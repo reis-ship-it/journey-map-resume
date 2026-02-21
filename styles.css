@@ -65,9 +65,7 @@ body {
 }
 
 .hero {
-  display: flex;
-  justify-content: space-between;
-  gap: 1.2rem;
+  display: block;
   padding: 2rem 0 1rem;
 }
 
@@ -122,13 +120,6 @@ h1 {
   display: block;
   color: var(--muted);
   font-size: 0.75rem;
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  gap: 0.5rem;
 }
 
 .btn {
@@ -305,6 +296,12 @@ textarea {
   min-height: 560px;
 }
 
+.timeline-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
 .journey-nav {
   display: flex;
   gap: 0.42rem;
@@ -409,6 +406,13 @@ textarea {
 
 .editor {
   margin: 0 auto 2rem;
+}
+
+.data-tools {
+  margin: 0.75rem 0 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .hidden {
