@@ -234,7 +234,6 @@ const countryCountEl = document.getElementById("countryCount");
 
 const playBtn = document.getElementById("playBtn");
 const stopBtn = document.getElementById("stopBtn");
-const speedSelect = document.getElementById("speedSelect");
 const progressRange = document.getElementById("progressRange");
 
 const editorEl = document.getElementById("editor");
@@ -764,7 +763,7 @@ function stopPlayback() {
   if (playbackTimer) clearInterval(playbackTimer);
   playbackTimer = null;
   isPlaying = false;
-  playBtn.textContent = "Play Journey";
+  playBtn.textContent = "▶";
 }
 
 function jumpSelection(direction) {
@@ -789,7 +788,7 @@ function startPlayback() {
   }
 
   isPlaying = true;
-  playBtn.textContent = "Pause";
+  playBtn.textContent = "⏸";
 
   playbackTimer = setInterval(() => {
     const current = visibleEntries();
@@ -808,7 +807,7 @@ function startPlayback() {
     renderAll();
     panToSelected();
     scrollTimelineTo(selectedId);
-  }, Number(speedSelect.value));
+  }, 1500);
 }
 
 async function findPlaceCoordinates() {
@@ -1049,12 +1048,6 @@ playBtn.addEventListener("click", startPlayback);
 stopBtn.addEventListener("click", stopPlayback);
 findPlaceBtn.addEventListener("click", findPlaceCoordinates);
 reverseCoordsBtn.addEventListener("click", fillPlaceFromCoordinates);
-
-speedSelect.addEventListener("change", () => {
-  if (!isPlaying) return;
-  stopPlayback();
-  startPlayback();
-});
 
 if (closeDrawerBtn) {
   closeDrawerBtn.addEventListener("click", () => {
