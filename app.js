@@ -1,6 +1,6 @@
 const ALLOW_EDIT_MODE = true;
 const EDITOR_PASSCODE = "change-this-passcode";
-const STORAGE_KEY = "journey_map_resume_entries_v3";
+const STORAGE_KEY = "journey_map_resume_entries_v4";
 
 const CATEGORY_COLORS = {
   education: "#5ca6f8",
@@ -43,8 +43,8 @@ const defaultEntries = [
   {
     id: crypto.randomUUID(),
     title: "NYU Gallatin BA",
-    startDate: "2019-09-01",
-    endDate: "2023-09-01",
+    startDate: "2018-08-01",
+    endDate: "2023-08-01",
     category: "Education",
     location: "New York City",
     country: "United States",
@@ -135,7 +135,7 @@ const defaultEntries = [
     locationDetail: "GUM Studios (Brooklyn)",
     lat: 40.651873,
     lng: -74.006142,
-    description: "Directed full-cycle content production, audience analytics, and automation workflows for social performance.",
+    description: "Directed full-cycle content production and social strategy, integrating AI + virtual production workflows and cutting research/search time by up to 90%.",
     overlapGroup: "NYC-2025-Creative",
   },
   {
@@ -149,7 +149,7 @@ const defaultEntries = [
     locationDetail: "Remote role anchored in NYC",
     lat: 40.712776,
     lng: -74.005974,
-    description: "Built AI-enabled content strategy pipelines, reducing production time and improving executive decision speed.",
+    description: "Created and executed data-informed content plans, automated publishing workflows (about 30% faster production), and delivered executive-facing competitor insights.",
     overlapGroup: "NYC-2025-Creative",
   },
   {

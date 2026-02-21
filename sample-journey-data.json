@@ -44,8 +44,8 @@
   {
     "id": "edu-nyu-gallatin",
     "title": "NYU Gallatin BA",
-    "startDate": "2019-09-01",
-    "endDate": "2023-09-01",
+    "startDate": "2018-08-01",
+    "endDate": "2023-08-01",
     "category": "Education",
     "location": "New York City",
     "country": "United States",
@@ -137,7 +137,7 @@
     "lat": 40.651873,
     "lng": -74.006142,
     "overlapGroup": "NYC-2025-Creative",
-    "description": "Directed full-cycle content production, audience analytics, and automation workflows for social performance."
+    "description": "Directed full-cycle content production and social strategy, integrating AI + virtual production workflows and cutting research/search time by up to 90%."
   },
   {
     "id": "work-double-eye",
@@ -151,7 +151,7 @@
     "lat": 40.712776,
     "lng": -74.005974,
     "overlapGroup": "NYC-2025-Creative",
-    "description": "Built AI-enabled content strategy pipelines, reducing production time and improving executive decision speed."
+    "description": "Created and executed data-informed content plans, automated publishing workflows (about 30% faster production), and delivered executive-facing competitor insights."
   },
   {
     "id": "work-bhm-2",
