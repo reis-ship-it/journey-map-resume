@@ -4,20 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Drawings - Portfolio</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/landing.css" />
+  <style>
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    a[data-btn]:hover,
+    a[data-btn]:focus-visible {
+      background: #ff0;
+      color: #000;
+      outline: none;
+    }
+  </style>
 </head>
 <body>
-  <main class="landing">
-    <p class="eyebrow">Portfolio</p>
-    <h1>Drawings</h1>
-    <p class="blurb">This section is ready for your Drawings work.</p>
-    <div class="actions">
-      <a class="btn primary" href="/portfolio">Back to Portfolio</a>
-      <a class="btn secondary" href="/">Back to Landing</a>
-    </div>
-  </main>
+<pre>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;title&gt;Drawings - Portfolio&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Drawings&lt;/h1&gt;
+  &lt;p&gt;This section is ready for your Drawings work.&lt;/p&gt;
+
+  &lt;a href="/"&gt;<a data-btn href="/">back</a>&lt;/a&gt;
+  &lt;a href="/resume"&gt;<a data-btn href="/resume">resume</a>&lt;/a&gt;
+  &lt;a href="/portfolio"&gt;<a data-btn href="/portfolio">portfolio</a>&lt;/a&gt;
+
+  &lt;a href="/portfolio/drawings"&gt;<a data-btn href="/portfolio/drawings">drawings</a>&lt;/a&gt;
+  &lt;a href="/portfolio/paintings"&gt;<a data-btn href="/portfolio/paintings">paintings</a>&lt;/a&gt;
+  &lt;a href="/portfolio/films"&gt;<a data-btn href="/portfolio/films">films</a>&lt;/a&gt;
+  &lt;a href="/portfolio/xr"&gt;<a data-btn href="/portfolio/xr">XR</a>&lt;/a&gt;
+  &lt;a href="/portfolio/coding"&gt;<a data-btn href="/portfolio/coding">coding</a>&lt;/a&gt;
+  &lt;a href="/portfolio/writings"&gt;<a data-btn href="/portfolio/writings">writings</a>&lt;/a&gt;
+  &lt;a href="/portfolio/wips"&gt;<a data-btn href="/portfolio/wips">W.I.Ps</a>&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
 </body>
 </html>
