@@ -3,6 +3,8 @@
     { "source": "/resume", "destination": "/resume/index.html" },
     { "source": "/resume/", "destination": "/resume/index.html" },
     { "source": "/portfolio", "destination": "/portfolio/index.html" },
-    { "source": "/portfolio/", "destination": "/portfolio/index.html" }
+    { "source": "/portfolio/", "destination": "/portfolio/index.html" },
+    { "source": "/portfolio/:slug", "destination": "/portfolio/:slug/index.html" },
+    { "source": "/portfolio/:slug/", "destination": "/portfolio/:slug/index.html" }
   ]
 }
