@@ -11,6 +11,14 @@ const CATEGORY_COLORS = {
   general: "#a6b7cc",
 };
 
+const LOCATION_CODES = {
+  "new york city": "NYC",
+  brooklyn: "NYC",
+  birmingham: "BHAM",
+  miami: "MIA",
+  denver: "DEN",
+};
+
 const defaultEntries = [
   {
     id: crypto.randomUUID(),
@@ -373,6 +381,11 @@ function colorForCategory(category) {
   return CATEGORY_COLORS[normalizeCategory(category)] || CATEGORY_COLORS.general;
 }
 
+function locationCode(entry) {
+  const key = (entry.location || "").toLowerCase().trim();
+  return LOCATION_CODES[key] || (entry.location || "LOC").slice(0, 4).toUpperCase();
+}
+
 function cityCountry(entry) {
   return entry.country ? `${entry.location}, ${entry.country}` : entry.location;
 }
@@ -512,6 +525,15 @@ function buildStepIcon(stepNumber, entry, isActive) {
   });
 }
 
+function buildClusterIcon(code) {
+  return L.divIcon({
+    className: "cluster-pin",
+    html: `<div class="cluster-icon">${code}</div>`,
+    iconSize: [42, 42],
+    iconAnchor: [21, 21],
+  });
+}
+
 function offsetMarker(entry, duplicateIndex, duplicateTotal) {
   if (duplicateTotal <= 1) return [entry.lat, entry.lng];
   const angle = (Math.PI * 2 * duplicateIndex) / duplicateTotal;
@@ -552,6 +574,54 @@ function renderMap() {
       weight: 4,
       opacity: 0.95,
     }).addTo(map);
+  }
+
+  const zoom = map.getZoom();
+  const shouldCluster = zoom <= 6;
+  if (shouldCluster) {
+    const groups = new Map();
+    visible.forEach((entry) => {
+      const code = locationCode(entry);
+      if (!groups.has(code)) groups.set(code, []);
+      groups.get(code).push(entry);
+    });
+
+    groups.forEach((groupEntries, code) => {
+      if (groupEntries.length === 1) {
+        const entry = groupEntries[0];
+        const idx = visible.findIndex((item) => item.id === entry.id);
+        const marker = L.marker([entry.lat, entry.lng], {
+          icon: buildStepIcon(idx + 1, entry, entry.id === selectedId),
+          title: `${entry.title} (${locationLabel(entry)})`,
+        }).addTo(map);
+        marker.on("click", () => {
+          selectedId = entry.id;
+          drawerOpen = true;
+          renderAll();
+          panToSelected();
+          scrollTimelineTo(selectedId);
+        });
+        markerLayers.push(marker);
+        return;
+      }
+
+      const avgLat = groupEntries.reduce((sum, entry) => sum + Number(entry.lat), 0) / groupEntries.length;
+      const avgLng = groupEntries.reduce((sum, entry) => sum + Number(entry.lng), 0) / groupEntries.length;
+      const marker = L.marker([avgLat, avgLng], {
+        icon: buildClusterIcon(code),
+        title: `${code} cluster`,
+      }).addTo(map);
+
+      marker.on("click", () => {
+        const bounds = L.latLngBounds(groupEntries.map((entry) => [entry.lat, entry.lng]));
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 9 });
+        selectedId = groupEntries[0].id;
+        drawerOpen = true;
+        renderAll();
+      });
+      markerLayers.push(marker);
+    });
+    return;
   }
 
   const countByCoord = new Map();
@@ -979,6 +1049,10 @@ map.on("click", (event) => {
   lngEl.value = event.latlng.lng.toFixed(6);
   syncPrecisionMarker();
   setPlaceStatus(`Picked on map: ${event.latlng.lat.toFixed(6)}, ${event.latlng.lng.toFixed(6)}`);
+});
+
+map.on("zoomend", () => {
+  renderMap();
 });
 
 form.addEventListener("submit", (event) => {

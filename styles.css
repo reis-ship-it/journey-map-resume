@@ -211,7 +211,8 @@ a.btn {
 
 .map-card,
 .timeline-card {
-  min-height: var(--panel-height);
+  height: var(--panel-height);
+  min-height: 0;
 }
 
 .card-head {
@@ -295,6 +296,7 @@ body.is-mobile .map {
 
 body.is-mobile .timeline-card {
   min-height: 320px;
+  height: auto;
 }
 
 body.is-mobile .timeline {
@@ -397,6 +399,21 @@ textarea {
   padding: 0.46rem 0.55rem;
 }
 
+.cluster-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  font-weight: 800;
+  color: #102035;
+  background: #ffcf9f;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 16px rgba(66, 99, 129, 0.24);
+}
+
 .step-icon {
   width: 30px;
   height: 30px;
@@ -417,7 +434,7 @@ textarea {
 .timeline-card {
   display: flex;
   flex-direction: column;
-  min-height: var(--panel-height);
+  min-height: 0;
 }
 
 .timeline-actions {
@@ -489,8 +506,11 @@ textarea {
   list-style: none;
   margin: 0.8rem 0 0;
   padding: 0;
-  overflow: visible;
+  overflow-y: auto;
   max-height: none;
+  min-height: 0;
+  flex: 1 1 auto;
+  padding-bottom: 0.7rem;
 }
 
 .timeline-item {
@@ -638,6 +658,7 @@ textarea {
 
   .map-card,
   .timeline-card {
+    height: auto;
     min-height: auto;
   }
 
