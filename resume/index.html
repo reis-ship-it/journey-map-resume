@@ -15,9 +15,12 @@
 
   <header class="hero shell reveal">
     <div class="hero-copy">
-      <p class="eyebrow">Interactive Resume</p>
-      <h1>Life, Education, and Work Across the World</h1>
-      <p class="subtitle">A timeline map with overlap-friendly storytelling.</p>
+      <h1>resume</h1>
+      <p class="subtitle">i think through time in space. This is how i best see my resume, not as bullet points and some funny language, but as marks on a map leading from one place to another. (ps - I made this in less than a day for the specific purpose of being a Google Fiver. it's not meant to be impressive as a feat in and of itself, more like i just want to share my story/journey in a cool way that may actually be easier for humans to read than bullet points. I dont have the data on that yet)</p>
+      <div class="resume-nav">
+        <a class="btn btn-alt" href="/">back</a>
+        <a class="btn btn-alt" href="/portfolio">portfolio</a>
+      </div>
       <div class="meta-row">
         <div><span class="meta-label">Total Steps</span><strong id="totalSteps">0</strong></div>
         <div><span class="meta-label">Years Covered</span><strong id="yearSpan">-</strong></div>
@@ -30,23 +33,18 @@
     <section class="card map-card reveal delay-1">
       <div class="card-head">
         <h2>Journey Map</h2>
-        <div class="tools">
-          <label>Year<select id="yearFilter"><option value="all">All</option></select></label>
-          <label>Category<select id="categoryFilter"><option value="all">All</option></select></label>
-          <button id="fitAllBtn" class="btn btn-alt">Fit Route</button>
-        </div>
+        <details class="filter-panel">
+          <summary>Filters</summary>
+          <div class="tools">
+            <label>Year<select id="yearFilter"><option value="all">All</option></select></label>
+            <label>Category<select id="categoryFilter"><option value="all">All</option></select></label>
+            <button id="fitAllBtn" class="btn btn-alt">Fit Route</button>
+          </div>
+        </details>
       </div>
 
       <div id="map" class="map" aria-label="Realistic world map"></div>
       <div class="legend" id="legend"></div>
-
-      <div class="playback">
-        <button id="playBtn" class="btn btn-alt">Play Journey</button>
-        <button id="stopBtn" class="btn btn-alt">Stop</button>
-        <label>Speed<select id="speedSelect"><option value="2200">Slow</option><option value="1500" selected>Normal</option><option value="900">Fast</option></select></label>
-        <input id="progressRange" type="range" min="0" max="0" value="0" />
-      </div>
-
       <p class="map-note">Overlaps: use same dates and set an optional overlap group. Edits auto-save in your browser on this device.</p>
     </section>
 
@@ -61,10 +59,23 @@
           <button id="unlockBtn" class="btn btn-alt">Unlock Edit Mode</button>
         </div>
       </div>
-      <section id="focusCard" class="focus-card"></section>
+      <section id="detailDrawer" class="detail-drawer hidden">
+        <div class="detail-head">
+          <strong>Step Details</strong>
+          <button id="closeDrawerBtn" class="btn btn-alt" type="button">Close</button>
+        </div>
+        <section id="focusCard" class="focus-card"></section>
+      </section>
       <ol id="timeline" class="timeline"></ol>
     </aside>
   </main>
+
+  <section class="playback playback-floating card shell reveal delay-2">
+    <button id="playBtn" class="btn btn-alt">Play Journey</button>
+    <button id="stopBtn" class="btn btn-alt">Stop</button>
+    <label>Speed<select id="speedSelect"><option value="2200">Slow</option><option value="1500" selected>Normal</option><option value="900">Fast</option></select></label>
+    <input id="progressRange" type="range" min="0" max="0" value="0" />
+  </section>
 
   <section id="editor" class="shell card editor hidden reveal delay-3">
     <div class="card-head">

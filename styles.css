@@ -99,6 +99,13 @@ h1 {
   margin: 0;
   color: var(--muted);
   font-size: 1.03rem;
+  max-width: 980px;
+}
+
+.resume-nav {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .meta-row {
@@ -198,6 +205,25 @@ h2 {
   gap: 0.55rem;
 }
 
+.filter-panel {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0.25rem 0.5rem;
+}
+
+.filter-panel summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.85rem;
+  list-style: none;
+}
+
+.filter-panel[open] .tools {
+  margin-top: 0.5rem;
+}
+
 .tools label,
 .playback label {
   display: flex;
@@ -263,6 +289,15 @@ textarea {
   background: rgba(255, 255, 255, 0.54);
 }
 
+.playback-floating {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  width: min(720px, calc(100% - 2rem));
+  z-index: 30;
+  margin: 0;
+}
+
 #progressRange {
   width: 100%;
 }
@@ -313,6 +348,21 @@ textarea {
   border-radius: 13px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.66);
+}
+
+.detail-drawer {
+  margin-top: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 0.7rem;
+}
+
+.detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .focus-top {
@@ -512,5 +562,11 @@ textarea {
 
   .playback {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .playback-floating {
+    position: static;
+    width: auto;
+    margin: 0 auto 1rem;
   }
 }

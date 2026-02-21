@@ -187,8 +187,11 @@ let editorUnlocked = false;
 let pickMode = false;
 let isPlaying = false;
 let playbackTimer = null;
+let drawerOpen = false;
 
 const timelineEl = document.getElementById("timeline");
+const detailDrawerEl = document.getElementById("detailDrawer");
+const closeDrawerBtn = document.getElementById("closeDrawerBtn");
 const focusCardEl = document.getElementById("focusCard");
 const legendEl = document.getElementById("legend");
 
@@ -245,6 +248,12 @@ let markerLayers = [];
 let routeLayer = null;
 let activeRouteLayer = null;
 let precisionMarker = null;
+
+function setDrawerOpen(open) {
+  drawerOpen = open;
+  if (!detailDrawerEl) return;
+  detailDrawerEl.classList.toggle("hidden", !open);
+}
 
 function parseDate(dateString) {
   return new Date(`${dateString}T00:00:00`);
@@ -523,6 +532,7 @@ function renderMap() {
 
     marker.on("click", () => {
       selectedId = entry.id;
+      drawerOpen = true;
       renderAll();
       panToSelected();
       scrollTimelineTo(selectedId);
@@ -567,6 +577,7 @@ function renderFocusCard() {
 
   if (index < 0) {
     focusCardEl.innerHTML = "<p>No steps match this filter.</p>";
+    setDrawerOpen(false);
     return;
   }
 
@@ -581,6 +592,7 @@ function renderFocusCard() {
     ${entry.overlapGroup ? `<p class="focus-overlap">Overlap Group: ${entry.overlapGroup}</p>` : ""}
     <p>${entry.description}</p>
   `;
+  setDrawerOpen(drawerOpen);
 }
 
 function renderTimeline() {
@@ -609,6 +621,7 @@ function renderTimeline() {
 
     button.addEventListener("click", () => {
       selectedId = entry.id;
+      drawerOpen = true;
       renderAll();
       panToSelected();
     });
@@ -678,6 +691,7 @@ function renderEditorList() {
     editBtn.addEventListener("click", () => {
       fillForm(entry);
       selectedId = entry.id;
+      drawerOpen = true;
       renderAll();
       panToSelected();
     });
@@ -713,6 +727,7 @@ function jumpSelection(direction) {
   const current = selectedVisibleIndex();
   const next = current < 0 ? 0 : Math.min(Math.max(current + direction, 0), visible.length - 1);
   selectedId = visible[next].id;
+  drawerOpen = true;
   renderAll();
   scrollTimelineTo(selectedId);
   panToSelected();
@@ -743,6 +758,7 @@ function startPlayback() {
       return;
     }
     selectedId = current[nextIndex].id;
+    drawerOpen = true;
     renderAll();
     panToSelected();
     scrollTimelineTo(selectedId);
@@ -944,6 +960,7 @@ form.addEventListener("submit", (event) => {
     else entries.push(next);
 
     selectedId = next.id;
+    drawerOpen = true;
     saveEntries();
     clearForm();
     renderAll();
@@ -993,12 +1010,19 @@ speedSelect.addEventListener("change", () => {
   startPlayback();
 });
 
+if (closeDrawerBtn) {
+  closeDrawerBtn.addEventListener("click", () => {
+    setDrawerOpen(false);
+  });
+}
+
 progressRange.addEventListener("input", () => {
   stopPlayback();
   const visible = visibleEntries();
   const index = Number(progressRange.value);
   if (!visible[index]) return;
   selectedId = visible[index].id;
+  drawerOpen = true;
   renderAll();
   panToSelected();
   scrollTimelineTo(selectedId);
