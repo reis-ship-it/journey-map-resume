@@ -194,6 +194,7 @@ const detailDrawerEl = document.getElementById("detailDrawer");
 const closeDrawerBtn = document.getElementById("closeDrawerBtn");
 const focusCardEl = document.getElementById("focusCard");
 const legendEl = document.getElementById("legend");
+const filterPanelEl = document.getElementById("filterPanel");
 
 const yearFilterEl = document.getElementById("yearFilter");
 const categoryFilterEl = document.getElementById("categoryFilter");
@@ -248,6 +249,22 @@ let markerLayers = [];
 let routeLayer = null;
 let activeRouteLayer = null;
 let precisionMarker = null;
+
+function isMobileDevice() {
+  const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+  const narrowViewport = window.matchMedia("(max-width: 820px)").matches;
+  return coarsePointer || narrowViewport;
+}
+
+function applyResponsiveMode() {
+  const mobile = isMobileDevice();
+  document.body.classList.toggle("is-mobile", mobile);
+  document.body.classList.toggle("is-desktop", !mobile);
+
+  if (filterPanelEl) {
+    filterPanelEl.open = !mobile;
+  }
+}
 
 function setDrawerOpen(open) {
   drawerOpen = open;
@@ -1073,6 +1090,8 @@ importInput.addEventListener("change", async (event) => {
 });
 
 setPlaceStatus("Use map click, search, or drag the precision pin.");
+applyResponsiveMode();
 renderAll();
 fitToVisibleRoute();
 setTimeout(() => map.invalidateSize(), 120);
+window.addEventListener("resize", applyResponsiveMode);

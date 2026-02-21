@@ -241,6 +241,35 @@ h2 {
   margin-top: 0.5rem;
 }
 
+body.is-mobile .hero {
+  padding-top: 1rem;
+  padding-bottom: 0.95rem;
+}
+
+body.is-mobile .subtitle {
+  font-size: 0.92rem;
+}
+
+body.is-mobile .meta-row {
+  gap: 0.55rem;
+}
+
+body.is-mobile .map {
+  height: clamp(280px, 45vh, 420px);
+}
+
+body.is-mobile .timeline-card {
+  min-height: 320px;
+}
+
+body.is-mobile .timeline {
+  max-height: 44vh;
+}
+
+body.is-mobile .playback {
+  grid-template-columns: 1fr;
+}
+
 .tools label,
 .playback label {
   display: flex;
