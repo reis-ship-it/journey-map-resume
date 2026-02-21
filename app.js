@@ -6,6 +6,7 @@ const CATEGORY_COLORS = {
   education: "#5ca6f8",
   work: "#35c88b",
   personal: "#ff9a62",
+  life: "#ff8c3a",
   project: "#a587f8",
   general: "#a6b7cc",
 };
