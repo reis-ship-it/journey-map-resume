@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume - Reis Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="sky"></div>
+
+  <header class="hero shell reveal">
+    <div class="hero-copy">
+      <p class="eyebrow">Interactive Resume</p>
+      <h1>Life, Education, and Work Across the World</h1>
+      <p class="subtitle">A timeline map with overlap-friendly storytelling.</p>
+      <div class="meta-row">
+        <div><span class="meta-label">Total Steps</span><strong id="totalSteps">0</strong></div>
+        <div><span class="meta-label">Years Covered</span><strong id="yearSpan">-</strong></div>
+        <div><span class="meta-label">Countries</span><strong id="countryCount">0</strong></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell layout">
+    <section class="card map-card reveal delay-1">
+      <div class="card-head">
+        <h2>Journey Map</h2>
+        <div class="tools">
+          <label>Year<select id="yearFilter"><option value="all">All</option></select></label>
+          <label>Category<select id="categoryFilter"><option value="all">All</option></select></label>
+          <button id="fitAllBtn" class="btn btn-alt">Fit Route</button>
+        </div>
+      </div>
+
+      <div id="map" class="map" aria-label="Realistic world map"></div>
+      <div class="legend" id="legend"></div>
+
+      <div class="playback">
+        <button id="playBtn" class="btn btn-alt">Play Journey</button>
+        <button id="stopBtn" class="btn btn-alt">Stop</button>
+        <label>Speed<select id="speedSelect"><option value="2200">Slow</option><option value="1500" selected>Normal</option><option value="900">Fast</option></select></label>
+        <input id="progressRange" type="range" min="0" max="0" value="0" />
+      </div>
+
+      <p class="map-note">Overlaps: use same dates and set an optional overlap group. Edits auto-save in your browser on this device.</p>
+    </section>
+
+    <aside class="card timeline-card reveal delay-2">
+      <div class="card-head compact">
+        <h2>Journey Steps</h2>
+        <div class="timeline-actions">
+          <div class="journey-nav">
+            <button id="prevBtn" class="btn btn-alt">Prev</button>
+            <button id="nextBtn" class="btn btn-alt">Next</button>
+          </div>
+          <button id="unlockBtn" class="btn btn-alt">Unlock Edit Mode</button>
+        </div>
+      </div>
+      <section id="focusCard" class="focus-card"></section>
+      <ol id="timeline" class="timeline"></ol>
+    </aside>
+  </main>
+
+  <section id="editor" class="shell card editor hidden reveal delay-3">
+    <div class="card-head">
+      <h2>Edit Journey Data</h2>
+      <button id="pickModeBtn" class="btn btn-alt" type="button">Pick Coordinates on Map: Off</button>
+    </div>
+
+    <div class="data-tools">
+      <button id="exportBtn" class="btn btn-alt">Export JSON</button>
+      <button id="templateBtn" class="btn btn-alt">Download Template</button>
+      <button id="resetDataBtn" class="btn btn-alt">Reset to Sample</button>
+      <label class="btn btn-alt file-label">Import JSON<input id="importInput" type="file" accept="application/json" /></label>
+    </div>
+
+    <form id="entryForm" class="entry-form">
+      <input type="hidden" id="entryId" />
+      <label>Title<input id="title" required /></label>
+      <label>Start Date<input id="startDate" type="date" required /></label>
+      <label>End Date (optional)<input id="endDate" type="date" /></label>
+      <label>Category<input id="category" placeholder="Education, Work, Personal, Project" /></label>
+      <label>Location Name<input id="location" required /></label>
+      <label>Country<input id="country" placeholder="United States, Germany" required /></label>
+      <label>Location Detail (optional)<input id="locationDetail" placeholder="Venue, campus, neighborhood, or address" /></label>
+      <label>Overlap Group (optional)<input id="overlapGroup" placeholder="NYC-2025-MultiRole" /></label>
+      <label class="wide">
+        Find Place (City, Address, Venue)
+        <div class="location-tools">
+          <input id="placeQuery" placeholder="Example: NYU Tisch School of the Arts, Brooklyn" />
+          <button class="btn btn-alt" id="findPlaceBtn" type="button">Find Coordinates</button>
+          <button class="btn btn-alt" id="reverseCoordsBtn" type="button">Fill City/Country from Coords</button>
+        </div>
+        <small id="placeStatus" class="place-status">Use map click, search, or drag the precision pin.</small>
+      </label>
+      <label>Latitude<input id="lat" type="number" step="0.000001" min="-90" max="90" required /></label>
+      <label>Longitude<input id="lng" type="number" step="0.000001" min="-180" max="180" required /></label>
+      <label class="wide">Description<textarea id="description" rows="3" required></textarea></label>
+      <div class="form-actions wide">
+        <button class="btn" type="submit">Save Entry</button>
+        <button class="btn btn-alt" id="resetFormBtn" type="button">Reset</button>
+      </div>
+    </form>
+
+    <h3>Current Dataset</h3>
+    <ul id="editorList" class="editor-list"></ul>
+  </section>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/app.js"></script>
+</body>
+</html>
