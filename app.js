@@ -19,6 +19,15 @@ const LOCATION_CODES = {
   denver: "DEN",
 };
 
+const MOTION = {
+  clusterZoomDuration: 2.5,
+  routeFitDuration: 2.0,
+  focusPanDuration: 2.1,
+  geocodePanDuration: 1.7,
+  ease: 0.22,
+  playbackStepMs: 3000,
+};
+
 const defaultEntries = [
   {
     id: crypto.randomUUID(),
@@ -274,7 +283,14 @@ const lngEl = document.getElementById("lng");
 const descriptionEl = document.getElementById("description");
 const resetFormBtn = document.getElementById("resetFormBtn");
 
-const map = L.map("map", { worldCopyJump: true, zoomControl: true, minZoom: 2 }).setView([20, 0], 2);
+const map = L.map("map", {
+  worldCopyJump: true,
+  zoomControl: true,
+  minZoom: 2,
+  zoomAnimation: true,
+  fadeAnimation: true,
+  markerZoomAnimation: true,
+}).setView([20, 0], 2);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 18,
@@ -614,7 +630,12 @@ function renderMap() {
 
       marker.on("click", () => {
         const bounds = L.latLngBounds(groupEntries.map((entry) => [entry.lat, entry.lng]));
-        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 9 });
+        map.flyToBounds(bounds, {
+          padding: [60, 60],
+          maxZoom: 9,
+          duration: MOTION.clusterZoomDuration,
+          easeLinearity: MOTION.ease,
+        });
         selectedId = groupEntries[0].id;
         drawerOpen = true;
         renderAll();
@@ -661,13 +682,21 @@ function fitToVisibleRoute() {
   const visible = visibleEntries();
   if (!visible.length) return;
   const bounds = L.latLngBounds(visible.map((entry) => [entry.lat, entry.lng]));
-  map.fitBounds(bounds, { padding: [40, 40], maxZoom: 5 });
+  map.flyToBounds(bounds, {
+    padding: [50, 50],
+    maxZoom: 5,
+    duration: MOTION.routeFitDuration,
+    easeLinearity: MOTION.ease,
+  });
 }
 
 function panToSelected() {
   const selected = visibleEntries().find((entry) => entry.id === selectedId);
   if (!selected) return;
-  map.flyTo([selected.lat, selected.lng], Math.max(map.getZoom(), 4), { duration: 0.9 });
+  map.flyTo([selected.lat, selected.lng], Math.max(map.getZoom(), 4), {
+    duration: MOTION.focusPanDuration,
+    easeLinearity: MOTION.ease,
+  });
 }
 
 function scrollTimelineTo(id) {
@@ -830,7 +859,7 @@ function renderEditorList() {
 }
 
 function stopPlayback() {
-  if (playbackTimer) clearInterval(playbackTimer);
+  if (playbackTimer) clearTimeout(playbackTimer);
   playbackTimer = null;
   isPlaying = false;
   playBtn.textContent = "▶";
@@ -859,25 +888,31 @@ function startPlayback() {
 
   isPlaying = true;
   playBtn.textContent = "⏸";
-
-  playbackTimer = setInterval(() => {
+  const runPlaybackStep = () => {
+    if (!isPlaying) return;
     const current = visibleEntries();
     if (!current.length) {
       stopPlayback();
       return;
     }
+
     const idx = current.findIndex((entry) => entry.id === selectedId);
     const nextIndex = idx + 1;
     if (nextIndex >= current.length) {
       stopPlayback();
       return;
     }
+
     selectedId = current[nextIndex].id;
     drawerOpen = true;
     renderAll();
     panToSelected();
     scrollTimelineTo(selectedId);
-  }, 1500);
+
+    playbackTimer = setTimeout(runPlaybackStep, MOTION.playbackStepMs);
+  };
+
+  playbackTimer = setTimeout(runPlaybackStep, MOTION.playbackStepMs);
 }
 
 async function findPlaceCoordinates() {
@@ -902,7 +937,10 @@ async function findPlaceCoordinates() {
     latEl.value = Number(result.lat).toFixed(6);
     lngEl.value = Number(result.lon).toFixed(6);
     syncPrecisionMarker();
-    map.flyTo([Number(result.lat), Number(result.lon)], 9, { duration: 0.8 });
+    map.flyTo([Number(result.lat), Number(result.lon)], 9, {
+      duration: MOTION.geocodePanDuration,
+      easeLinearity: MOTION.ease,
+    });
     setPlaceStatus(`Found: ${result.display_name}`);
   } catch (error) {
     setPlaceStatus(error.message, true);
