@@ -19,7 +19,7 @@
   </style>
 </head>
 <body>
-<pre>&lt;!doctype html&gt;
+<pre id="portfolio-pre">&lt;!doctype html&gt;
 &lt;html lang="en"&gt;
 &lt;head&gt;
   &lt;title&gt;W.I.Ps - Portfolio&lt;/title&gt;
@@ -43,5 +43,52 @@
 &lt;/body&gt;
 &lt;/html&gt;
 </pre>
+<script>
+  (function () {
+    const pre = document.getElementById("portfolio-pre");
+    if (!pre) return;
+
+    const walker = document.createTreeWalker(pre, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let node;
+
+    while ((node = walker.nextNode())) {
+      const value = node.textContent || "";
+      nodes.push({ node, value });
+      node.textContent = "";
+    }
+
+    const totalChars = nodes.reduce((sum, entry) => sum + entry.value.length, 0);
+    if (!totalChars) return;
+
+    const holdMs = 250;
+    const durationMs = 670;
+    const start = performance.now() + holdMs;
+
+    function render(charCount) {
+      let remaining = charCount;
+      for (const entry of nodes) {
+        const take = Math.max(0, Math.min(entry.value.length, remaining));
+        entry.node.textContent = entry.value.slice(0, take);
+        remaining -= take;
+      }
+    }
+
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(1, Math.max(0, elapsed / durationMs));
+      const charsToShow = Math.floor(progress * totalChars);
+      render(charsToShow);
+
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        render(totalChars);
+      }
+    }
+
+    requestAnimationFrame(tick);
+  })();
+</script>
 </body>
 </html>
