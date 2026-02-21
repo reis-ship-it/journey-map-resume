@@ -1,0 +1,16 @@
+[
+  {
+    "id": "optional-uuid",
+    "title": "Step Title",
+    "startDate": "YYYY-MM-DD",
+    "endDate": "YYYY-MM-DD or null",
+    "category": "Education | Work | Personal | Project",
+    "location": "City",
+    "country": "Country",
+    "locationDetail": "Exact venue/campus/address (optional)",
+    "lat": 0,
+    "lng": 0,
+    "overlapGroup": "optional-shared-group-id",
+    "description": "What happened at this step and why it mattered."
+  }
+]

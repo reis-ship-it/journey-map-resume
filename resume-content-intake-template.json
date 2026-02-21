@@ -1,0 +1,232 @@
+{
+  "profile": {
+    "full_name": "",
+    "headline": "",
+    "tagline": "",
+    "short_bio": "",
+    "email": "",
+    "linkedin_url": "",
+    "portfolio_url": ""
+  },
+  "experience": [
+    {
+      "id": "exp-double-eye-studios",
+      "organization": "Double Eye Studios",
+      "role": "Content Strategy Associate",
+      "employment_type": "Remote",
+      "start_date": "2025-06-01",
+      "end_date": null,
+      "is_current": true,
+      "city": "",
+      "region": "",
+      "country": "",
+      "category": "Work",
+      "summary": "",
+      "highlights": [
+        "Created and executed content plans informed by market data and company growth goals",
+        "Automated parts of the publishing pipeline through AI tools, cutting production time by 30%",
+        "Developed cross-channel social copy aligned with Meta content partnerships",
+        "Conducted competitor performance reviews and delivered actionable reports for executives"
+      ],
+      "top_metric": "",
+      "tools": [],
+      "links": []
+    },
+    {
+      "id": "exp-birmingham-fencing-club-period-1",
+      "organization": "Birmingham Fencing Club",
+      "role": "Epee Strategy Coach, Marketing Head",
+      "employment_type": "On-site",
+      "start_date": "2023-08-01",
+      "end_date": "2024-08-31",
+      "is_current": false,
+      "city": "Birmingham",
+      "region": "Alabama",
+      "country": "United States",
+      "category": "Work",
+      "summary": "",
+      "highlights": [
+        "Led social strategy that increased new memberships by 25% in one quarter",
+        "Designed brand materials and digital campaigns using Adobe Suite",
+        "Trained youth and adult athletes through structured data-based progress tracking"
+      ],
+      "top_metric": "",
+      "tools": [],
+      "links": []
+    },
+    {
+      "id": "exp-birmingham-fencing-club-period-2",
+      "organization": "Birmingham Fencing Club",
+      "role": "Epee Strategy Coach, Marketing Head",
+      "employment_type": "On-site",
+      "start_date": "2025-08-01",
+      "end_date": null,
+      "is_current": true,
+      "city": "Birmingham",
+      "region": "Alabama",
+      "country": "United States",
+      "category": "Work",
+      "summary": "",
+      "highlights": [
+        "Continued athlete development and strategic marketing leadership"
+      ],
+      "top_metric": "",
+      "tools": [],
+      "links": []
+    },
+    {
+      "id": "exp-gum-studios",
+      "organization": "Gum Studios",
+      "role": "Content Producer, Social Media Strategist",
+      "employment_type": "On-site",
+      "start_date": "2025-03-01",
+      "end_date": "2025-07-31",
+      "is_current": false,
+      "city": "Brooklyn",
+      "region": "New York",
+      "country": "United States",
+      "category": "Work",
+      "summary": "",
+      "highlights": [
+        "Directed full-cycle content production, integrating AI and Virtual Production pipelines",
+        "Collaborated with executives to refine brand voice and streamline social communication",
+        "Delivered audience analysis leading to new client acquisition and improved engagement",
+        "Automated parts of the content resharing pipeline through agentic scraping tools, cutting search time by 90%"
+      ],
+      "top_metric": "",
+      "tools": [],
+      "links": []
+    },
+    {
+      "id": "exp-nyu-thesis-film",
+      "organization": "NYU Graduate Thesis Film",
+      "role": "Project Manager (Producer, Writer, Director, Editor)",
+      "employment_type": "Project",
+      "start_date": "2024-08-01",
+      "end_date": "2025-05-31",
+      "is_current": false,
+      "city": "Brooklyn",
+      "region": "New York",
+      "country": "United States",
+      "category": "Project",
+      "summary": "",
+      "highlights": [
+        "Managed a 30-person team from concept to delivery, maintaining timeline and budget discipline",
+        "Oversaw creative direction, editing, and digital marketing for the film's theatrical debut",
+        "Applied data insights from test audiences to refine the final cut and promotional approach",
+        "Raised $25000 in crowdfunding"
+      ],
+      "top_metric": "",
+      "tools": [],
+      "links": []
+    },
+    {
+      "id": "exp-service-industry",
+      "organization": "Service Industry",
+      "role": "Various Roles (Barista, Host, Ice Cream Scooper, Kitchen Staff, D2C Sales)",
+      "employment_type": "Various",
+      "start_date": "2014-02-01",
+      "end_date": "2024-08-31",
+      "is_current": false,
+      "city": "Multiple",
+      "region": "CO, FL, NY, AL",
+      "country": "United States",
+      "category": "Work",
+      "summary": "",
+      "highlights": [
+        "Learned customer retention, team coordination, and small business operations"
+      ],
+      "top_metric": "",
+      "tools": [],
+      "links": []
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-nyu-tisch-scorsese",
+      "institution": "New York University, Tisch School of the Arts, Scorsese Institute",
+      "program": "Master of Professional Studies, Virtual Production",
+      "start_date": "",
+      "end_date": "2025-05-01",
+      "city": "Brooklyn",
+      "region": "New York",
+      "country": "United States",
+      "gpa": "3.9",
+      "focus": []
+    },
+    {
+      "id": "edu-nyu-gallatin",
+      "institution": "New York University, Gallatin School of Individualized Study",
+      "program": "Bachelor of Arts, Individualized Study in Business of Emerging Technology for New Media",
+      "minor": "Bioethics (focused on ethics of Human Computer Interaction)",
+      "start_date": "",
+      "end_date": "2023-09-01",
+      "city": "New York",
+      "region": "New York",
+      "country": "United States",
+      "gpa": "3.5",
+      "focus": []
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-spots",
+      "name": "SPOTS",
+      "year": 2025,
+      "category": "Project",
+      "problem": "",
+      "contributions": [
+        "Built a peer-to-peer AI tracking prototype for location discovery using vibe data",
+        "Designed product flow and user feedback loops for preference-based recommendations"
+      ],
+      "tools": [],
+      "city": "",
+      "region": "",
+      "country": "",
+      "lat": null,
+      "lng": null,
+      "links": []
+    },
+    {
+      "id": "proj-ride-the-dice-love-crushed-velvet",
+      "name": "Ride The Dice - Love Crushed Velvet",
+      "year": 2024,
+      "category": "Project",
+      "problem": "",
+      "contributions": [
+        "Creative strategist for immersive multi-viewer music video concept"
+      ],
+      "tools": [],
+      "city": "",
+      "region": "",
+      "country": "",
+      "lat": null,
+      "lng": null,
+      "links": []
+    }
+  ],
+  "skills": {
+    "analytical": [
+      "Campaign metrics",
+      "A/B testing",
+      "Trend tracking",
+      "Excel/Sheets",
+      "Competitive analysis"
+    ],
+    "technical": [
+      "Generative AI",
+      "Virtual Production",
+      "Content automation systems"
+    ],
+    "creative": [
+      "Storytelling",
+      "Copywriting",
+      "Brand development",
+      "Adobe Suite"
+    ],
+    "other": [
+      "NCAA international-level epee fencer",
+      "Leadership under pressure"
+    ]
+  }
+}
