@@ -40,7 +40,7 @@ const defaultEntries = [
     locationDetail: "Downtown Denver (service roles cluster)",
     lat: 39.739236,
     lng: -104.990251,
-    description: "Built customer service, retention, and team coordination foundations in fast-paced service roles.",
+    description: "Started in high-volume front-of-house and kitchen support environments where pace and consistency mattered every shift. Built the baseline skills that still shape my work style: reading people quickly, coordinating teams under pressure, and keeping quality steady while volume changes hour to hour.",
     overlapGroup: "Service-MultiState",
   },
   {
@@ -54,7 +54,7 @@ const defaultEntries = [
     locationDetail: "Downtown Miami (service roles cluster)",
     lat: 25.761681,
     lng: -80.191788,
-    description: "Expanded operational range across hospitality and small-business customer experience roles.",
+    description: "Extended service and operations work into Miami, adapting quickly to a different customer base and operating style. Strengthened retention and reliability habits while learning how local market context changes communication, workflow, and team rhythm.",
     overlapGroup: "Service-MultiState",
   },
   {
@@ -68,7 +68,7 @@ const defaultEntries = [
     locationDetail: "New York University athletics",
     lat: 40.7295,
     lng: -73.9965,
-    description: "Competed as an NCAA fencer while balancing academics and professional growth.",
+    description: "Competed in NCAA epee while balancing coursework and paid work, which demanded disciplined time management and repeatable training structure. Fencing sharpened decision speed, pattern recognition, and calm execution under pressure that now carries into leadership and production work.",
     overlapGroup: "NYC-Life-Leadership",
   },
   {
@@ -82,7 +82,7 @@ const defaultEntries = [
     locationDetail: "Manhattan + Brooklyn hospitality corridor",
     lat: 40.712776,
     lng: -74.005974,
-    description: "Developed high-pressure execution, customer retention, and team reliability across service positions.",
+    description: "Worked across New York service roles spanning host, barista, food service, and kitchen support. Built strong customer retention habits and team reliability in high-traffic environments where communication and handoffs directly affected revenue and guest experience.",
     overlapGroup: "Service-MultiState",
   },
   {
@@ -96,7 +96,7 @@ const defaultEntries = [
     locationDetail: "NYU Gallatin",
     lat: 40.7295,
     lng: -73.9965,
-    description: "Mentored first-year students, organized orientation programming, and supported peer leadership development.",
+    description: "Supported first-year student onboarding at NYU Gallatin as an orientation leader and peer mentor. Designed and ran events, coordinated with the student team, and became a first point of contact for both logistics and student support issues.",
     overlapGroup: "NYC-Life-Leadership",
   },
   {
@@ -110,7 +110,7 @@ const defaultEntries = [
     locationDetail: "Limore Kurtz Dooley (NYC metro area)",
     lat: 40.7128,
     lng: -74.006,
-    description: "Supported research, strategy, and presentation workflows across creative development and client communications.",
+    description: "Contributed to research, strategy, and client-facing communication workflows in a New York internship setting. Produced presentation materials, organized inputs for decision-making, and supported early-stage creative and business development tasks.",
     overlapGroup: "NYC-Life-Leadership",
   },
   {
@@ -124,7 +124,7 @@ const defaultEntries = [
     locationDetail: "NYU Gallatin School, 1 Washington Place",
     lat: 40.72927,
     lng: -73.99417,
-    description: "Completed BA in individualized study in business of emerging technology for new media with Bioethics minor.",
+    description: "Completed a BA at NYU Gallatin in Business of Emerging Technology for New Media with a Bioethics minor. Built an interdisciplinary base across technology strategy, ethics, and communication design that later informed XR, AI media, and production leadership work.",
     overlapGroup: "NYC-Education-Track",
   },
   {
@@ -138,8 +138,36 @@ const defaultEntries = [
     locationDetail: "Love Crushed Velvet (Band)",
     lat: 40.758,
     lng: -73.9855,
-    description: "Led creative production for an immersive XR-forward music video concept with controlled budget and multi-role collaboration.",
+    description: "Drove the creative strategy and production path for an immersive music-video concept, translating a broad artistic vision into concrete scope, budget, and team execution. The project blended XR direction, storytelling, and practical production constraints to deliver a distinct audience experience.",
     overlapGroup: "NYC-Production-Arc",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Falling. (Apart)",
+    startDate: "2020-04-17",
+    endDate: "2020-04-17",
+    category: "Project",
+    location: "New York City",
+    country: "United States",
+    locationDetail: "Independent 360 project",
+    lat: 40.712776,
+    lng: -74.005974,
+    description: "Created an early 360 storytelling experiment focused on emotional atmosphere and viewer embodiment. This project helped establish my long-term interest in immersive media by testing how framing and spatial presence change narrative impact.",
+    overlapGroup: "NYC-Immersive-Projects",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Conflicting Perspectives",
+    startDate: "2023-04-27",
+    endDate: "2023-04-27",
+    category: "Project",
+    location: "New York City",
+    country: "United States",
+    locationDetail: "Immersive 360 film experiment",
+    lat: 40.712776,
+    lng: -74.005974,
+    description: "Produced a 360 film experiment around point-of-view tension and perspective control. The work tested how interpretation shifts when the viewer decides where to look, and became a useful study in spatial framing and narrative ambiguity.",
+    overlapGroup: "NYC-Immersive-Projects",
   },
   {
     id: crypto.randomUUID(),
@@ -152,8 +180,36 @@ const defaultEntries = [
     locationDetail: "Pihakis Restaurant Group (Luca Market)",
     lat: 33.5186,
     lng: -86.8104,
-    description: "Served high-volume customers, maintained product operations, and supported kitchen and floor coordination.",
+    description: "Worked full-time at Luca Market (Pihakis Restaurant Group) serving customers while supporting inventory flow, counter operations, and kitchen coordination. The role reinforced practical operations discipline: consistency, communication, and clean execution during peak demand windows.",
     overlapGroup: "BHM-Coach-Leadership",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Motel Sunshine Spec Intro",
+    startDate: "2024-10-28",
+    endDate: "2024-10-28",
+    category: "Project",
+    location: "Brooklyn",
+    country: "United States",
+    locationDetail: "Virtual production concept development",
+    lat: 40.6782,
+    lng: -73.9442,
+    description: "Built a concept intro for a potential episodic VR world to define tone, visual language, and audience positioning. Framed the piece as proof-of-direction for a larger serialized immersive format.",
+    overlapGroup: "NYC-Production-Arc",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "A Fall At The Circus",
+    startDate: "2024-09-30",
+    endDate: "2024-09-30",
+    category: "Project",
+    location: "New York City",
+    country: "United States",
+    locationDetail: "Maya animation project",
+    lat: 40.712776,
+    lng: -74.005974,
+    description: "Designed and rendered a short-form Maya animation focused on timing, motion, and stylized visual storytelling. Used the piece as a controlled technical and narrative study to sharpen look development and finish quality.",
+    overlapGroup: "NYC-Production-Arc",
   },
   {
     id: crypto.randomUUID(),
@@ -166,8 +222,22 @@ const defaultEntries = [
     locationDetail: "NYU Tisch Martin Scorsese Virtual Production Center",
     lat: 40.72935,
     lng: -73.99254,
-    description: "Completed Virtual Production MPS while leading a 30-person production team across creative and technical workflows.",
+    description: "Completed the NYU Tisch Virtual Production MPS at the Martin Scorsese Institute while leading a 30-person thesis team from concept to delivery. Managed creative direction, schedule, production logistics, and post workflows across both technical and narrative tracks.",
     overlapGroup: "NYC-Education-Track",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "No End For Sight",
+    startDate: "2025-04-28",
+    endDate: "2025-04-28",
+    category: "Project",
+    location: "Brooklyn",
+    country: "United States",
+    locationDetail: "AI-native short film pipeline",
+    lat: 40.6782,
+    lng: -73.9442,
+    description: "Directed an AI-native short film to test authorship, pacing, and tonal continuity in a synthetic workflow. The project focused on turning exploratory tooling into intentional cinematic decision-making.",
+    overlapGroup: "NYC-2025-Creative",
   },
   {
     id: crypto.randomUUID(),
@@ -180,7 +250,21 @@ const defaultEntries = [
     locationDetail: "GUM Studios (Brooklyn)",
     lat: 40.651873,
     lng: -74.006142,
-    description: "Produced social-first media including music video work, directing and coordinating on-set virtual production workflows.",
+    description: "At GUM Studios, produced social-first media and supported on-set production, including a local NYC band music video. Directed, produced, and coordinated across creative, crew, and virtual production constraints to move ideas from concept into delivered content.",
+    overlapGroup: "NYC-2025-Creative",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "NYU Master's Thesis Short Film (Wolfe & The Bee)",
+    startDate: "2025-05-31",
+    endDate: "2025-05-31",
+    category: "Project",
+    location: "Brooklyn",
+    country: "United States",
+    locationDetail: "Martin Scorsese Institute LED soundstage",
+    lat: 40.6782,
+    lng: -73.9442,
+    description: "Delivered graduate thesis film \"Wolfe & The Bee\" on the LED soundstage, integrating narrative direction with in-camera virtual production techniques. Led cross-functional execution spanning story, technical setup, team coordination, and post-finishing decisions.",
     overlapGroup: "NYC-2025-Creative",
   },
   {
@@ -194,7 +278,7 @@ const defaultEntries = [
     locationDetail: "GUM Studios (Brooklyn)",
     lat: 40.651873,
     lng: -74.006142,
-    description: "Developed communication and channel strategies supporting growth-oriented marketing and brand development.",
+    description: "Partnered with leadership at GUM Studios on communication and business-development strategy during a rebranding phase. Built practical channel plans and messaging structure designed to improve positioning, client communication, and growth readiness.",
     overlapGroup: "NYC-2025-Creative",
   },
   {
@@ -208,7 +292,7 @@ const defaultEntries = [
     locationDetail: "Double Eye Studios (Remote contract)",
     lat: 40.712776,
     lng: -74.005974,
-    description: "Conducts market analysis for luxury brands adopting XR, researches competitive landscapes, and develops partnership-driven growth strategies.",
+    description: "At Double Eye Studios, conduct market and competitive analysis across luxury fashion and accessory brands exploring XR adoption. Translate research into actionable partnership and positioning strategies that support client acquisition and thought-leadership opportunities.",
     overlapGroup: "NYC-2025-Creative",
   },
   {
@@ -222,12 +306,22 @@ const defaultEntries = [
     locationDetail: "Birmingham Fencing Club",
     lat: 33.518589,
     lng: -86.810356,
-    description: "Leads youth/adult epee development, supports growth outreach in local schools, and contributes to club rebrand and social strategy.",
+    description: "Brought in to lead epee coaching for youth and adults at Birmingham Fencing Club while supporting growth goals beyond the piste. Drove school outreach demos and contributed to brand-refresh efforts including social strategy and identity updates.",
     overlapGroup: "BHM-Coach-Leadership",
   },
 ];
 
-let entries = loadEntries();
+const PORTFOLIO_PROJECT_TITLES = [
+  "Falling. (Apart)",
+  "Conflicting Perspectives",
+  "Ride The Dice - Love Crushed Velvet",
+  "Motel Sunshine Spec Intro",
+  "A Fall At The Circus",
+  "No End For Sight",
+  "NYU Master's Thesis Short Film (Wolfe & The Bee)",
+];
+
+let entries = migrateEntries(loadEntries());
 let selectedId = null;
 let editorUnlocked = false;
 let pickMode = false;
@@ -789,6 +883,57 @@ function loadEntries() {
   } catch {
     return [...defaultEntries];
   }
+}
+
+function migrateEntries(loadedEntries) {
+  const templateByTitle = new Map(defaultEntries.map((entry) => [entry.title, entry]));
+  const existingTitles = new Set();
+  let changed = false;
+
+  const enriched = loadedEntries.map((entry) => {
+    const template = templateByTitle.get(entry.title);
+    existingTitles.add(entry.title);
+    if (!template) return entry;
+
+    const next = { ...entry };
+
+    const currentDescriptionLength = (next.description || "").length;
+    if (currentDescriptionLength < 120 && template.description.length > currentDescriptionLength) {
+      next.description = template.description;
+      changed = true;
+    }
+
+    if (!next.locationDetail && template.locationDetail) {
+      next.locationDetail = template.locationDetail;
+      changed = true;
+    }
+
+    if (!next.overlapGroup && template.overlapGroup) {
+      next.overlapGroup = template.overlapGroup;
+      changed = true;
+    }
+
+    if (!next.country && template.country) {
+      next.country = template.country;
+      changed = true;
+    }
+
+    return next;
+  });
+
+  PORTFOLIO_PROJECT_TITLES.forEach((title) => {
+    if (existingTitles.has(title)) return;
+    const template = templateByTitle.get(title);
+    if (!template) return;
+    enriched.push({ ...template, id: crypto.randomUUID() });
+    changed = true;
+  });
+
+  if (changed) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(enriched));
+  }
+
+  return enriched;
 }
 
 function clearForm() {
