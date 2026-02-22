@@ -7,61 +7,24 @@
   <link rel="stylesheet" href="/landing.css" />
 </head>
 <body>
-  <main class="scene" aria-label="Fax machine on desk scene">
-    <div class="light-fixture" aria-hidden="true">
-      <div class="light-tube"></div>
-    </div>
-
-    <section class="desk-stage">
-      <div class="desk-back"></div>
-      <div class="desk-top"></div>
-
-      <article class="fax-machine" aria-label="Animated fax machine">
-        <div class="fax-top-feed" aria-hidden="true">
-          <div class="top-paper"></div>
-        </div>
-
-        <div class="fax-body">
-          <div class="fax-front">
-            <div class="fax-panel">
-              <div class="panel-grid" aria-hidden="true">
-                <span></span><span></span><span></span><span></span><span></span><span></span>
-                <span></span><span></span><span></span><span></span><span></span><span></span>
-                <span></span><span></span><span></span><span></span><span></span><span></span>
-              </div>
-              <div class="panel-buttons" aria-hidden="true">
-                <span></span><span></span><span></span><span></span>
-              </div>
-            </div>
-            <div class="fax-knob" aria-hidden="true">
-              <div class="power-led"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="output-slot" aria-hidden="true"></div>
-
-        <div class="print-path">
-          <article class="printed-page" aria-label="Printed page content">
-            <h1>Reis Quest</h1>
-            <p>Everything is reality, but what is reality? My creative approach is an undying attempt to answer that question. I think i've gotten a very good little bit of it so far. See an abridged visual in my resume, and some thoughts about the stuff i've made as of 02-20-26 in my portfolio.</p>
-            <nav class="page-links" aria-label="Main links">
-              <a href="/resume">Resume</a>
-              <a href="/portfolio">Portfolio</a>
-            </nav>
-            <p class="footnote">*there are a lot of typos, errors, mispellings, and other grammatical issues. I did that on purpose because that one guy said "to error is human" and i want y'all to know i'm writing this myself. (honestly an interesting thought about how being stupid might actually be a positive sign of human consciouness in the age of AI)</p>
-          </article>
-        </div>
-      </article>
+  <main class="fax-landing" aria-label="Photoreal fax scene">
+    <section class="plate-wrap">
+      <img class="plate-image" src="/fax-scene.png" alt="Fax machine on blue carpet" />
+      <canvas id="fxCanvas" class="fx-canvas" aria-hidden="true"></canvas>
+      <div class="scan-glow" aria-hidden="true"></div>
+      <div class="noise" aria-hidden="true"></div>
     </section>
+
+    <nav class="cta" aria-label="Main links">
+      <a href="/resume">Resume</a>
+      <a href="/portfolio">Portfolio</a>
+    </nav>
+
+    <noscript class="fallback">
+      <p>This landing has animated printing. JavaScript is required for the effect.</p>
+    </noscript>
   </main>
 
-  <script>
-    window.addEventListener("load", () => {
-      window.setTimeout(() => {
-        document.body.classList.add("printing");
-      }, 1000);
-    });
-  </script>
+  <script type="module" src="/landing.js"></script>
 </body>
 </html>
