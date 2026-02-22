@@ -10,95 +10,136 @@ body {
 
 body {
   font-family: "Times New Roman", Times, serif;
-  background: #0f1112;
-  color: #fff;
+  background: url("/fax-scene.jpg") center center / cover no-repeat fixed;
+  overflow: hidden;
 }
 
 .fax-landing {
-  min-height: 100svh;
-  display: grid;
-  grid-template-rows: 1fr auto;
-  gap: 0.9rem;
-  align-items: center;
-  padding: clamp(0.65rem, 2vw, 1.1rem);
-}
-
-.plate-wrap {
   position: relative;
-  width: min(96vw, 1208px);
-  margin: 0 auto;
-  aspect-ratio: 1208 / 662;
-  border-radius: 2px;
-  overflow: hidden;
-  box-shadow:
-    0 24px 40px rgba(0, 0, 0, 0.58),
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
-  background: #101113;
+  width: 100vw;
+  height: 100svh;
 }
 
-.plate-image,
-.fx-canvas,
-.scan-glow,
-.noise {
+.vignette {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.plate-image {
-  object-fit: cover;
-}
-
-.fx-canvas {
-  pointer-events: none;
-}
-
-.scan-glow {
   background:
-    radial-gradient(
-      78% 42% at 53% 12%,
-      rgba(255, 255, 250, 0.32) 0%,
-      rgba(255, 255, 250, 0.12) 35%,
-      rgba(255, 255, 250, 0) 72%
-    );
-  mix-blend-mode: screen;
+    radial-gradient(circle at 52% 44%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.28) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.18));
   pointer-events: none;
 }
 
-.noise {
-  opacity: 0.08;
-  background-image:
-    repeating-radial-gradient(circle at 22% 24%, #fff 0 0.45px, transparent 0.5px 2.6px),
-    repeating-radial-gradient(circle at 80% 62%, #fff 0 0.35px, transparent 0.45px 2.2px);
-  mix-blend-mode: overlay;
+.slot-mask {
+  position: absolute;
+  left: 46.9%;
+  top: 62.6%;
+  width: 9.2%;
+  height: 1.6%;
+  transform: translateX(-50%) rotate(-8deg);
+  background: rgba(24, 26, 28, 0.84);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  z-index: 5;
   pointer-events: none;
 }
 
-.cta {
+.printed-sheet {
+  position: absolute;
+  left: 47.2%;
+  top: 63.1%;
+  width: clamp(240px, 25vw, 410px);
+  background: #fcfcfa;
+  color: #111;
+  border: 1px solid #d0d0cb;
+  box-shadow:
+    0 18px 28px rgba(0, 0, 0, 0.34),
+    0 2px 0 rgba(255, 255, 255, 0.5) inset;
+  padding: clamp(0.75rem, 1.1vw, 1rem);
+  transform-origin: top center;
+  transform: translate(-50%, 0) rotate(-8deg) scaleY(0.06);
+  opacity: 0;
+  z-index: 4;
+}
+
+body.printing .printed-sheet {
+  animation: feed-out 6.2s cubic-bezier(0.2, 0.74, 0.24, 1) forwards;
+}
+
+.printed-sheet h1 {
+  margin: 0;
+  font-size: clamp(1.45rem, 2.1vw, 2rem);
+  line-height: 1.1;
+}
+
+.printed-sheet p {
+  margin: 0.55rem 0 0;
+  font-size: clamp(0.68rem, 0.9vw, 0.9rem);
+  line-height: 1.35;
+}
+
+.paper-links {
+  margin-top: 0.6rem;
   display: flex;
-  justify-content: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
-.cta a {
+.paper-links a {
   text-decoration: none;
-  border: 1px solid rgba(255, 255, 255, 0.56);
-  color: #ececec;
-  background: rgba(0, 0, 0, 0.42);
-  padding: 0.42rem 0.8rem;
-  font-size: clamp(0.88rem, 1.6vw, 1rem);
-  letter-spacing: 0.01em;
-  backdrop-filter: blur(2px);
+  color: #fff;
+  background: #171717;
+  border: 1px solid #171717;
+  padding: 0.22rem 0.58rem;
+  font-size: clamp(0.7rem, 0.95vw, 0.92rem);
 }
 
-.cta a:hover {
-  background: rgba(255, 255, 255, 0.12);
+.paper-links a:hover {
+  background: #fff;
+  color: #171717;
 }
 
-.fallback {
-  margin: 0 auto;
-  width: min(96vw, 1208px);
-  text-align: center;
-  color: #d5d5d5;
+.footnote {
+  opacity: 0.86;
 }
+
+@keyframes feed-out {
+  0% {
+    transform: translate(-50%, 0) rotate(-8deg) scaleY(0.06);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, clamp(130px, 20vh, 270px)) rotate(-8deg) scaleY(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .slot-mask {
+    left: 49.7%;
+    top: 62.3%;
+    width: 12%;
+  }
+
+  .printed-sheet {
+    left: 50%;
+    top: 62.8%;
+    width: clamp(220px, 55vw, 360px);
+    transform: translate(-50%, 0) rotate(-6deg) scaleY(0.05);
+  }
+
+  @keyframes feed-out {
+    0% {
+      transform: translate(-50%, 0) rotate(-6deg) scaleY(0.05);
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, clamp(100px, 18vh, 220px)) rotate(-6deg) scaleY(1);
+      opacity: 1;
+    }
+  }
+}
+
