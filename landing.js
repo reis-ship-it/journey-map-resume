@@ -16,7 +16,14 @@ const FALLBACK_DURATION = 7.666667;
 const VIDEO_ZOOM = 1.28;
 const PIXEL_RATIO_CAP = 2;
 
-const PAPER_RECT = {
+const PAPER_START = {
+  left: 0.5,
+  top: 0.648,
+  width: 0.325,
+  height: 0.035,
+};
+
+const PAPER_END = {
   left: 0.5,
   top: 0.678,
   width: 0.325,
@@ -82,25 +89,31 @@ const paperMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), paperMaterial);
 scene.add(paperMesh);
 
 video.loop = false;
+let currentProgress = 0;
+webglCanvas.style.opacity = "0";
 
 const persistedComplete = readSession(STORAGE_KEY) === "1";
-if (persistedComplete) {
-  setProgress(1);
-}
+setProgress(0);
 
 video.addEventListener("loadedmetadata", () => {
   document.documentElement.style.setProperty("--video-zoom", VIDEO_ZOOM.toFixed(4));
   resizeScene();
   if (persistedComplete) {
-    holdFinalFrame();
+    holdFinalFrame(() => {
+      setProgress(1);
+      webglCanvas.style.opacity = "1";
+    });
   } else {
     setProgress(0);
     video.currentTime = 0;
+    webglCanvas.style.opacity = "1";
     const startPlayback = video.play();
     if (startPlayback && typeof startPlayback.catch === "function") {
       startPlayback.catch(() => {
         setProgress(1);
-        holdFinalFrame();
+        holdFinalFrame(() => {
+          webglCanvas.style.opacity = "1";
+        });
       });
     }
   }
@@ -117,30 +130,38 @@ video.addEventListener("timeupdate", () => {
 
 video.addEventListener("ended", () => {
   writeSession(STORAGE_KEY, "1");
-  setProgress(1);
-  holdFinalFrame();
+  holdFinalFrame(() => {
+    setProgress(1);
+  });
 });
 
 window.addEventListener("resize", resizeScene);
 window.addEventListener("orientationchange", resizeScene);
 
-function holdFinalFrame() {
+function holdFinalFrame(onLocked) {
   const duration = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : FALLBACK_DURATION;
-  video.currentTime = Math.max(0, duration - 1 / 24);
-  video.pause();
+  const target = Math.max(0, duration - 1 / 24);
+  let resolved = false;
+
+  const finalize = () => {
+    if (resolved) return;
+    resolved = true;
+    video.pause();
+    if (typeof onLocked === "function") onLocked();
+  };
+
+  video.addEventListener("seeked", finalize, { once: true });
+  video.currentTime = target;
+  window.setTimeout(finalize, 220);
 }
 
 function setProgress(progress) {
-  const p = clamp(progress, 0, 1);
-  paperMaterial.uniforms.uReveal.value = p;
-  updateHotspots(p);
-  render();
+  currentProgress = clamp(progress, 0, 1);
+  paperMaterial.uniforms.uReveal.value = currentProgress;
+  resizeScene();
 }
 
-function updateHotspots(progress) {
-  const viewportW = window.innerWidth;
-  const viewportH = window.innerHeight;
-  const paper = getPaperRectPx(viewportW, viewportH);
+function updateHotspots(progress, paper) {
   const revealY = paper.top + paper.height * progress;
 
   placeHotspot(resumeHit, BUTTON_RECTS.resume, paper, revealY);
@@ -171,30 +192,36 @@ function resizeScene() {
 
   renderer.setPixelRatio(pr);
   renderer.setSize(w, h, false);
-
   camera.left = -w / 2;
   camera.right = w / 2;
   camera.top = h / 2;
   camera.bottom = -h / 2;
   camera.updateProjectionMatrix();
 
-  const paper = getPaperRectPx(w, h);
+  const paper = getPaperRectPx(w, h, currentProgress);
   const cx = paper.left + paper.width / 2;
   const cy = paper.top + paper.height / 2;
 
   paperMesh.position.set(cx - w / 2, h / 2 - cy, 0);
   paperMesh.scale.set(paper.width, paper.height, 1);
 
-  updateHotspots(paperMaterial.uniforms.uReveal.value);
+  updateHotspots(currentProgress, paper);
   render();
 }
 
-function getPaperRectPx(viewportW, viewportH) {
+function getPaperRectPx(viewportW, viewportH, progress) {
+  const p = easeOutQuad(progress);
+  const rect = {
+    left: lerp(PAPER_START.left, PAPER_END.left, p),
+    top: lerp(PAPER_START.top, PAPER_END.top, p),
+    width: lerp(PAPER_START.width, PAPER_END.width, p),
+    height: lerp(PAPER_START.height, PAPER_END.height, p),
+  };
   return {
-    left: viewportW * PAPER_RECT.left - (viewportW * PAPER_RECT.width) / 2,
-    top: viewportH * PAPER_RECT.top,
-    width: viewportW * PAPER_RECT.width,
-    height: viewportH * PAPER_RECT.height,
+    left: viewportW * rect.left - (viewportW * rect.width) / 2,
+    top: viewportH * rect.top,
+    width: viewportW * rect.width,
+    height: viewportH * rect.height,
   };
 }
 
@@ -204,6 +231,15 @@ function render() {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function lerp(start, end, t) {
+  return start + (end - start) * t;
+}
+
+function easeOutQuad(t) {
+  const c = clamp(t, 0, 1);
+  return 1 - (1 - c) * (1 - c);
 }
 
 function drawPaperTexture(ctx, width, height) {
