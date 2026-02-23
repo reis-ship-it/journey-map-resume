@@ -59,7 +59,7 @@ body {
   transform-origin: top center;
   z-index: 3;
   isolation: isolate;
-  background: #fff;
+  background: transparent;
   border-radius: 2px;
 }
 
@@ -73,16 +73,21 @@ body {
   transform: none;
   opacity: 1;
   z-index: 1;
-}
-
-.paper-reveal::after {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: calc((1 - var(--print-progress, 1)) * 100%);
-  background: #fff;
-  z-index: 2;
-  pointer-events: none;
+  --reveal-cut: calc((1 - var(--print-progress, 1)) * 100%);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent var(--reveal-cut),
+    #000 var(--reveal-cut),
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent var(--reveal-cut),
+    #000 var(--reveal-cut),
+    #000 100%
+  );
 }
 
 .printed-sheet > * {

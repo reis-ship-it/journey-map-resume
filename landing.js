@@ -42,7 +42,15 @@ video.addEventListener("loadedmetadata", () => {
     setProgress(0);
     // Start from beginning each fresh session.
     video.currentTime = 0;
-    void video.play().catch(() => {});
+    const startPlayback = video.play();
+    if (startPlayback && typeof startPlayback.catch === "function") {
+      startPlayback.catch(() => {
+        // If autoplay is blocked, show final readable state instead of a masked strip.
+        setProgress(1);
+        if (links) links.classList.add("is-ready");
+        holdFinalFrame();
+      });
+    }
   }
 });
 
