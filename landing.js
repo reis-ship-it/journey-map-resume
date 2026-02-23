@@ -12,6 +12,7 @@ const PRINT_START_SEC = 0.65;
 const PRINT_END_SEC = 7.45;
 const BUTTONS_VISIBLE_AT = 0.88; // of print progress window
 const FALLBACK_DURATION = 7.666667;
+const VIDEO_ZOOM = 1.28;
 const PAPER_START = {
   left: 0.603,
   top: 0.643,
@@ -120,10 +121,16 @@ function updatePlateMetrics() {
     offsetX = (plateRect.width - renderW) / 2;
   }
 
-  root.style.setProperty("--plate-x", `${offsetX.toFixed(2)}px`);
-  root.style.setProperty("--plate-y", `${offsetY.toFixed(2)}px`);
-  root.style.setProperty("--plate-w", `${renderW.toFixed(2)}px`);
-  root.style.setProperty("--plate-h", `${renderH.toFixed(2)}px`);
+  const zoomedW = renderW * VIDEO_ZOOM;
+  const zoomedH = renderH * VIDEO_ZOOM;
+  const zoomedX = offsetX - (zoomedW - renderW) / 2;
+  const zoomedY = offsetY - (zoomedH - renderH) / 2;
+
+  root.style.setProperty("--video-zoom", VIDEO_ZOOM.toFixed(4));
+  root.style.setProperty("--plate-x", `${zoomedX.toFixed(2)}px`);
+  root.style.setProperty("--plate-y", `${zoomedY.toFixed(2)}px`);
+  root.style.setProperty("--plate-w", `${zoomedW.toFixed(2)}px`);
+  root.style.setProperty("--plate-h", `${zoomedH.toFixed(2)}px`);
 }
 
 function clamp(value, min, max) {

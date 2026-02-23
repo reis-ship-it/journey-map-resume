@@ -37,7 +37,7 @@ body {
   object-fit: cover;
   object-position: center center;
   background: transparent;
-  transform: scale(1.28);
+  transform: scale(var(--video-zoom, 1));
   transform-origin: center center;
 }
 
