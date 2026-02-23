@@ -10,7 +10,7 @@ body {
 
 body {
   font-family: "Times New Roman", Times, serif;
-  background: #02050a;
+  background: transparent;
   color: #fff;
   overflow: hidden;
 }
@@ -25,7 +25,7 @@ body {
   position: relative;
   width: 100vw;
   height: 100svh;
-  background: #0b1118;
+  background: transparent;
   overflow: hidden;
 }
 
@@ -34,19 +34,19 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center center;
-  background: #070b11;
+  background: transparent;
 }
 
 .paper-reveal {
   position: absolute;
-  left: 60%;
-  top: 58.8%;
-  width: clamp(230px, 24vw, 430px);
-  height: clamp(260px, 28vh, 420px);
+  left: calc(var(--plate-x, 0px) + (var(--paper-left, 0.598) * var(--plate-w, 100vw)));
+  top: calc(var(--plate-y, 0px) + (var(--paper-top, 0.589) * var(--plate-h, 100svh)));
+  width: calc(var(--paper-width, 0.239) * var(--plate-w, 100vw));
+  height: calc(var(--paper-height, 0.272) * var(--plate-h, 100svh));
   overflow: hidden;
-  transform: translateX(-50%) rotate(-8deg) skewX(-3.6deg);
+  transform: translateX(-50%) rotate(var(--paper-rot, -8deg)) skewX(var(--paper-skew, -3.6deg));
   transform-origin: top center;
   z-index: 3;
 }
@@ -58,9 +58,9 @@ body {
   color: #111;
   padding: 3.6% 4.4%;
   transform:
-    translateY(calc((var(--print-progress, 0) * 130%) - 90%))
+    translateY(calc((var(--print-progress, 0) * var(--paper-travel, 1.3)) - 0.9 * 100%))
     perspective(900px)
-    rotateX(2deg);
+    rotateX(var(--paper-tilt, 2deg));
   opacity: 1;
 }
 
@@ -113,10 +113,12 @@ body {
 
 @media (max-width: 840px) {
   .paper-reveal {
-    left: 59.8%;
-    top: 59.5%;
-    width: clamp(220px, 44vw, 360px);
-    height: clamp(220px, 32vh, 340px);
+    --paper-left: 0.598;
+    --paper-top: 0.593;
+    --paper-width: 0.252;
+    --paper-height: 0.286;
+    --paper-rot: -7.6deg;
+    --paper-skew: -3.1deg;
   }
 
   .printed-sheet p {

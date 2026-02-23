@@ -1,8 +1,9 @@
 const video = document.getElementById("faxVideo");
 const root = document.documentElement;
 const links = document.querySelector("[data-links]");
+const plate = document.querySelector(".scene-plate");
 
-if (!video) {
+if (!video || !plate) {
   throw new Error("Missing fax video element.");
 }
 
@@ -21,6 +22,7 @@ if (persistedComplete) {
 }
 
 video.addEventListener("loadedmetadata", () => {
+  updatePlateMetrics();
   if (persistedComplete) {
     holdFinalFrame();
   } else {
@@ -46,6 +48,9 @@ video.addEventListener("ended", () => {
   holdFinalFrame();
 });
 
+window.addEventListener("resize", updatePlateMetrics);
+window.addEventListener("orientationchange", updatePlateMetrics);
+
 function holdFinalFrame() {
   const duration = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : FALLBACK_DURATION;
   video.currentTime = Math.max(0, duration - 1 / 24);
@@ -61,6 +66,37 @@ function setProgress(progress) {
     if (linkOpacity > 0.001) links.classList.add("is-ready");
     else links.classList.remove("is-ready");
   }
+}
+
+function updatePlateMetrics() {
+  const plateRect = plate.getBoundingClientRect();
+
+  const vw = Number.isFinite(video.videoWidth) && video.videoWidth > 0 ? video.videoWidth : 3840;
+  const vh = Number.isFinite(video.videoHeight) && video.videoHeight > 0 ? video.videoHeight : 2160;
+
+  const videoAspect = vw / vh;
+  const plateAspect = plateRect.width / Math.max(1, plateRect.height);
+
+  let renderW = plateRect.width;
+  let renderH = plateRect.height;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  // Matches object-fit: contain letterbox math.
+  if (plateAspect > videoAspect) {
+    renderH = plateRect.height;
+    renderW = renderH * videoAspect;
+    offsetX = (plateRect.width - renderW) / 2;
+  } else {
+    renderW = plateRect.width;
+    renderH = renderW / videoAspect;
+    offsetY = (plateRect.height - renderH) / 2;
+  }
+
+  root.style.setProperty("--plate-x", `${offsetX.toFixed(2)}px`);
+  root.style.setProperty("--plate-y", `${offsetY.toFixed(2)}px`);
+  root.style.setProperty("--plate-w", `${renderW.toFixed(2)}px`);
+  root.style.setProperty("--plate-h", `${renderH.toFixed(2)}px`);
 }
 
 function clamp(value, min, max) {
