@@ -42,18 +42,18 @@ body {
 }
 
 .paper-reveal {
-  --paper-left: 0.603;
-  --paper-top: 0.643;
-  --paper-width: 0.272;
+  --paper-left: 0.5;
+  --paper-top: 0.678;
+  --paper-width: 0.325;
   --paper-height: 0.014;
   --paper-rot: 0deg;
   --paper-skew: 0deg;
   --paper-tilt: 0deg;
   position: absolute;
-  left: calc(var(--plate-x, 0px) + (var(--paper-left) * var(--plate-w, 100vw)));
-  top: calc(var(--plate-y, 0px) + (var(--paper-top) * var(--plate-h, 100svh)));
-  width: calc(var(--paper-width) * var(--plate-w, 100vw));
-  height: calc(var(--paper-height) * var(--plate-h, 100svh));
+  left: calc(var(--paper-left) * 100vw);
+  top: calc(var(--paper-top) * 100svh);
+  width: calc(var(--paper-width) * 100vw);
+  height: calc(var(--paper-height) * 100svh);
   overflow: hidden;
   transform: translateX(-50%) rotate(var(--paper-rot)) skewX(var(--paper-skew));
   transform-origin: top center;
@@ -66,7 +66,7 @@ body {
   inset: 0;
   background: transparent;
   color: #111;
-  font-size: clamp(16px, calc(var(--paper-height) * var(--plate-h, 100svh) * 0.055), 34px);
+  font-size: clamp(17px, calc(var(--paper-height) * 100svh * 0.068), 36px);
   padding: 8.2% 8.2% 8%;
   transform: none;
   opacity: 1;

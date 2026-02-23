@@ -14,16 +14,16 @@ const BUTTONS_VISIBLE_AT = 0.88; // of print progress window
 const FALLBACK_DURATION = 7.666667;
 const VIDEO_ZOOM = 1.28;
 const PAPER_START = {
-  left: 0.603,
-  top: 0.643,
-  width: 0.272,
-  height: 0.014,
+  left: 0.5,
+  top: 0.678,
+  width: 0.325,
+  height: 0.012,
 };
 const PAPER_END = {
-  left: 0.603,
-  top: 0.643,
-  width: 0.272,
-  height: 0.43,
+  left: 0.5,
+  top: 0.678,
+  width: 0.325,
+  height: 0.378,
 };
 
 video.loop = false;
@@ -35,7 +35,7 @@ if (persistedComplete) {
 }
 
 video.addEventListener("loadedmetadata", () => {
-  updatePlateMetrics();
+  root.style.setProperty("--video-zoom", VIDEO_ZOOM.toFixed(4));
   if (persistedComplete) {
     holdFinalFrame();
   } else {
@@ -61,8 +61,12 @@ video.addEventListener("ended", () => {
   holdFinalFrame();
 });
 
-window.addEventListener("resize", updatePlateMetrics);
-window.addEventListener("orientationchange", updatePlateMetrics);
+window.addEventListener("resize", () => {
+  root.style.setProperty("--video-zoom", VIDEO_ZOOM.toFixed(4));
+});
+window.addEventListener("orientationchange", () => {
+  root.style.setProperty("--video-zoom", VIDEO_ZOOM.toFixed(4));
+});
 
 function holdFinalFrame() {
   const duration = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : FALLBACK_DURATION;
@@ -94,43 +98,6 @@ function mapPaperRect(progress) {
     width: lerp(PAPER_START.width, PAPER_END.width, p),
     height: lerp(PAPER_START.height, PAPER_END.height, p),
   };
-}
-
-function updatePlateMetrics() {
-  const plateRect = plate.getBoundingClientRect();
-
-  const vw = Number.isFinite(video.videoWidth) && video.videoWidth > 0 ? video.videoWidth : 3840;
-  const vh = Number.isFinite(video.videoHeight) && video.videoHeight > 0 ? video.videoHeight : 2160;
-
-  const videoAspect = vw / vh;
-  const plateAspect = plateRect.width / Math.max(1, plateRect.height);
-
-  let renderW = plateRect.width;
-  let renderH = plateRect.height;
-  let offsetX = 0;
-  let offsetY = 0;
-
-  // Matches object-fit: cover math.
-  if (plateAspect > videoAspect) {
-    renderW = plateRect.width;
-    renderH = renderW / videoAspect;
-    offsetY = (plateRect.height - renderH) / 2;
-  } else {
-    renderH = plateRect.height;
-    renderW = renderH * videoAspect;
-    offsetX = (plateRect.width - renderW) / 2;
-  }
-
-  const zoomedW = renderW * VIDEO_ZOOM;
-  const zoomedH = renderH * VIDEO_ZOOM;
-  const zoomedX = offsetX - (zoomedW - renderW) / 2;
-  const zoomedY = offsetY - (zoomedH - renderH) / 2;
-
-  root.style.setProperty("--video-zoom", VIDEO_ZOOM.toFixed(4));
-  root.style.setProperty("--plate-x", `${zoomedX.toFixed(2)}px`);
-  root.style.setProperty("--plate-y", `${zoomedY.toFixed(2)}px`);
-  root.style.setProperty("--plate-w", `${zoomedW.toFixed(2)}px`);
-  root.style.setProperty("--plate-h", `${zoomedH.toFixed(2)}px`);
 }
 
 function clamp(value, min, max) {
