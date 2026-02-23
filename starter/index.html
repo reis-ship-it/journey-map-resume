@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resume - Reis Quest</title>
+  <title>Resume Map Starter</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/starter/styles.css" />
 </head>
 <body>
   <div class="sky"></div>
@@ -16,14 +16,13 @@
   <header class="hero shell reveal">
     <div class="hero-copy">
       <div class="hero-topline">
-        <h1>resume</h1>
+        <h1>resume map starter</h1>
         <div class="resume-nav">
-          <a class="btn btn-alt" href="/">back</a>
-          <a class="btn btn-alt" href="/portfolio">portfolio</a>
-          <a class="btn btn-alt" href="https://www.linkedin.com/in/reis-gordon/" target="_blank" rel="noopener">linkedin</a>
+          <a class="btn btn-alt" href="/resume">live resume</a>
+          <a class="btn btn-alt" href="https://github.com/reis-ship-it/journey-map-resume" target="_blank" rel="noopener">github</a>
         </div>
       </div>
-      <p class="subtitle">i think through time in space. This is how i best see my resume, not as bullet points and some funny language, but as marks on a map leading from one place to another. (ps - I made this in less than a day for the specific purpose of being a Google Fiver. it's not meant to be impressive as a feat in and of itself, more like i just want to share my story/journey in a cool way that may actually be easier for humans to read than bullet points. I dont have the data on that yet)</p>
+      <p class="subtitle">Open-source starter for anyone who wants to build an interactive, map-based resume. Edit sample entries, replace with your own timeline, and deploy free on Vercel.</p>
     </div>
   </header>
 
@@ -79,11 +78,6 @@
     </aside>
   </main>
 
-  <footer class="shell resume-footer reveal delay-3">
-    <a class="btn btn-alt" href="/starter">Build Your Own Resume Map (Open Starter)</a>
-    <a class="btn btn-alt" href="https://github.com/reis-ship-it/journey-map-resume/tree/main/starter" target="_blank" rel="noopener">View Starter Source</a>
-  </footer>
-
   <section id="editor" class="shell card editor hidden reveal delay-3">
     <div class="card-head">
       <h2>Edit Journey Data</h2>
@@ -106,11 +100,11 @@
       <label>Location Name<input id="location" required /></label>
       <label>Country<input id="country" placeholder="United States, Germany" required /></label>
       <label>Location Detail (optional)<input id="locationDetail" placeholder="Venue, campus, neighborhood, or address" /></label>
-      <label>Overlap Group (optional)<input id="overlapGroup" placeholder="NYC-2025-MultiRole" /></label>
+      <label>Overlap Group (optional)<input id="overlapGroup" placeholder="optional-shared-group" /></label>
       <label class="wide">
         Find Place (City, Address, Venue)
         <div class="location-tools">
-          <input id="placeQuery" placeholder="Example: NYU Tisch School of the Arts, Brooklyn" />
+          <input id="placeQuery" placeholder="Example: Berlin Hauptbahnhof" />
           <button class="btn btn-alt" id="findPlaceBtn" type="button">Find Coordinates</button>
           <button class="btn btn-alt" id="reverseCoordsBtn" type="button">Fill City/Country from Coords</button>
         </div>
@@ -130,6 +124,6 @@
   </section>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/app.js"></script>
+  <script src="/starter/app.js"></script>
 </body>
 </html>

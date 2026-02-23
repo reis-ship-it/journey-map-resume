@@ -5,6 +5,8 @@
     { "source": "/portfolio", "destination": "/portfolio/index.html" },
     { "source": "/portfolio/", "destination": "/portfolio/index.html" },
     { "source": "/portfolio/:slug", "destination": "/portfolio/:slug/index.html" },
-    { "source": "/portfolio/:slug/", "destination": "/portfolio/:slug/index.html" }
+    { "source": "/portfolio/:slug/", "destination": "/portfolio/:slug/index.html" },
+    { "source": "/starter", "destination": "/starter/index.html" },
+    { "source": "/starter/", "destination": "/starter/index.html" }
   ]
 }

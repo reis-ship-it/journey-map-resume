@@ -9,6 +9,13 @@ A custom interactive resume site with:
 - Local browser autosave (no backend)
 - JSON import/export
 
+## Open-source starter (no personal details)
+- Public starter app path: `/Users/reisgordon/Websites/journey-map-resume/starter`
+- Live route: `/starter`
+- Starter edit passcode: `starter-passcode`
+- Starter source link: `https://github.com/reis-ship-it/journey-map-resume/tree/main/starter`
+- The starter includes generic sample data only so other people can copy and customize without your personal timeline.
+
 ## Overlapping experiences and places
 Use these fields per step:
 - `startDate`

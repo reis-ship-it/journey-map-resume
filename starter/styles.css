@@ -591,14 +591,6 @@ textarea {
   margin: 0 auto 1rem;
 }
 
-.resume-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.3rem 0 0.9rem;
-}
-
 .data-tools {
   margin: 0.75rem 0 0.9rem;
   display: flex;
