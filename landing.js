@@ -16,7 +16,7 @@ const FALLBACK_DURATION = 7.666667;
 const VIDEO_ZOOM = 1.28;
 const PIXEL_RATIO_CAP = 2;
 const BUTTONS_VISIBLE_AT = 0.9;
-const INK_DELAY = 0.18;
+const INK_DELAY = 0;
 
 const PAPER_FINAL = {
   left: 0.515,
@@ -207,7 +207,7 @@ function resizeScene() {
 
 function getPaperRectPx(viewportW, viewportH, progress) {
   const videoRect = getVideoRectPx(viewportW, viewportH);
-  const feedTop = lerp(PAPER_SLOT_TOP, PAPER_FINAL.top, easeOutQuad(progress));
+  const feedTop = lerp(PAPER_SLOT_TOP, PAPER_FINAL.top, clamp(progress, 0, 1));
   return {
     left: videoRect.left + videoRect.width * PAPER_FINAL.left - (videoRect.width * PAPER_FINAL.width) / 2,
     top: videoRect.top + videoRect.height * feedTop,
@@ -260,11 +260,6 @@ function clamp(value, min, max) {
 
 function lerp(start, end, t) {
   return start + (end - start) * t;
-}
-
-function easeOutQuad(t) {
-  const c = clamp(t, 0, 1);
-  return 1 - (1 - c) * (1 - c);
 }
 
 function drawPaperTexture(ctx, width, height) {
