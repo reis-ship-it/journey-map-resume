@@ -82,15 +82,15 @@ function updatePlateMetrics() {
   let offsetX = 0;
   let offsetY = 0;
 
-  // Matches object-fit: contain letterbox math.
+  // Matches object-fit: cover math.
   if (plateAspect > videoAspect) {
-    renderH = plateRect.height;
-    renderW = renderH * videoAspect;
-    offsetX = (plateRect.width - renderW) / 2;
-  } else {
     renderW = plateRect.width;
     renderH = renderW / videoAspect;
     offsetY = (plateRect.height - renderH) / 2;
+  } else {
+    renderH = plateRect.height;
+    renderW = renderH * videoAspect;
+    offsetX = (plateRect.width - renderW) / 2;
   }
 
   root.style.setProperty("--plate-x", `${offsetX.toFixed(2)}px`);
