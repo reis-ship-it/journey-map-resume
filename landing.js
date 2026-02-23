@@ -28,7 +28,7 @@ const PAPER_END = {
 
 video.loop = false;
 
-const persistedComplete = sessionStorage.getItem(STORAGE_KEY) === "1";
+const persistedComplete = readSession(STORAGE_KEY) === "1";
 if (persistedComplete) {
   setProgress(1);
   if (links) links.classList.add("is-ready");
@@ -39,6 +39,7 @@ video.addEventListener("loadedmetadata", () => {
   if (persistedComplete) {
     holdFinalFrame();
   } else {
+    setProgress(0);
     // Start from beginning each fresh session.
     video.currentTime = 0;
     void video.play().catch(() => {});
@@ -55,7 +56,7 @@ video.addEventListener("timeupdate", () => {
 });
 
 video.addEventListener("ended", () => {
-  sessionStorage.setItem(STORAGE_KEY, "1");
+  writeSession(STORAGE_KEY, "1");
   setProgress(1);
   if (links) links.classList.add("is-ready");
   holdFinalFrame();
@@ -110,4 +111,20 @@ function lerp(start, end, t) {
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - clamp(t, 0, 1), 3);
+}
+
+function readSession(key) {
+  try {
+    return sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeSession(key, value) {
+  try {
+    sessionStorage.setItem(key, value);
+  } catch {
+    // no-op when session storage is unavailable
+  }
 }

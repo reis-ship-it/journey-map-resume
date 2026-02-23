@@ -58,18 +58,31 @@ body {
   transform: translateX(-50%) rotate(var(--paper-rot)) skewX(var(--paper-skew));
   transform-origin: top center;
   z-index: 3;
-  clip-path: inset(calc((1 - var(--print-progress, 0)) * 100%) 0 0 0 round 2px);
+  isolation: isolate;
+  background: #fff;
+  border-radius: 2px;
 }
 
 .printed-sheet {
   position: absolute;
   inset: 0;
   background: transparent;
-  color: #111;
+  color: #000;
   font-size: clamp(17px, calc(var(--paper-height) * 100svh * 0.068), 36px);
   padding: 8.2% 8.2% 8%;
   transform: none;
   opacity: 1;
+  z-index: 1;
+}
+
+.paper-reveal::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc((1 - var(--print-progress, 1)) * 100%);
+  background: #fff;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .printed-sheet > * {
@@ -97,7 +110,7 @@ body {
   display: flex;
   justify-content: center;
   gap: 6%;
-  opacity: var(--link-opacity, 0);
+  opacity: var(--link-opacity, 1);
   pointer-events: none;
 }
 
