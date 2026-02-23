@@ -596,7 +596,8 @@ textarea {
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.5rem;
-  padding: 0.3rem 0 0.9rem;
+  margin: clamp(2.4rem, 10vh, 7rem) auto 0;
+  padding: 0.5rem 0 1.4rem;
 }
 
 .data-tools {
