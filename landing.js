@@ -16,11 +16,11 @@ const FALLBACK_DURATION = 7.666667;
 const VIDEO_ZOOM = 1.28;
 const PIXEL_RATIO_CAP = 2;
 const BUTTONS_VISIBLE_AT = 0.9;
-const FLOW_SCROLL_START = 0.19;
+const FLOW_SCROLL_START = 0.24;
 
 const PAPER_END = {
   left: 0.5,
-  top: 0.678,
+  top: 0.672,
   width: 0.325,
   height: 0.378,
 };
