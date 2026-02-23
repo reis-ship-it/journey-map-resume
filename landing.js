@@ -16,10 +16,10 @@ const FALLBACK_DURATION = 7.666667;
 const VIDEO_ZOOM = 1.28;
 const PIXEL_RATIO_CAP = 2;
 const BUTTONS_VISIBLE_AT = 0.9;
-const INK_DELAY = 0.1;
+const INK_DELAY = 0.18;
 
 const PAPER_FINAL = {
-  left: 0.5,
+  left: 0.515,
   top: 0.672,
   width: 0.325,
   height: 0.378,
@@ -27,8 +27,8 @@ const PAPER_FINAL = {
 const PAPER_SLOT_TOP = 0.648;
 
 const BUTTON_RECTS = {
-  resume: { x: 0.16, y: 0.56, width: 0.28, height: 0.08 },
-  portfolio: { x: 0.54, y: 0.56, width: 0.3, height: 0.08 },
+  resume: { x: 0.16, y: 0.1, width: 0.28, height: 0.08 },
+  portfolio: { x: 0.54, y: 0.1, width: 0.3, height: 0.08 },
 };
 
 const renderer = new THREE.WebGLRenderer({
@@ -276,24 +276,7 @@ function drawPaperTexture(ctx, width, height) {
 
   const padX = width * 0.1;
   const contentW = width - padX * 2;
-  let y = height * 0.1;
-
-  ctx.font = `700 ${Math.floor(width * 0.104)}px "Times New Roman", Times, serif`;
-  ctx.fillText("Reis Quest", padX, y);
-  y += width * 0.15;
-
-  ctx.font = `${Math.floor(width * 0.046)}px "Times New Roman", Times, serif`;
-  y = drawWrappedText(
-    ctx,
-    "Everything is reality, but what is reality? My creative approach is an undying attempt to answer that question. I think i've gotten a very good little bit of it so far. See an abridged visual in my resume, and some thoughts about the stuff i've made as of 02-20-26 in my portfolio.",
-    padX,
-    y,
-    contentW,
-    width * 0.062
-  );
-
-  y += width * 0.04;
-  const btnY = y;
+  const btnY = height * 0.1;
   const btnH = width * 0.12;
   const gap = width * 0.04;
   const btnW = (contentW - gap) / 2;
@@ -312,15 +295,19 @@ function drawPaperTexture(ctx, width, height) {
   ctx.fillStyle = "#000";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  y = btnY + btnH + width * 0.05;
-  ctx.font = `${Math.floor(width * 0.038)}px "Times New Roman", Times, serif`;
+  let y = btnY + btnH + width * 0.06;
+  ctx.font = `700 ${Math.floor(width * 0.104)}px "Times New Roman", Times, serif`;
+  ctx.fillText("Reis Quest", padX, y);
+
+  y += width * 0.15;
+  ctx.font = `${Math.floor(width * 0.05)}px "Times New Roman", Times, serif`;
   drawWrappedText(
     ctx,
-    "*there are a lot of typos, errors, mispellings, and other grammatical issues. I did that on purpose because that one guy said \"to error is human\" and i want y'all to know i'm writing this myself. (honestly an interesting thought about how being stupid might actually be a positive sign of human consciouness in the age of AI)",
+    "this is my website, click the buttons above to see some of the facts about me.",
     padX,
     y,
     contentW,
-    width * 0.052
+    width * 0.064
   );
 }
 
