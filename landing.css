@@ -40,14 +40,14 @@ body {
 }
 
 .paper-reveal {
-  --paper-left: 0.603;
-  --paper-top: 0.586;
-  --paper-width: 0.247;
-  --paper-height: 0.318;
-  --paper-rot: 4.2deg;
-  --paper-skew: -1.1deg;
-  --paper-tilt: 0.8deg;
-  --paper-travel: 1.46;
+  --paper-left: 0.601;
+  --paper-top: 0.667;
+  --paper-width: 0.238;
+  --paper-height: 0.304;
+  --paper-rot: 0deg;
+  --paper-skew: 0deg;
+  --paper-tilt: 0deg;
+  --paper-travel: 0.28;
   position: absolute;
   left: calc(var(--plate-x, 0px) + (var(--paper-left) * var(--plate-w, 100vw)));
   top: calc(var(--plate-y, 0px) + (var(--paper-top) * var(--plate-h, 100svh)));
@@ -57,6 +57,7 @@ body {
   transform: translateX(-50%) rotate(var(--paper-rot)) skewX(var(--paper-skew));
   transform-origin: top center;
   z-index: 3;
+  clip-path: inset(calc((1 - var(--print-progress, 0)) * 100%) 0 0 0);
 }
 
 .printed-sheet {
@@ -64,25 +65,22 @@ body {
   inset: 0;
   background: transparent;
   color: #111;
-  font-size: calc(var(--plate-w, 100vw) * 0.00195);
-  padding: 3.6% 4.4%;
-  transform:
-    translateY(calc((var(--print-progress, 0) * var(--paper-travel)) - 0.9 * 100%))
-    perspective(900px)
-    rotateX(var(--paper-tilt));
+  font-size: calc(var(--plate-w, 100vw) * 0.00172);
+  padding: 5.3% 7.3% 4.6%;
+  transform: translateY(calc((1 - var(--print-progress, 0)) * -28%));
   opacity: 1;
 }
 
 .printed-sheet h1 {
   margin: 0;
-  font-size: 3em;
+  font-size: 2.58em;
   line-height: 1.05;
 }
 
 .printed-sheet p {
-  margin: 3.4% 0 0;
-  font-size: 1.24em;
-  line-height: 1.3;
+  margin: 4.1% 0 0;
+  font-size: 1.31em;
+  line-height: 1.26;
 }
 
 .paper-links {
@@ -99,7 +97,7 @@ body {
   background: #131313;
   border: 1px solid #131313;
   padding: 1.8% 5%;
-  font-size: 1.14em;
+  font-size: 1.12em;
 }
 
 .paper-links.is-ready {
@@ -122,17 +120,17 @@ body {
 
 @media (max-width: 840px) {
   .paper-reveal {
-    --paper-left: 0.603;
-    --paper-top: 0.589;
-    --paper-width: 0.254;
-    --paper-height: 0.33;
-    --paper-rot: 4.4deg;
-    --paper-skew: -0.9deg;
-    --paper-tilt: 0.4deg;
-    --paper-travel: 1.38;
+    --paper-left: 0.601;
+    --paper-top: 0.671;
+    --paper-width: 0.251;
+    --paper-height: 0.318;
+    --paper-rot: 0deg;
+    --paper-skew: 0deg;
+    --paper-tilt: 0deg;
+    --paper-travel: 0.28;
   }
 
   .printed-sheet p {
-    font-size: 1.18em;
+    font-size: 1.22em;
   }
 }
