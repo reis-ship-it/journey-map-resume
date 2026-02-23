@@ -10,12 +10,12 @@ body {
 
 body {
   font-family: "Times New Roman", Times, serif;
-  background: #070c12;
+  background: #02050a;
   color: #fff;
   overflow: hidden;
 }
 
-.landing-static {
+.landing-video {
   width: 100vw;
   height: 100svh;
   display: grid;
@@ -24,44 +24,42 @@ body {
 
 .scene-plate {
   position: relative;
-  width: min(100vw, 100svh);
-  height: min(100vw, 100svh);
+  width: 100vw;
+  height: 100svh;
   background: #0b1118;
   overflow: hidden;
 }
 
-.scene-image {
+.scene-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.scene-grain {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.1;
-  mix-blend-mode: soft-light;
-  background-image:
-    radial-gradient(circle at 24% 28%, rgba(255, 255, 255, 0.09) 0 0.35px, transparent 0.45px 2.6px),
-    radial-gradient(circle at 78% 72%, rgba(255, 255, 255, 0.08) 0 0.35px, transparent 0.45px 2.6px);
+  background: #070b11;
 }
 
 .printed-sheet {
   position: absolute;
-  left: 63.7%;
-  top: 31.5%;
-  width: 31.5%;
-  height: 32.6%;
+  left: 59.7%;
+  top: 68.9%;
+  width: clamp(230px, 24vw, 430px);
+  min-height: clamp(200px, 18vw, 330px);
   background: rgba(252, 252, 250, 0.94);
   color: #111;
   border: 1px solid rgba(195, 195, 190, 0.82);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.24);
   padding: 3.6% 4.4%;
-  transform-origin: 12% 100%;
-  transform: perspective(820px) rotateZ(13deg) rotateX(2deg) skewX(-4.2deg);
+  transform-origin: 18% 0%;
+  transform:
+    translate(-50%, calc((1 - var(--print-progress, 0)) * -32%))
+    perspective(900px)
+    rotateZ(-8deg)
+    rotateX(2deg)
+    skewX(-3.6deg)
+    scaleY(calc(0.04 + (0.96 * var(--print-progress, 0))));
+  clip-path: inset(calc((1 - var(--print-progress, 0)) * 88%) 0 0 0);
+  opacity: calc(0.06 + (0.94 * var(--print-progress, 0)));
   z-index: 3;
 }
 
@@ -81,6 +79,8 @@ body {
   margin-top: 4.6%;
   display: flex;
   gap: 4.5%;
+  opacity: var(--link-opacity, 0);
+  pointer-events: none;
 }
 
 .paper-links a {
@@ -92,6 +92,10 @@ body {
   font-size: clamp(0.5rem, 0.92vw, 0.95rem);
 }
 
+.paper-links.is-ready {
+  pointer-events: auto;
+}
+
 .paper-links a:hover {
   background: #fff;
   color: #131313;
@@ -101,13 +105,16 @@ body {
   opacity: 0.9;
 }
 
+.lead,
+[data-footnote] {
+  opacity: calc(0.15 + (0.85 * var(--print-progress, 0)));
+}
+
 @media (max-width: 840px) {
   .printed-sheet {
-    left: 62.8%;
-    top: 32.8%;
-    width: 36.8%;
-    height: 35.2%;
-    transform: perspective(760px) rotateZ(12deg) rotateX(1.5deg) skewX(-3.5deg);
+    left: 60%;
+    top: 68.2%;
+    width: clamp(220px, 44vw, 360px);
   }
 
   .printed-sheet p {
