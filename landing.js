@@ -10,18 +10,13 @@ if (!video || !webglCanvas || !resumeHit || !portfolioHit) {
 }
 
 const STORAGE_KEY = "reis_fax_print_complete_v1";
-const PRINT_START_SEC = 0.65;
+const PRINT_START_SEC = 0.95;
 const PRINT_END_SEC = 7.45;
 const FALLBACK_DURATION = 7.666667;
 const VIDEO_ZOOM = 1.28;
 const PIXEL_RATIO_CAP = 2;
-
-const PAPER_START = {
-  left: 0.5,
-  top: 0.648,
-  width: 0.325,
-  height: 0.035,
-};
+const BUTTONS_VISIBLE_AT = 0.9;
+const FLOW_SCROLL_START = 0.19;
 
 const PAPER_END = {
   left: 0.5,
@@ -63,6 +58,7 @@ const paperMaterial = new THREE.ShaderMaterial({
   uniforms: {
     uMap: { value: paperTexture },
     uReveal: { value: 0 },
+    uScroll: { value: 0 },
   },
   vertexShader: `
     varying vec2 vUv;
@@ -74,13 +70,16 @@ const paperMaterial = new THREE.ShaderMaterial({
   fragmentShader: `
     uniform sampler2D uMap;
     uniform float uReveal;
+    uniform float uScroll;
     varying vec2 vUv;
 
     void main() {
       float threshold = 1.0 - clamp(uReveal, 0.0, 1.0);
       float visible = step(threshold, vUv.y);
-      vec4 tex = texture2D(uMap, vUv);
-      gl_FragColor = vec4(tex.rgb, tex.a * visible);
+      vec2 uv = vec2(vUv.x, vUv.y + uScroll);
+      float inside = step(0.0, uv.y) * step(uv.y, 1.0);
+      vec4 tex = texture2D(uMap, uv);
+      gl_FragColor = vec4(tex.rgb, tex.a * visible * inside);
     }
   `,
 });
@@ -158,23 +157,24 @@ function holdFinalFrame(onLocked) {
 function setProgress(progress) {
   currentProgress = clamp(progress, 0, 1);
   paperMaterial.uniforms.uReveal.value = currentProgress;
+  paperMaterial.uniforms.uScroll.value = -(1 - currentProgress) * FLOW_SCROLL_START;
   resizeScene();
 }
 
 function updateHotspots(progress, paper) {
-  const revealY = paper.top + paper.height * progress;
-
-  placeHotspot(resumeHit, BUTTON_RECTS.resume, paper, revealY);
-  placeHotspot(portfolioHit, BUTTON_RECTS.portfolio, paper, revealY);
+  const flowTopOffset = -(1 - progress) * FLOW_SCROLL_START;
+  placeHotspot(resumeHit, BUTTON_RECTS.resume, paper, progress, flowTopOffset);
+  placeHotspot(portfolioHit, BUTTON_RECTS.portfolio, paper, progress, flowTopOffset);
 }
 
-function placeHotspot(node, rect, paperRect, revealY) {
+function placeHotspot(node, rect, paperRect, progress, flowTopOffset) {
+  const yShifted = rect.y + flowTopOffset;
   const left = paperRect.left + rect.x * paperRect.width;
-  const top = paperRect.top + rect.y * paperRect.height;
+  const top = paperRect.top + yShifted * paperRect.height;
   const width = rect.width * paperRect.width;
   const height = rect.height * paperRect.height;
-  const bottom = top + height;
-  const isVisible = bottom <= revealY + 1;
+  const bottomRatio = yShifted + rect.height;
+  const isVisible = progress >= BUTTONS_VISIBLE_AT && bottomRatio <= progress + 0.001;
 
   node.style.left = `${left}px`;
   node.style.top = `${top}px`;
@@ -210,13 +210,7 @@ function resizeScene() {
 }
 
 function getPaperRectPx(viewportW, viewportH, progress) {
-  const p = easeOutQuad(progress);
-  const rect = {
-    left: lerp(PAPER_START.left, PAPER_END.left, p),
-    top: lerp(PAPER_START.top, PAPER_END.top, p),
-    width: lerp(PAPER_START.width, PAPER_END.width, p),
-    height: lerp(PAPER_START.height, PAPER_END.height, p),
-  };
+  const rect = PAPER_END;
   return {
     left: viewportW * rect.left - (viewportW * rect.width) / 2,
     top: viewportH * rect.top,
@@ -231,15 +225,6 @@ function render() {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
-}
-
-function lerp(start, end, t) {
-  return start + (end - start) * t;
-}
-
-function easeOutQuad(t) {
-  const c = clamp(t, 0, 1);
-  return 1 - (1 - c) * (1 - c);
 }
 
 function drawPaperTexture(ctx, width, height) {
