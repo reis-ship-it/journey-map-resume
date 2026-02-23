@@ -12,6 +12,18 @@ const PRINT_START_SEC = 0.65;
 const PRINT_END_SEC = 7.45;
 const BUTTONS_VISIBLE_AT = 0.88; // of print progress window
 const FALLBACK_DURATION = 7.666667;
+const PAPER_START = {
+  left: 0.603,
+  top: 0.643,
+  width: 0.272,
+  height: 0.014,
+};
+const PAPER_END = {
+  left: 0.603,
+  top: 0.643,
+  width: 0.272,
+  height: 0.43,
+};
 
 video.loop = false;
 
@@ -61,11 +73,26 @@ function setProgress(progress) {
   root.style.setProperty("--print-progress", progress.toFixed(4));
   const linkOpacity = clamp((progress - BUTTONS_VISIBLE_AT) / (1 - BUTTONS_VISIBLE_AT), 0, 1);
   root.style.setProperty("--link-opacity", linkOpacity.toFixed(4));
+  const mapped = mapPaperRect(progress);
+  root.style.setProperty("--paper-left", mapped.left.toFixed(5));
+  root.style.setProperty("--paper-top", mapped.top.toFixed(5));
+  root.style.setProperty("--paper-width", mapped.width.toFixed(5));
+  root.style.setProperty("--paper-height", mapped.height.toFixed(5));
 
   if (links) {
     if (linkOpacity > 0.001) links.classList.add("is-ready");
     else links.classList.remove("is-ready");
   }
+}
+
+function mapPaperRect(progress) {
+  const p = easeOutCubic(progress);
+  return {
+    left: lerp(PAPER_START.left, PAPER_END.left, p),
+    top: lerp(PAPER_START.top, PAPER_END.top, p),
+    width: lerp(PAPER_START.width, PAPER_END.width, p),
+    height: lerp(PAPER_START.height, PAPER_END.height, p),
+  };
 }
 
 function updatePlateMetrics() {
@@ -101,4 +128,12 @@ function updatePlateMetrics() {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function lerp(start, end, t) {
+  return start + (end - start) * t;
+}
+
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - clamp(t, 0, 1), 3);
 }

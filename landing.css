@@ -37,17 +37,18 @@ body {
   object-fit: cover;
   object-position: center center;
   background: transparent;
+  transform: scale(1.28);
+  transform-origin: center center;
 }
 
 .paper-reveal {
-  --paper-left: 0.601;
-  --paper-top: 0.667;
-  --paper-width: 0.238;
-  --paper-height: 0.304;
+  --paper-left: 0.603;
+  --paper-top: 0.643;
+  --paper-width: 0.272;
+  --paper-height: 0.014;
   --paper-rot: 0deg;
   --paper-skew: 0deg;
   --paper-tilt: 0deg;
-  --paper-travel: 0.28;
   position: absolute;
   left: calc(var(--plate-x, 0px) + (var(--paper-left) * var(--plate-w, 100vw)));
   top: calc(var(--plate-y, 0px) + (var(--paper-top) * var(--plate-h, 100svh)));
@@ -57,7 +58,7 @@ body {
   transform: translateX(-50%) rotate(var(--paper-rot)) skewX(var(--paper-skew));
   transform-origin: top center;
   z-index: 3;
-  clip-path: inset(calc((1 - var(--print-progress, 0)) * 100%) 0 0 0);
+  clip-path: inset(calc((1 - var(--print-progress, 0)) * 100%) 0 0 0 round 2px);
 }
 
 .printed-sheet {
@@ -65,37 +66,37 @@ body {
   inset: 0;
   background: transparent;
   color: #111;
-  font-size: calc(var(--plate-w, 100vw) * 0.00235);
-  padding: 5.3% 7.3% 4.6%;
-  transform: translateY(calc((1 - var(--print-progress, 0)) * -28%));
+  font-size: clamp(16px, calc(var(--paper-height) * var(--plate-h, 100svh) * 0.055), 34px);
+  padding: 8.2% 8.2% 8%;
+  transform: none;
   opacity: 1;
 }
 
 .printed-sheet > * {
-  max-width: 94%;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
 
 .printed-sheet h1 {
   margin: 0;
-  font-size: 2.5em;
-  line-height: 1.05;
+  font-size: 2.8em;
+  line-height: 1.08;
   text-align: center;
 }
 
 .printed-sheet p {
-  margin: 4.1% 0 0;
-  font-size: 1.18em;
-  line-height: 1.28;
+  margin: 5.2% 0 0;
+  font-size: 1.12em;
+  line-height: 1.35;
   text-align: left;
 }
 
 .paper-links {
-  margin-top: 4.6%;
+  margin-top: 6%;
   display: flex;
   justify-content: center;
-  gap: 4.5%;
+  gap: 6%;
   opacity: var(--link-opacity, 0);
   pointer-events: none;
 }
@@ -105,8 +106,8 @@ body {
   color: #fff;
   background: #131313;
   border: 1px solid #131313;
-  padding: 1.8% 5%;
-  font-size: 1.12em;
+  padding: 2.3% 6%;
+  font-size: 1.05em;
 }
 
 .paper-links.is-ready {
@@ -128,18 +129,7 @@ body {
 }
 
 @media (max-width: 840px) {
-  .paper-reveal {
-    --paper-left: 0.601;
-    --paper-top: 0.671;
-    --paper-width: 0.251;
-    --paper-height: 0.318;
-    --paper-rot: 0deg;
-    --paper-skew: 0deg;
-    --paper-tilt: 0deg;
-    --paper-travel: 0.28;
-  }
-
   .printed-sheet p {
-    font-size: 1.08em;
+    font-size: 1.06em;
   }
 }
