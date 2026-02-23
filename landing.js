@@ -16,14 +16,15 @@ const FALLBACK_DURATION = 7.666667;
 const VIDEO_ZOOM = 1.28;
 const PIXEL_RATIO_CAP = 2;
 const BUTTONS_VISIBLE_AT = 0.9;
-const FLOW_SCROLL_START = 0.24;
+const INK_DELAY = 0.1;
 
-const PAPER_END = {
+const PAPER_FINAL = {
   left: 0.5,
   top: 0.672,
   width: 0.325,
   height: 0.378,
 };
+const PAPER_SLOT_TOP = 0.648;
 
 const BUTTON_RECTS = {
   resume: { x: 0.16, y: 0.56, width: 0.28, height: 0.08 },
@@ -58,7 +59,6 @@ const paperMaterial = new THREE.ShaderMaterial({
   uniforms: {
     uMap: { value: paperTexture },
     uReveal: { value: 0 },
-    uScroll: { value: 0 },
   },
   vertexShader: `
     varying vec2 vUv;
@@ -70,16 +70,13 @@ const paperMaterial = new THREE.ShaderMaterial({
   fragmentShader: `
     uniform sampler2D uMap;
     uniform float uReveal;
-    uniform float uScroll;
     varying vec2 vUv;
 
     void main() {
       float threshold = 1.0 - clamp(uReveal, 0.0, 1.0);
       float visible = step(threshold, vUv.y);
-      vec2 uv = vec2(vUv.x, vUv.y + uScroll);
-      float inside = step(0.0, uv.y) * step(uv.y, 1.0);
-      vec4 tex = texture2D(uMap, uv);
-      gl_FragColor = vec4(tex.rgb, tex.a * visible * inside);
+      vec4 tex = texture2D(uMap, vUv);
+      gl_FragColor = vec4(tex.rgb, tex.a * visible);
     }
   `,
 });
@@ -156,25 +153,24 @@ function holdFinalFrame(onLocked) {
 
 function setProgress(progress) {
   currentProgress = clamp(progress, 0, 1);
-  paperMaterial.uniforms.uReveal.value = currentProgress;
-  paperMaterial.uniforms.uScroll.value = -(1 - currentProgress) * FLOW_SCROLL_START;
+  const inkProgress = clamp((currentProgress - INK_DELAY) / (1 - INK_DELAY), 0, 1);
+  paperMaterial.uniforms.uReveal.value = inkProgress;
   resizeScene();
 }
 
 function updateHotspots(progress, paper) {
-  const flowTopOffset = -(1 - progress) * FLOW_SCROLL_START;
-  placeHotspot(resumeHit, BUTTON_RECTS.resume, paper, progress, flowTopOffset);
-  placeHotspot(portfolioHit, BUTTON_RECTS.portfolio, paper, progress, flowTopOffset);
+  const inkProgress = clamp((progress - INK_DELAY) / (1 - INK_DELAY), 0, 1);
+  placeHotspot(resumeHit, BUTTON_RECTS.resume, paper, inkProgress);
+  placeHotspot(portfolioHit, BUTTON_RECTS.portfolio, paper, inkProgress);
 }
 
-function placeHotspot(node, rect, paperRect, progress, flowTopOffset) {
-  const yShifted = rect.y + flowTopOffset;
+function placeHotspot(node, rect, paperRect, inkProgress) {
   const left = paperRect.left + rect.x * paperRect.width;
-  const top = paperRect.top + yShifted * paperRect.height;
+  const top = paperRect.top + rect.y * paperRect.height;
   const width = rect.width * paperRect.width;
   const height = rect.height * paperRect.height;
-  const bottomRatio = yShifted + rect.height;
-  const isVisible = progress >= BUTTONS_VISIBLE_AT && bottomRatio <= progress + 0.001;
+  const bottomRatio = rect.y + rect.height;
+  const isVisible = inkProgress >= BUTTONS_VISIBLE_AT && bottomRatio <= inkProgress + 0.001;
 
   node.style.left = `${left}px`;
   node.style.top = `${top}px`;
@@ -210,12 +206,47 @@ function resizeScene() {
 }
 
 function getPaperRectPx(viewportW, viewportH, progress) {
-  const rect = PAPER_END;
+  const videoRect = getVideoRectPx(viewportW, viewportH);
+  const feedTop = lerp(PAPER_SLOT_TOP, PAPER_FINAL.top, easeOutQuad(progress));
   return {
-    left: viewportW * rect.left - (viewportW * rect.width) / 2,
-    top: viewportH * rect.top,
-    width: viewportW * rect.width,
-    height: viewportH * rect.height,
+    left: videoRect.left + videoRect.width * PAPER_FINAL.left - (videoRect.width * PAPER_FINAL.width) / 2,
+    top: videoRect.top + videoRect.height * feedTop,
+    width: videoRect.width * PAPER_FINAL.width,
+    height: videoRect.height * PAPER_FINAL.height,
+  };
+}
+
+function getVideoRectPx(viewportW, viewportH) {
+  const videoW = Number.isFinite(video.videoWidth) && video.videoWidth > 0 ? video.videoWidth : 3840;
+  const videoH = Number.isFinite(video.videoHeight) && video.videoHeight > 0 ? video.videoHeight : 2160;
+  const containerAspect = viewportW / Math.max(1, viewportH);
+  const videoAspect = videoW / videoH;
+
+  let renderW;
+  let renderH;
+  let left = 0;
+  let top = 0;
+
+  if (containerAspect > videoAspect) {
+    renderW = viewportW;
+    renderH = renderW / videoAspect;
+    top = (viewportH - renderH) / 2;
+  } else {
+    renderH = viewportH;
+    renderW = renderH * videoAspect;
+    left = (viewportW - renderW) / 2;
+  }
+
+  const zoomedW = renderW * VIDEO_ZOOM;
+  const zoomedH = renderH * VIDEO_ZOOM;
+  const zoomedLeft = left - (zoomedW - renderW) / 2;
+  const zoomedTop = top - (zoomedH - renderH) / 2;
+
+  return {
+    left: zoomedLeft,
+    top: zoomedTop,
+    width: zoomedW,
+    height: zoomedH,
   };
 }
 
@@ -225,6 +256,15 @@ function render() {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function lerp(start, end, t) {
+  return start + (end - start) * t;
+}
+
+function easeOutQuad(t) {
+  const c = clamp(t, 0, 1);
+  return 1 - (1 - c) * (1 - c);
 }
 
 function drawPaperTexture(ctx, width, height) {
