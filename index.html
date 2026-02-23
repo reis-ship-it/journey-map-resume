@@ -7,11 +7,10 @@
   <link rel="stylesheet" href="/landing.css" />
 </head>
 <body>
-  <main class="fax-landing" aria-label="Photoreal fax scene">
-    <section class="fax-plate" aria-label="Centered fax photo">
-      <img class="fax-image" src="/fax-scene.jpg" alt="Fax machine on carpet" />
-      <div class="vignette" aria-hidden="true"></div>
-      <div class="slot-mask" aria-hidden="true"></div>
+  <main class="landing-seq" aria-label="Fax printer sequence landing">
+    <section class="frame-stage" aria-label="Fax printer scene">
+      <img id="frameImage" class="frame-image" src="/faxprinter/Fax-printer000.jpg" alt="Fax printer animation frame" />
+      <div class="frame-grain" aria-hidden="true"></div>
 
       <article class="printed-sheet" aria-label="Printed page">
         <h1>Reis Quest</h1>
@@ -34,12 +33,6 @@
     </section>
   </main>
 
-  <script>
-    window.addEventListener("load", () => {
-      window.setTimeout(() => {
-        document.body.classList.add("printing");
-      }, 1000);
-    });
-  </script>
+  <script type="module" src="/landing.js"></script>
 </body>
 </html>
