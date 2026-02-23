@@ -15,8 +15,8 @@ const PRINT_END_SEC = 7.45;
 const FALLBACK_DURATION = 7.666667;
 const VIDEO_ZOOM = 1.28;
 const PIXEL_RATIO_CAP = 2;
-const BUTTONS_VISIBLE_AT = 0.9;
-const INK_DELAY = 0;
+const BUTTONS_VISIBLE_AT = 0;
+const INK_DELAY = 0.22;
 
 const PAPER_FINAL = {
   left: 0.515,
@@ -24,7 +24,7 @@ const PAPER_FINAL = {
   width: 0.325,
   height: 0.378,
 };
-const PAPER_SLOT_TOP = 0.648;
+const PAPER_FEED_TOP_OFFSET = 0.024;
 
 const BUTTON_RECTS = {
   resume: { x: 0.16, y: 0.1, width: 0.28, height: 0.08 },
@@ -207,7 +207,8 @@ function resizeScene() {
 
 function getPaperRectPx(viewportW, viewportH, progress) {
   const videoRect = getVideoRectPx(viewportW, viewportH);
-  const feedTop = lerp(PAPER_SLOT_TOP, PAPER_FINAL.top, clamp(progress, 0, 1));
+  const p = clamp(progress, 0, 1);
+  const feedTop = PAPER_FINAL.top - (1 - p) * PAPER_FEED_TOP_OFFSET;
   return {
     left: videoRect.left + videoRect.width * PAPER_FINAL.left - (videoRect.width * PAPER_FINAL.width) / 2,
     top: videoRect.top + videoRect.height * feedTop,
