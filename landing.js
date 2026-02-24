@@ -10,7 +10,6 @@ if (!video || !resumeHit || !portfolioHit || !emailHit || !phoneHit) {
 
 const STORAGE_KEY = "reis_fax_print_complete_v1";
 const FALLBACK_DURATION = 7.666667;
-const VIDEO_ZOOM = 1.42;
 const HOTSPOTS_VISIBLE_AT = 0.98;
 
 // Update these two values with your real contact info.
@@ -36,7 +35,6 @@ const HITBOXES = {
 let persistedComplete = readSession(STORAGE_KEY) === "1";
 
 video.loop = false;
-document.documentElement.style.setProperty("--video-zoom", VIDEO_ZOOM.toFixed(4));
 emailHit.setAttribute("href", EMAIL_HREF);
 phoneHit.setAttribute("href", PHONE_HREF);
 
@@ -117,36 +115,11 @@ function placeHitbox(node, paperRect, rect) {
 }
 
 function getVideoRectPx(viewportW, viewportH) {
-  const videoW = Number.isFinite(video.videoWidth) && video.videoWidth > 0 ? video.videoWidth : 3840;
-  const videoH = Number.isFinite(video.videoHeight) && video.videoHeight > 0 ? video.videoHeight : 2160;
-  const containerAspect = viewportW / Math.max(1, viewportH);
-  const videoAspect = videoW / videoH;
-
-  let renderW;
-  let renderH;
-  let left = 0;
-  let top = 0;
-
-  if (containerAspect > videoAspect) {
-    renderW = viewportW;
-    renderH = renderW / videoAspect;
-    top = (viewportH - renderH) / 2;
-  } else {
-    renderH = viewportH;
-    renderW = renderH * videoAspect;
-    left = (viewportW - renderW) / 2;
-  }
-
-  const zoomedW = renderW * VIDEO_ZOOM;
-  const zoomedH = renderH * VIDEO_ZOOM;
-  const zoomedLeft = left - (zoomedW - renderW) / 2;
-  const zoomedTop = top - (zoomedH - renderH) / 2;
-
   return {
-    left: zoomedLeft,
-    top: zoomedTop,
-    width: zoomedW,
-    height: zoomedH,
+    left: video.offsetLeft || 0,
+    top: video.offsetTop || 0,
+    width: video.clientWidth || viewportW,
+    height: video.clientHeight || viewportH,
   };
 }
 
