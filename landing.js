@@ -26,10 +26,10 @@ const PAPER_FINAL = {
 
 // Hotspots normalized in paper space.
 const HITBOXES = {
-  resume: { x: 0.205, y: 0.005, width: 0.245, height: 0.105 },
-  portfolio: { x: 0.585, y: 0.005, width: 0.255, height: 0.105 },
-  email: { x: 0.18, y: 0.74, width: 0.33, height: 0.055 },
-  phone: { x: 0.52, y: 0.74, width: 0.23, height: 0.055 },
+  resume: { x: 0.23, y: -0.10, width: 0.245, height: 0.21 },
+  portfolio: { x: 0.61, y: -0.10, width: 0.255, height: 0.21 },
+  email: { x: 0.18, y: 0.68, width: 0.33, height: 0.07 },
+  phone: { x: 0.66, y: 0.68, width: 0.23, height: 0.055 },
 };
 
 let persistedComplete = readSession(STORAGE_KEY) === "1";
