@@ -28,9 +28,12 @@ body {
 .scene-video {
   position: relative;
   display: block;
-  width: 100%;
-  height: auto;
+  width: auto;
+  height: 100svh;
+  max-width: 100vw;
   object-fit: contain;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .link-hotspots {
