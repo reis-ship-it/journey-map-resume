@@ -10,7 +10,7 @@ if (!video || !resumeHit || !portfolioHit || !emailHit || !phoneHit) {
 
 const STORAGE_KEY = "reis_fax_print_complete_v1";
 const FALLBACK_DURATION = 7.666667;
-const VIDEO_ZOOM = 1.28;
+const VIDEO_ZOOM = 1.42;
 const HOTSPOTS_VISIBLE_AT = 0.98;
 
 // Update these two values with your real contact info.
