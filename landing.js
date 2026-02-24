@@ -1,10 +1,12 @@
 const video = document.getElementById("faxVideo");
+const plate = document.querySelector(".scene-plate");
+const hotspotsLayer = document.querySelector(".link-hotspots");
 const resumeHit = document.getElementById("resumeHit");
 const portfolioHit = document.getElementById("portfolioHit");
 const emailHit = document.getElementById("emailHit");
 const phoneHit = document.getElementById("phoneHit");
 
-if (!video || !resumeHit || !portfolioHit || !emailHit || !phoneHit) {
+if (!video || !plate || !hotspotsLayer || !resumeHit || !portfolioHit || !emailHit || !phoneHit) {
   throw new Error("Missing landing elements.");
 }
 
@@ -91,12 +93,15 @@ function holdFinalFrame() {
 }
 
 function updateHotspotPositions() {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const videoRect = getVideoRectPx(vw, vh);
+  const videoRect = getVideoRectPx();
+  hotspotsLayer.style.left = `${videoRect.left}px`;
+  hotspotsLayer.style.top = `${videoRect.top}px`;
+  hotspotsLayer.style.width = `${videoRect.width}px`;
+  hotspotsLayer.style.height = `${videoRect.height}px`;
+
   const paperRect = {
-    left: videoRect.left + videoRect.width * PAPER_FINAL.left - (videoRect.width * PAPER_FINAL.width) / 2,
-    top: videoRect.top + videoRect.height * PAPER_FINAL.top,
+    left: videoRect.width * PAPER_FINAL.left - (videoRect.width * PAPER_FINAL.width) / 2,
+    top: videoRect.height * PAPER_FINAL.top,
     width: videoRect.width * PAPER_FINAL.width,
     height: videoRect.height * PAPER_FINAL.height,
   };
@@ -114,12 +119,14 @@ function placeHitbox(node, paperRect, rect) {
   node.style.height = `${rect.height * paperRect.height}px`;
 }
 
-function getVideoRectPx(viewportW, viewportH) {
+function getVideoRectPx() {
+  const videoRect = video.getBoundingClientRect();
+  const plateRect = plate.getBoundingClientRect();
   return {
-    left: video.offsetLeft || 0,
-    top: video.offsetTop || 0,
-    width: video.clientWidth || viewportW,
-    height: video.clientHeight || viewportH,
+    left: videoRect.left - plateRect.left,
+    top: videoRect.top - plateRect.top,
+    width: videoRect.width,
+    height: videoRect.height,
   };
 }
 

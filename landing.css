@@ -38,7 +38,6 @@ body {
 
 .link-hotspots {
   position: absolute;
-  inset: 0;
   z-index: 3;
   pointer-events: none;
 }
@@ -46,7 +45,9 @@ body {
 .link-hotspots a {
   position: absolute;
   display: block;
-  opacity: 0;
+  opacity: 0.22;
+  background: rgba(0, 160, 255, 0.22);
+  border: 1px solid rgba(0, 160, 255, 0.55);
   pointer-events: none;
 }
 
