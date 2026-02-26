@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume Map Starter Generator</title>
+  <style>
+    body { font-family: "Azeret Mono", ui-monospace, Menlo, monospace; margin: 0; background: #eef5ff; color: #203246; }
+    main { width: min(1000px, 94vw); margin: 1rem auto; }
+    .card { background: #fff; border: 1px solid #c6d7ea; border-radius: 12px; padding: 0.8rem; margin-bottom: 0.8rem; }
+    textarea { width: 100%; min-height: 180px; font: inherit; border: 1px solid #c6d7ea; border-radius: 8px; padding: 0.5rem; }
+    button, a { font: inherit; border: 1px solid #95b4d8; background: #fff; padding: 0.35rem 0.65rem; border-radius: 8px; cursor: pointer; text-decoration: none; color: inherit; }
+    .row { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="card">
+      <h1>Resume Map Starter Generator</h1>
+      <p>Paste JSON array or CSV with headers (`title,startDate,endDate,category,location,country,lat,lng,description`) and generate map-ready JSON.</p>
+      <div class="row">
+        <a href="/resume">Back to Resume</a>
+        <a href="/starter">Open Starter</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Input</h2>
+      <textarea id="input" placeholder='[{"title":"Role","startDate":"2024-01-01",...}]'></textarea>
+      <div class="row" style="margin-top:0.5rem;">
+        <button id="generate">Generate</button>
+        <button id="download">Download JSON</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Output</h2>
+      <pre id="output">[]</pre>
+    </section>
+  </main>
+
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const generate = document.getElementById('generate');
+    const download = document.getElementById('download');
+
+    function csvToObjects(csv) {
+      const lines = csv.trim().split(/\r?\n/);
+      const headers = lines.shift().split(',').map(h => h.trim());
+      return lines.map((line) => {
+        const cols = line.split(',');
+        const obj = {};
+        headers.forEach((h, i) => { obj[h] = (cols[i] || '').trim(); });
+        return obj;
+      });
+    }
+
+    function normalize(entry) {
+      return {
+        id: crypto.randomUUID(),
+        title: entry.title || 'Untitled Step',
+        startDate: entry.startDate || '2025-01-01',
+        endDate: entry.endDate || null,
+        category: entry.category || 'Work',
+        location: entry.location || 'City',
+        country: entry.country || 'Country',
+        locationDetail: entry.locationDetail || '',
+        lat: Number(entry.lat || 0),
+        lng: Number(entry.lng || 0),
+        overlapGroup: entry.overlapGroup || '',
+        description: entry.description || 'Add detail here.',
+        impact: entry.impact || '',
+        scope: entry.scope || '',
+        tools: entry.tools || '',
+        teamSize: entry.teamSize || '',
+        outcome: entry.outcome || '',
+        skills: (entry.skills || '').split(',').map(s => s.trim()).filter(Boolean),
+        evidenceLinks: [],
+        mediaLinks: []
+      };
+    }
+
+    function run() {
+      try {
+        const raw = input.value.trim();
+        if (!raw) return;
+        let parsed;
+        if (raw.startsWith('[') || raw.startsWith('{')) {
+          const json = JSON.parse(raw);
+          parsed = Array.isArray(json) ? json : [json];
+        } else {
+          parsed = csvToObjects(raw);
+        }
+        const normalized = parsed.map(normalize);
+        output.textContent = JSON.stringify(normalized, null, 2);
+      } catch (error) {
+        output.textContent = `Error: ${error.message}`;
+      }
+    }
+
+    generate.addEventListener('click', run);
+    download.addEventListener('click', () => {
+      run();
+      if (output.textContent.startsWith('Error')) return;
+      const blob = new Blob([output.textContent], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'journey-data.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>

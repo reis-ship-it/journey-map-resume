@@ -24,6 +24,7 @@
         </div>
       </div>
       <p class="subtitle">i think through time in space. This is how i best see my resume, not as bullet points and some funny language, but as marks on a map leading from one place to another. (ps - I made this in less than a day for the specific purpose of being a Google Fiver. it's not meant to be impressive as a feat in and of itself, more like i just want to share my story/journey in a cool way that may actually be easier for humans to read than bullet points. I dont have the data on that yet)</p>
+      <p class="subtitle summary-line" id="whySummary">Why this matters: loading summary...</p>
     </div>
   </header>
 
@@ -43,8 +44,13 @@
           <div class="tools">
             <label>Year<select id="yearFilter"><option value="all">All</option></select></label>
             <label>Category<select id="categoryFilter"><option value="all">All</option></select></label>
+            <label>View<select id="viewMode"><option value="story">Story</option><option value="recruiter">Recruiter</option><option value="technical">Technical</option></select></label>
+            <label>Search<input id="searchInput" type="search" placeholder="company, skill, location" /></label>
             <button id="fitAllBtn" class="btn btn-alt">Fit Route</button>
+            <button id="printBtn" class="btn btn-alt" type="button">Print / Share</button>
+            <button id="tourBtn" class="btn btn-alt" type="button">Guided Tour</button>
           </div>
+          <div id="quickChips" class="quick-chips"></div>
         </details>
       </div>
 
@@ -55,6 +61,7 @@
         <button id="stopBtn" class="btn btn-alt icon-btn" type="button" aria-label="Stop Journey">■</button>
         <input id="progressRange" type="range" min="0" max="0" value="0" />
       </section>
+      <p id="tourStatus" class="map-note"></p>
     </section>
 
     <aside class="card timeline-card reveal delay-2">
@@ -74,6 +81,22 @@
           <button id="closeDrawerBtn" class="btn btn-alt" type="button">Close</button>
         </div>
         <section id="focusCard" class="focus-card"></section>
+      </section>
+      <section class="card compare-card">
+        <div class="card-head compact">
+          <strong>Compare Mode</strong>
+        </div>
+        <div class="compare-controls">
+          <label>Step A<select id="compareA"></select></label>
+          <label>Step B<select id="compareB"></select></label>
+        </div>
+        <div id="comparePanel" class="compare-panel"></div>
+      </section>
+      <section class="card skills-card">
+        <div class="card-head compact">
+          <strong>Skills Graph</strong>
+        </div>
+        <div id="skillsGraph" class="skills-graph"></div>
       </section>
       <ol id="timeline" class="timeline"></ol>
     </aside>
@@ -114,12 +137,21 @@
       <label>Latitude<input id="lat" type="number" step="0.000001" min="-90" max="90" required /></label>
       <label>Longitude<input id="lng" type="number" step="0.000001" min="-180" max="180" required /></label>
       <label class="wide">Description<textarea id="description" rows="3" required></textarea></label>
+      <label>Impact<input id="impact" placeholder="Outcome and measurable effect" /></label>
+      <label>Scope<input id="scope" placeholder="Ownership, domain, complexity" /></label>
+      <label>Tools<input id="tools" placeholder="Unreal, Maya, Figma, SQL..." /></label>
+      <label>Team Size<input id="teamSize" placeholder="Example: 30" /></label>
+      <label>Outcome<input id="outcome" placeholder="What changed because of this work" /></label>
+      <label>Skills (comma-separated)<input id="skills" placeholder="Leadership, AI, Strategy" /></label>
+      <label class="wide">Evidence Links (one per line: Label|URL)<textarea id="evidenceLinks" rows="3"></textarea></label>
+      <label class="wide">Media Links (one per line: Label|ImageOrVideoURL)<textarea id="mediaLinks" rows="2"></textarea></label>
       <div class="form-actions wide">
         <button class="btn" type="submit">Save Entry</button>
         <button class="btn btn-alt" id="resetFormBtn" type="button">Reset</button>
       </div>
     </form>
 
+    <p id="dataHealth" class="map-note"></p>
     <h3>Current Dataset</h3>
     <ul id="editorList" class="editor-list"></ul>
   </section>
@@ -127,6 +159,7 @@
   <footer class="shell resume-footer reveal delay-3">
     <a class="btn btn-alt" href="/starter">Build Your Own Resume Map (Open Starter)</a>
     <a class="btn btn-alt" href="https://github.com/reis-ship-it/journey-map-resume/tree/main/starter" target="_blank" rel="noopener">View Starter Source</a>
+    <a class="btn btn-alt" href="/starter-generator">Starter Generator</a>
   </footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>

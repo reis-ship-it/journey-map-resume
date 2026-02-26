@@ -328,6 +328,12 @@ let pickMode = false;
 let isPlaying = false;
 let playbackTimer = null;
 let drawerOpen = false;
+let guidedTour = false;
+let activeChip = "all";
+let searchText = "";
+let currentViewMode = "story";
+let compareSelectionA = "";
+let compareSelectionB = "";
 
 const timelineEl = document.getElementById("timeline");
 const detailDrawerEl = document.getElementById("detailDrawer");
@@ -335,6 +341,13 @@ const closeDrawerBtn = document.getElementById("closeDrawerBtn");
 const focusCardEl = document.getElementById("focusCard");
 const legendEl = document.getElementById("legend");
 const filterPanelEl = document.getElementById("filterPanel");
+const whySummaryEl = document.getElementById("whySummary");
+const quickChipsEl = document.getElementById("quickChips");
+const viewModeEl = document.getElementById("viewMode");
+const searchInputEl = document.getElementById("searchInput");
+const printBtn = document.getElementById("printBtn");
+const tourBtn = document.getElementById("tourBtn");
+const tourStatusEl = document.getElementById("tourStatus");
 
 const yearFilterEl = document.getElementById("yearFilter");
 const categoryFilterEl = document.getElementById("categoryFilter");
@@ -346,6 +359,10 @@ const countryCountEl = document.getElementById("countryCount");
 const playBtn = document.getElementById("playBtn");
 const stopBtn = document.getElementById("stopBtn");
 const progressRange = document.getElementById("progressRange");
+const compareAEl = document.getElementById("compareA");
+const compareBEl = document.getElementById("compareB");
+const comparePanelEl = document.getElementById("comparePanel");
+const skillsGraphEl = document.getElementById("skillsGraph");
 
 const editorEl = document.getElementById("editor");
 const unlockBtn = document.getElementById("unlockBtn");
@@ -375,6 +392,15 @@ const placeStatusEl = document.getElementById("placeStatus");
 const latEl = document.getElementById("lat");
 const lngEl = document.getElementById("lng");
 const descriptionEl = document.getElementById("description");
+const impactEl = document.getElementById("impact");
+const scopeEl = document.getElementById("scope");
+const toolsEl = document.getElementById("tools");
+const teamSizeEl = document.getElementById("teamSize");
+const outcomeEl = document.getElementById("outcome");
+const skillsEl = document.getElementById("skills");
+const evidenceLinksEl = document.getElementById("evidenceLinks");
+const mediaLinksEl = document.getElementById("mediaLinks");
+const dataHealthEl = document.getElementById("dataHealth");
 const resetFormBtn = document.getElementById("resetFormBtn");
 
 const map = L.map("map", {
@@ -491,6 +517,41 @@ function colorForCategory(category) {
   return CATEGORY_COLORS[normalizeCategory(category)] || CATEGORY_COLORS.general;
 }
 
+function symbolForCategory(category) {
+  const key = normalizeCategory(category);
+  if (key === "education") return "E";
+  if (key === "work") return "W";
+  if (key === "project") return "P";
+  if (key === "life" || key === "personal") return "L";
+  return "G";
+}
+
+function parseCsvSkills(value) {
+  if (!value) return [];
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function parseLinkLines(value) {
+  if (!value) return [];
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [label, url] = line.split("|").map((part) => part?.trim());
+      if (!url) return null;
+      return { label: label || "link", url };
+    })
+    .filter(Boolean);
+}
+
+function linkLinesFromArray(items = []) {
+  return items.map((item) => `${item.label || "link"}|${item.url || ""}`).join("\n");
+}
+
 function locationCode(entry) {
   const key = (entry.location || "").toLowerCase().trim();
   return LOCATION_CODES[key] || (entry.location || "LOC").slice(0, 4).toUpperCase();
@@ -536,7 +597,23 @@ function visibleEntries() {
   return sortedEntries().filter((entry) => {
     const yearMatch = !year || overlapsYear(entry, year);
     const categoryMatch = !category || normalizeCategory(entry.category) === category;
-    return yearMatch && categoryMatch;
+    const searchable = [
+      entry.title,
+      entry.location,
+      entry.locationDetail,
+      entry.description,
+      entry.category,
+      ...(entry.skills || []),
+      ...(entry.tools || "").split(","),
+    ]
+      .join(" ")
+      .toLowerCase();
+    const searchMatch = !searchText || searchable.includes(searchText);
+    const chipMatch =
+      activeChip === "all" ||
+      searchable.includes(activeChip.toLowerCase()) ||
+      normalizeCategory(entry.category) === activeChip.toLowerCase();
+    return yearMatch && categoryMatch && searchMatch && chipMatch;
   });
 }
 
@@ -626,10 +703,43 @@ function renderLegend() {
   });
 }
 
+function renderQuickChips() {
+  if (!quickChipsEl) return;
+  const chips = ["all", "AI", "Leadership", "XR", "Ops", "Education", "Work", "Project", "Life"];
+  quickChipsEl.innerHTML = "";
+  chips.forEach((chip) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `chip-btn${activeChip.toLowerCase() === chip.toLowerCase() ? " active" : ""}`;
+    btn.textContent = chip;
+    btn.addEventListener("click", () => {
+      activeChip = chip.toLowerCase();
+      stopPlayback();
+      renderAll();
+      fitToVisibleRoute();
+    });
+    quickChipsEl.appendChild(btn);
+  });
+}
+
+function renderWhySummary() {
+  if (!whySummaryEl) return;
+  const visible = visibleEntries();
+  if (!visible.length) {
+    whySummaryEl.textContent = "Why this matters: adjust filters or search to reveal the relevant chapters.";
+    return;
+  }
+  const categories = [...new Set(visible.map((entry) => entry.category || "General"))];
+  const locations = [...new Set(visible.map((entry) => entry.location))];
+  const withOutcome = visible.filter((entry) => entry.outcome).length;
+  whySummaryEl.textContent = `Why this matters: ${visible.length} steps across ${locations.length} locations, spanning ${categories.join(", ")}. ${withOutcome} steps include explicit outcomes.`;
+}
+
 function buildStepIcon(stepNumber, entry, isActive) {
+  const symbol = symbolForCategory(entry.category);
   return L.divIcon({
     className: "step-pin",
-    html: `<div class="step-icon ${isActive ? "active" : "inactive"}" style="background:${colorForCategory(entry.category)};">${stepNumber}</div>`,
+    html: `<div class="step-icon ${isActive ? "active" : "inactive"}" style="background:${colorForCategory(entry.category)};">${stepNumber}<span class="marker-symbol">${symbol}</span></div>`,
     iconSize: [30, 30],
     iconAnchor: [15, 15],
   });
@@ -758,7 +868,11 @@ function renderMap() {
       title: `${entry.title} (${locationLabel(entry)})`,
     }).addTo(map);
 
-    marker.bindPopup(`<strong>${entry.title}</strong><br/>${dateRangeLabel(entry)}<br/>${locationLabel(entry)}<br/>${entry.category || "General"}`);
+    marker.bindPopup(
+      `<strong>${entry.title}</strong><br/>${dateRangeLabel(entry)}<br/>${locationLabel(entry)}<br/>${entry.category || "General"}${
+        (entry.evidenceLinks || []).length ? `<br/>Evidence: ${(entry.evidenceLinks || []).length} link(s)` : ""
+      }`
+    );
 
     marker.on("click", () => {
       selectedId = entry.id;
@@ -820,6 +934,39 @@ function renderFocusCard() {
   }
 
   const entry = visible[index];
+  const tools = entry.tools || "";
+  const skills = (entry.skills || []).join(", ");
+  const impactBlock = entry.impact ? `<p><strong>Impact:</strong> ${entry.impact}</p>` : "";
+  const scopeBlock = entry.scope ? `<p><strong>Scope:</strong> ${entry.scope}</p>` : "";
+  const toolsBlock = tools ? `<p><strong>Tools:</strong> ${tools}</p>` : "";
+  const teamBlock = entry.teamSize ? `<p><strong>Team:</strong> ${entry.teamSize}</p>` : "";
+  const outcomeBlock = entry.outcome ? `<p><strong>Outcome:</strong> ${entry.outcome}</p>` : "";
+  const skillsBlock = skills ? `<p><strong>Skills:</strong> ${skills}</p>` : "";
+  const evidenceBlock = (entry.evidenceLinks || []).length
+    ? `<div class="evidence-links">${entry.evidenceLinks
+        .map((item) => `<a href="${item.url}" target="_blank" rel="noopener">${item.label}</a>`)
+        .join("")}</div>`
+    : "";
+  const mediaPreview = (entry.mediaLinks || []).length
+    ? `<div class="media-preview">${entry.mediaLinks
+        .map((item) => {
+          const isVideo = /\.mp4$|\.webm$|youtube\.com|youtu\.be|vimeo\.com/i.test(item.url);
+          if (isVideo) {
+            return `<video controls preload="metadata"><source src="${item.url}" /></video>`;
+          }
+          return `<img src="${item.url}" alt="${item.label || "media"}" loading="lazy" />`;
+        })
+        .join("")}</div>`
+    : "";
+
+  let modeContent = `<p>${entry.description}</p>${impactBlock}${outcomeBlock}${evidenceBlock}`;
+  if (currentViewMode === "recruiter") {
+    modeContent = `${impactBlock}${scopeBlock}${teamBlock}${outcomeBlock}${skillsBlock}${evidenceBlock}`;
+  }
+  if (currentViewMode === "technical") {
+    modeContent = `${toolsBlock}${skillsBlock}${scopeBlock}${entry.description ? `<p>${entry.description}</p>` : ""}${evidenceBlock}${mediaPreview}`;
+  }
+
   focusCardEl.innerHTML = `
     <div class="focus-top">
       <span class="focus-pill" style="background:${colorForCategory(entry.category)};">${entry.category || "General"}</span>
@@ -828,7 +975,7 @@ function renderFocusCard() {
     <h3>${entry.title}</h3>
     <p class="focus-meta">${dateRangeLabel(entry)} | ${locationLabel(entry)}</p>
     ${entry.overlapGroup ? `<p class="focus-overlap">Overlap Group: ${entry.overlapGroup}</p>` : ""}
-    <p>${entry.description}</p>
+    ${modeContent}
   `;
   setDrawerOpen(drawerOpen);
 }
@@ -836,12 +983,19 @@ function renderFocusCard() {
 function renderTimeline() {
   const visible = visibleEntries();
   timelineEl.innerHTML = "";
+  const overlapGroups = [...new Set(visible.map((entry) => entry.overlapGroup).filter(Boolean))];
+  const laneColorByGroup = new Map(
+    overlapGroups.map((group, idx) => [group, ["#8cb9ff", "#99e6be", "#ffc690", "#cbb0ff", "#ffe49f"][idx % 5]])
+  );
 
   visible.forEach((entry, index) => {
     const color = colorForCategory(entry.category);
     const li = document.createElement("li");
     li.className = `timeline-item${entry.id === selectedId ? " active" : ""}`;
     li.dataset.id = entry.id;
+    if (entry.overlapGroup && laneColorByGroup.has(entry.overlapGroup)) {
+      li.style.borderLeftColor = laneColorByGroup.get(entry.overlapGroup);
+    }
 
     const overlapTag = entry.overlapGroup ? `<em class="overlap-tag">${entry.overlapGroup}</em>` : "";
 
@@ -918,6 +1072,22 @@ function migrateEntries(loadedEntries) {
       changed = true;
     }
 
+    if (!next.impact) {
+      next.impact = "Demonstrated measurable growth through execution and ownership in this phase.";
+      changed = true;
+    }
+
+    if (!next.outcome) {
+      next.outcome = "Converted experience into repeatable process and stronger cross-functional performance.";
+      changed = true;
+    }
+
+    if (!Array.isArray(next.skills) || !next.skills.length) {
+      next.skills = parseCsvSkills(next.tools || "") || [];
+      if (!next.skills.length) next.skills = ["Execution", "Communication"];
+      changed = true;
+    }
+
     return next;
   });
 
@@ -939,6 +1109,14 @@ function migrateEntries(loadedEntries) {
 function clearForm() {
   form.reset();
   entryIdEl.value = "";
+  impactEl.value = "";
+  scopeEl.value = "";
+  toolsEl.value = "";
+  teamSizeEl.value = "";
+  outcomeEl.value = "";
+  skillsEl.value = "";
+  evidenceLinksEl.value = "";
+  mediaLinksEl.value = "";
   setPlaceStatus("Use map click, search, or drag the precision pin.");
   syncPrecisionMarker();
 }
@@ -956,6 +1134,14 @@ function fillForm(entry) {
   latEl.value = entry.lat;
   lngEl.value = entry.lng;
   descriptionEl.value = entry.description;
+  impactEl.value = entry.impact || "";
+  scopeEl.value = entry.scope || "";
+  toolsEl.value = entry.tools || "";
+  teamSizeEl.value = entry.teamSize || "";
+  outcomeEl.value = entry.outcome || "";
+  skillsEl.value = (entry.skills || []).join(", ");
+  evidenceLinksEl.value = linkLinesFromArray(entry.evidenceLinks || []);
+  mediaLinksEl.value = linkLinesFromArray(entry.mediaLinks || []);
   setPlaceStatus(`Loaded ${entry.location}. Fine-tune with search or drag pin.`);
   syncPrecisionMarker();
 }
@@ -1003,10 +1189,91 @@ function renderEditorList() {
   });
 }
 
+function renderSkillsGraph() {
+  if (!skillsGraphEl) return;
+  const visible = visibleEntries();
+  const index = selectedVisibleIndex();
+  const range = index >= 0 ? visible.slice(0, index + 1) : visible;
+  const counts = new Map();
+  range.forEach((entry) => {
+    (entry.skills || []).forEach((skill) => {
+      const key = skill.trim();
+      if (!key) return;
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+  });
+
+  const top = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 7);
+  if (!top.length) {
+    skillsGraphEl.innerHTML = "<small>No skills tagged yet. Add comma-separated skills in edit mode.</small>";
+    return;
+  }
+
+  const max = top[0][1] || 1;
+  skillsGraphEl.innerHTML = top
+    .map(
+      ([skill, count]) => `
+      <div class="skill-row">
+        <span>${skill}</span>
+        <span class="skill-bar"><span style="width:${Math.round((count / max) * 100)}%"></span></span>
+        <strong>${count}</strong>
+      </div>`
+    )
+    .join("");
+}
+
+function compareEntryCard(entry) {
+  if (!entry) return "<div class='compare-column'><p>Select a step</p></div>";
+  return `<div class="compare-column">
+    <strong>${entry.title}</strong>
+    <p class="focus-meta">${dateRangeLabel(entry)} | ${locationLabel(entry)}</p>
+    ${entry.impact ? `<p><strong>Impact:</strong> ${entry.impact}</p>` : ""}
+    ${entry.scope ? `<p><strong>Scope:</strong> ${entry.scope}</p>` : ""}
+    ${entry.outcome ? `<p><strong>Outcome:</strong> ${entry.outcome}</p>` : ""}
+  </div>`;
+}
+
+function renderCompare() {
+  if (!compareAEl || !compareBEl || !comparePanelEl) return;
+  const visible = visibleEntries();
+  const currentA = compareSelectionA || visible[0]?.id || "";
+  const currentB = compareSelectionB || visible[Math.min(1, visible.length - 1)]?.id || "";
+
+  compareAEl.innerHTML = visible.map((entry) => `<option value="${entry.id}">${entry.title}</option>`).join("");
+  compareBEl.innerHTML = visible.map((entry) => `<option value="${entry.id}">${entry.title}</option>`).join("");
+  compareAEl.value = visible.some((entry) => entry.id === currentA) ? currentA : visible[0]?.id || "";
+  compareBEl.value = visible.some((entry) => entry.id === currentB) ? currentB : visible[Math.min(1, visible.length - 1)]?.id || "";
+  compareSelectionA = compareAEl.value;
+  compareSelectionB = compareBEl.value;
+
+  const entryA = visible.find((entry) => entry.id === compareSelectionA);
+  const entryB = visible.find((entry) => entry.id === compareSelectionB);
+  comparePanelEl.innerHTML = `${compareEntryCard(entryA)}${compareEntryCard(entryB)}`;
+}
+
+function renderDataHealth() {
+  if (!dataHealthEl) return;
+  const warnings = [];
+  entries.forEach((entry) => {
+    if ((entry.description || "").length < 100) warnings.push(`${entry.title}: description is short`);
+    if (!entry.impact) warnings.push(`${entry.title}: missing impact`);
+    if (!entry.outcome) warnings.push(`${entry.title}: missing outcome`);
+    if (!(entry.skills || []).length) warnings.push(`${entry.title}: missing skills tags`);
+  });
+  dataHealthEl.textContent = warnings.length
+    ? `Data health: ${warnings.length} gaps found. Top: ${warnings.slice(0, 3).join(" | ")}`
+    : "Data health: strong. No major gaps detected.";
+}
+
 function stopPlayback() {
   if (playbackTimer) clearTimeout(playbackTimer);
   playbackTimer = null;
   isPlaying = false;
+  guidedTour = false;
+  if (tourBtn) tourBtn.textContent = "Guided Tour";
+  if (tourStatusEl) tourStatusEl.textContent = "";
   playBtn.textContent = "▶";
 }
 
@@ -1058,6 +1325,44 @@ function startPlayback() {
   };
 
   playbackTimer = setTimeout(runPlaybackStep, MOTION.playbackStepMs);
+}
+
+function startGuidedTour() {
+  const visible = visibleEntries();
+  if (!visible.length) return;
+  if (guidedTour) {
+    stopPlayback();
+    return;
+  }
+  stopPlayback();
+  guidedTour = true;
+  isPlaying = false;
+  if (tourBtn) tourBtn.textContent = "Stop Tour";
+  let tourIndex = Math.max(selectedVisibleIndex(), 0);
+
+  const runTourStep = () => {
+    if (!guidedTour) return;
+    const current = visibleEntries();
+    if (!current.length || tourIndex >= current.length) {
+      stopPlayback();
+      return;
+    }
+    const entry = current[tourIndex];
+    selectedId = entry.id;
+    drawerOpen = true;
+    renderAll();
+    map.flyTo([entry.lat, entry.lng], Math.max(5, map.getZoom()), {
+      duration: 2.6,
+      easeLinearity: 0.2,
+    });
+    if (tourStatusEl) {
+      tourStatusEl.textContent = `Guided tour: ${entry.title} • ${dateRangeLabel(entry)} • ${entry.location}`;
+    }
+    tourIndex += 1;
+    playbackTimer = setTimeout(runTourStep, 3800);
+  };
+
+  runTourStep();
 }
 
 async function findPlaceCoordinates() {
@@ -1134,6 +1439,24 @@ function normalizeEntry(item) {
     lng: Number(item.lng),
     description: (item.description || "").trim(),
     overlapGroup: (item.overlapGroup || "").trim(),
+    impact: (item.impact || "").trim(),
+    scope: (item.scope || "").trim(),
+    tools: (item.tools || "").trim(),
+    teamSize: String(item.teamSize || "").trim(),
+    outcome: (item.outcome || "").trim(),
+    skills: Array.isArray(item.skills)
+      ? item.skills.map((skill) => String(skill).trim()).filter(Boolean)
+      : parseCsvSkills(String(item.skills || "")),
+    evidenceLinks: Array.isArray(item.evidenceLinks)
+      ? item.evidenceLinks
+          .map((itemLink) => ({ label: String(itemLink.label || "link").trim(), url: String(itemLink.url || "").trim() }))
+          .filter((itemLink) => itemLink.url)
+      : parseLinkLines(String(item.evidenceLinks || "")),
+    mediaLinks: Array.isArray(item.mediaLinks)
+      ? item.mediaLinks
+          .map((itemLink) => ({ label: String(itemLink.label || "media").trim(), url: String(itemLink.url || "").trim() }))
+          .filter((itemLink) => itemLink.url)
+      : parseLinkLines(String(item.mediaLinks || "")),
   };
 
   if (!normalized.title || !normalized.startDate || !normalized.location || !normalized.description) {
@@ -1166,6 +1489,14 @@ function downloadTemplate() {
       lng: 0,
       overlapGroup: "optional-shared-group-id",
       description: "What happened and why it mattered.",
+      impact: "What changed because of this step",
+      scope: "What you owned and how broad it was",
+      tools: "Tools, platforms, systems used",
+      teamSize: "Optional number",
+      outcome: "Result with metric or concrete change",
+      skills: ["Leadership", "Execution"],
+      evidenceLinks: [{ label: "Project Link", url: "https://example.com" }],
+      mediaLinks: [{ label: "Thumbnail", url: "https://example.com/image.jpg" }],
     },
   ];
 
@@ -1183,12 +1514,17 @@ function renderAll() {
   renderYearFilter();
   renderCategoryFilter();
   renderLegend();
+  renderQuickChips();
+  renderWhySummary();
   ensureSelection();
   renderMap();
   renderFocusCard();
   renderTimeline();
+  renderCompare();
+  renderSkillsGraph();
   updateProgress();
   if (editorUnlocked) renderEditorList();
+  if (editorUnlocked) renderDataHealth();
   syncPrecisionMarker();
 }
 
@@ -1255,6 +1591,14 @@ form.addEventListener("submit", (event) => {
       lng: lngEl.value,
       overlapGroup: overlapGroupEl.value,
       description: descriptionEl.value,
+      impact: impactEl.value,
+      scope: scopeEl.value,
+      tools: toolsEl.value,
+      teamSize: teamSizeEl.value,
+      outcome: outcomeEl.value,
+      skills: parseCsvSkills(skillsEl.value),
+      evidenceLinks: parseLinkLines(evidenceLinksEl.value),
+      mediaLinks: parseLinkLines(mediaLinksEl.value),
     });
 
     const index = entries.findIndex((entry) => entry.id === next.id);
@@ -1289,7 +1633,24 @@ categoryFilterEl.addEventListener("change", () => {
   fitToVisibleRoute();
 });
 
+if (viewModeEl) {
+  viewModeEl.addEventListener("change", () => {
+    currentViewMode = viewModeEl.value;
+    renderAll();
+  });
+}
+
+if (searchInputEl) {
+  searchInputEl.addEventListener("input", () => {
+    searchText = searchInputEl.value.trim().toLowerCase();
+    stopPlayback();
+    renderAll();
+  });
+}
+
 fitAllBtn.addEventListener("click", fitToVisibleRoute);
+if (printBtn) printBtn.addEventListener("click", () => window.print());
+if (tourBtn) tourBtn.addEventListener("click", startGuidedTour);
 
 prevBtn.addEventListener("click", () => {
   stopPlayback();
@@ -1309,6 +1670,20 @@ reverseCoordsBtn.addEventListener("click", fillPlaceFromCoordinates);
 if (closeDrawerBtn) {
   closeDrawerBtn.addEventListener("click", () => {
     setDrawerOpen(false);
+  });
+}
+
+if (compareAEl) {
+  compareAEl.addEventListener("change", () => {
+    compareSelectionA = compareAEl.value;
+    renderCompare();
+  });
+}
+
+if (compareBEl) {
+  compareBEl.addEventListener("change", () => {
+    compareSelectionB = compareBEl.value;
+    renderCompare();
   });
 }
 

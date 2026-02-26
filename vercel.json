@@ -7,6 +7,8 @@
     { "source": "/portfolio/:slug", "destination": "/portfolio/:slug/index.html" },
     { "source": "/portfolio/:slug/", "destination": "/portfolio/:slug/index.html" },
     { "source": "/starter", "destination": "/starter/index.html" },
-    { "source": "/starter/", "destination": "/starter/index.html" }
+    { "source": "/starter/", "destination": "/starter/index.html" },
+    { "source": "/starter-generator", "destination": "/starter-generator/index.html" },
+    { "source": "/starter-generator/", "destination": "/starter-generator/index.html" }
   ]
 }

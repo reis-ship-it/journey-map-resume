@@ -11,6 +11,18 @@
     "lat": 0,
     "lng": 0,
     "overlapGroup": "optional-shared-group-id",
-    "description": "What happened at this step and why it mattered."
+    "description": "What happened at this step and why it mattered.",
+    "impact": "What changed because of this step",
+    "scope": "What you owned and how broad it was",
+    "tools": "Tools, platforms, systems used",
+    "teamSize": "Optional number",
+    "outcome": "Concrete result with metric if possible",
+    "skills": ["Leadership", "Execution"],
+    "evidenceLinks": [
+      { "label": "Project Link", "url": "https://example.com" }
+    ],
+    "mediaLinks": [
+      { "label": "Image", "url": "https://example.com/image.jpg" }
+    ]
   }
 ]
