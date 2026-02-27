@@ -552,6 +552,32 @@ function linkLinesFromArray(items = []) {
   return items.map((item) => `${item.label || "link"}|${item.url || ""}`).join("\n");
 }
 
+function monthsBetween(startDate, endDate) {
+  const start = parseDate(startDate);
+  const end = parseDate(endDate);
+  const years = end.getFullYear() - start.getFullYear();
+  const months = end.getMonth() - start.getMonth();
+  const dayAdjust = end.getDate() >= start.getDate() ? 0 : -1;
+  return Math.max(1, years * 12 + months + dayAdjust + 1);
+}
+
+function normalizeSkillKey(skill) {
+  return String(skill || "").trim().toLowerCase();
+}
+
+function formatSkillLabel(skillKey) {
+  return skillKey
+    .split(/\s+/)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function skillsFromTools(value) {
+  return parseCsvSkills(value)
+    .map((item) => item.replace(/\//g, " "))
+    .filter(Boolean);
+}
+
 function locationCode(entry) {
   const key = (entry.location || "").toLowerCase().trim();
   return LOCATION_CODES[key] || (entry.location || "LOC").slice(0, 4).toUpperCase();
@@ -1194,34 +1220,106 @@ function renderSkillsGraph() {
   const visible = visibleEntries();
   const index = selectedVisibleIndex();
   const range = index >= 0 ? visible.slice(0, index + 1) : visible;
-  const counts = new Map();
+
+  const now = new Date();
+  const skillMap = new Map();
+
   range.forEach((entry) => {
-    (entry.skills || []).forEach((skill) => {
-      const key = skill.trim();
+    const explicitSkills = (entry.skills || []).map((skill) => ({ skill, source: "explicit" }));
+    const toolSkills = skillsFromTools(entry.tools || "").map((skill) => ({ skill, source: "tools" }));
+    const combined = [...explicitSkills, ...toolSkills];
+    if (!combined.length) return;
+
+    const start = getStartDate(entry);
+    const end = entry.endDate || now.toISOString().slice(0, 10);
+    const durationMonths = monthsBetween(start, end);
+    const yearsAgo = (now - parseDate(end)) / (1000 * 60 * 60 * 24 * 365.25);
+    const recencyWeight = Math.max(0.72, 1.38 - yearsAgo * 0.12);
+    const durationWeight = Math.min(1.95, 0.58 + durationMonths / 20);
+    const evidenceWeight = 1 + Math.min(0.26, (entry.evidenceLinks || []).length * 0.07);
+    const outcomeWeight = entry.outcome ? 1.08 : 1;
+    const impactWeight = entry.impact ? 1.08 : 1;
+
+    const seenInEntry = new Set();
+    combined.forEach(({ skill, source }) => {
+      const key = normalizeSkillKey(skill);
       if (!key) return;
-      counts.set(key, (counts.get(key) || 0) + 1);
+      if (seenInEntry.has(key)) return;
+      seenInEntry.add(key);
+
+      if (!skillMap.has(key)) {
+        skillMap.set(key, {
+          key,
+          label: formatSkillLabel(key),
+          score: 0,
+          touches: 0,
+          recentTouches: 0,
+          totalMonths: 0,
+          categories: new Set(),
+          firstDate: start,
+          lastDate: end,
+        });
+      }
+
+      const row = skillMap.get(key);
+      const sourceWeight = source === "explicit" ? 1.12 : 0.92;
+      const stepScore = durationWeight * recencyWeight * evidenceWeight * outcomeWeight * impactWeight * sourceWeight;
+      row.score += stepScore;
+      row.touches += 1;
+      row.totalMonths += durationMonths;
+      if (yearsAgo <= 2) row.recentTouches += 1;
+      row.categories.add(normalizeCategory(entry.category));
+
+      if (parseDate(start) < parseDate(row.firstDate)) row.firstDate = start;
+      if (parseDate(end) > parseDate(row.lastDate)) row.lastDate = end;
     });
   });
 
-  const top = [...counts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 7);
-  if (!top.length) {
+  const ranked = [...skillMap.values()]
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (b.recentTouches !== a.recentTouches) return b.recentTouches - a.recentTouches;
+      return b.touches - a.touches;
+    })
+    .slice(0, 8);
+
+  if (!ranked.length) {
     skillsGraphEl.innerHTML = "<small>No skills tagged yet. Add comma-separated skills in edit mode.</small>";
     return;
   }
 
-  const max = top[0][1] || 1;
-  skillsGraphEl.innerHTML = top
-    .map(
-      ([skill, count]) => `
-      <div class="skill-row">
-        <span>${skill}</span>
-        <span class="skill-bar"><span style="width:${Math.round((count / max) * 100)}%"></span></span>
-        <strong>${count}</strong>
-      </div>`
-    )
+  const maxScore = ranked[0].score || 1;
+  skillsGraphEl.innerHTML = ranked
+    .map((row) => {
+      const oldTouches = Math.max(0, row.touches - row.recentTouches);
+      const trend = row.recentTouches > oldTouches ? "Rising" : row.recentTouches === oldTouches ? "Steady" : "Established";
+      const trendClass = trend.toLowerCase();
+      const width = Math.max(10, Math.round((row.score / maxScore) * 100));
+      return `
+      <button type="button" class="skill-row" data-skill="${row.key}" title="Filter by ${row.label}">
+        <span class="skill-main">
+          <strong>${row.label}</strong>
+          <small>${row.categories.size} track${row.categories.size === 1 ? "" : "s"} • ${row.totalMonths} mo</small>
+        </span>
+        <span class="skill-bar"><span style="width:${width}%"></span></span>
+        <span class="skill-meta">
+          <em class="trend ${trendClass}">${trend}</em>
+          <small>${row.score.toFixed(1)} score</small>
+        </span>
+      </button>`;
+    })
     .join("");
+
+  skillsGraphEl.querySelectorAll(".skill-row").forEach((button) => {
+    button.addEventListener("click", () => {
+      const skill = button.getAttribute("data-skill") || "";
+      if (!skill) return;
+      searchText = skill.toLowerCase();
+      if (searchInputEl) searchInputEl.value = skill;
+      stopPlayback();
+      renderAll();
+    });
+  });
 }
 
 function compareEntryCard(entry) {

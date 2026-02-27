@@ -685,11 +685,17 @@ textarea {
 }
 
 .skill-row {
+  border: 1px solid rgba(96, 125, 157, 0.2);
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 8px;
+  padding: 0.35rem 0.4rem;
   display: grid;
-  grid-template-columns: minmax(80px, 120px) 1fr auto;
+  grid-template-columns: minmax(120px, 160px) 1fr minmax(74px, auto);
   align-items: center;
   gap: 0.35rem;
   font-size: 0.76rem;
+  text-align: left;
+  cursor: pointer;
 }
 
 .skill-bar {
@@ -703,6 +709,55 @@ textarea {
   display: block;
   height: 100%;
   background: var(--accent);
+}
+
+.skill-main {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.skill-main strong {
+  font-size: 0.78rem;
+}
+
+.skill-main small {
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+
+.skill-meta {
+  display: grid;
+  justify-items: end;
+  gap: 0.12rem;
+}
+
+.skill-meta small {
+  color: var(--muted);
+  font-size: 0.64rem;
+}
+
+.trend {
+  font-style: normal;
+  font-size: 0.62rem;
+  border-radius: 999px;
+  padding: 0.04rem 0.35rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.trend.rising {
+  border-color: rgba(28, 161, 98, 0.4);
+  color: #1c7d52;
+}
+
+.trend.steady {
+  border-color: rgba(55, 109, 176, 0.35);
+  color: #2b5e96;
+}
+
+.trend.established {
+  border-color: rgba(134, 102, 46, 0.35);
+  color: #7f642f;
 }
 
 .evidence-links,
