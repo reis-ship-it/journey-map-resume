@@ -40,7 +40,7 @@
           </div>
         </div>
         <details id="filterPanel" class="filter-panel">
-          <summary>Filters</summary>
+          <summary>Controls</summary>
           <div class="tools">
             <label>Year<select id="yearFilter"><option value="all">All</option></select></label>
             <label>Category<select id="categoryFilter"><option value="all">All</option></select></label>
@@ -82,23 +82,26 @@
         </div>
         <section id="focusCard" class="focus-card"></section>
       </section>
-      <section class="card compare-card">
-        <div class="card-head compact">
-          <strong>Compare Mode</strong>
-        </div>
-        <div class="compare-controls">
-          <label>Step A<select id="compareA"></select></label>
-          <label>Step B<select id="compareB"></select></label>
-        </div>
-        <div id="comparePanel" class="compare-panel"></div>
-      </section>
-      <section class="card skills-card">
-        <div class="card-head compact">
-          <strong>Skills Graph</strong>
-        </div>
-        <div id="skillsGraph" class="skills-graph"></div>
-      </section>
       <ol id="timeline" class="timeline"></ol>
+      <details class="insights-panel">
+        <summary>Insights (Optional)</summary>
+        <section class="card compare-card">
+          <div class="card-head compact">
+            <strong>Compare Mode</strong>
+          </div>
+          <div class="compare-controls">
+            <label>Step A<select id="compareA"></select></label>
+            <label>Step B<select id="compareB"></select></label>
+          </div>
+          <div id="comparePanel" class="compare-panel"></div>
+        </section>
+        <section class="card skills-card">
+          <div class="card-head compact">
+            <strong>Skills Graph</strong>
+          </div>
+          <div id="skillsGraph" class="skills-graph"></div>
+        </section>
+      </details>
     </aside>
   </main>
 
