@@ -74,11 +74,11 @@ let audioContext = null;
 let masterGain = null;
 let delayNode = null;
 let noiseBuffer = null;
-let mutedAutoplayFallback = false;
 
 video.loop = false;
-video.volume = 1;
-video.muted = false;
+video.volume = 0;
+video.muted = true;
+video.defaultMuted = true;
 emailHit.setAttribute("href", EMAIL_HREF);
 phoneHit.setAttribute("href", PHONE_HREF);
 
@@ -128,10 +128,6 @@ video.addEventListener("ended", () => {
   setHotspotsReady(true);
 });
 
-plate.addEventListener("pointerdown", () => {
-  maybeUnmuteVideo();
-});
-
 window.addEventListener("resize", updateHotspotPositions);
 window.addEventListener("orientationchange", updateHotspotPositions);
 window.addEventListener("keydown", handleGlobalKeydown);
@@ -154,40 +150,15 @@ function setHotspotsReady(ready) {
 
 async function startVideoPlayback() {
   video.currentTime = 0;
-  video.volume = 1;
-  video.muted = false;
-  video.defaultMuted = false;
-  mutedAutoplayFallback = false;
+  video.volume = 0;
+  video.muted = true;
+  video.defaultMuted = true;
 
   try {
     await video.play();
   } catch {
-    video.muted = true;
-    video.defaultMuted = true;
-    mutedAutoplayFallback = true;
-
-    try {
-      await video.play();
-    } catch {
-      mutedAutoplayFallback = false;
-      holdFinalFrame();
-      setHotspotsReady(true);
-    }
-  }
-}
-
-function maybeUnmuteVideo() {
-  if (!video.muted) return;
-
-  video.muted = false;
-  video.defaultMuted = false;
-  video.volume = 1;
-  mutedAutoplayFallback = false;
-
-  if (video.paused && !persistedComplete) {
-    void video.play().catch(() => {
-      // Browser policy can still refuse late unmute; leave the page usable.
-    });
+    holdFinalFrame();
+    setHotspotsReady(true);
   }
 }
 
@@ -261,9 +232,6 @@ async function triggerFaxKey(key) {
   const definition = FAX_PAD_MAP[key];
   if (!definition || !faxInstrument.classList.contains("is-ready")) return;
 
-  if (mutedAutoplayFallback) {
-    maybeUnmuteVideo();
-  }
   flashFaxKey(key);
 
   const isAudioReady = await ensureAudioEngine();
