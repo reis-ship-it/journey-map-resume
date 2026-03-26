@@ -22,7 +22,7 @@ if (
   throw new Error("Missing landing elements.");
 }
 
-const STORAGE_KEY = "reis_fax_print_complete_v1";
+const STORAGE_KEY = "reis_fax_print_complete_v2";
 const FALLBACK_DURATION = 7.666667;
 const HOTSPOTS_VISIBLE_AT = 0.98;
 const BASE_VIDEO_SIZE = { width: 3840, height: 2160 };
@@ -54,22 +54,19 @@ const KEY_HITBOXES = {
 };
 
 const FAX_PAD_MAP = {
-  "1": { rowFreq: 697, colFreq: 1209, color: "#8fd4ff", duration: 0.16, send: 0.08 },
-  "2": { rowFreq: 697, colFreq: 1336, color: "#99dbff", duration: 0.16, send: 0.08 },
-  "3": { rowFreq: 697, colFreq: 1477, color: "#a8e6ff", duration: 0.16, send: 0.09 },
-  "4": { rowFreq: 770, colFreq: 1209, color: "#9cf4ee", duration: 0.16, send: 0.09 },
-  "5": { rowFreq: 770, colFreq: 1336, color: "#8ef0d0", duration: 0.16, send: 0.09 },
-  "6": { rowFreq: 770, colFreq: 1477, color: "#94efbb", duration: 0.16, send: 0.09 },
-  "7": { rowFreq: 852, colFreq: 1209, color: "#f8df82", duration: 0.17, send: 0.1 },
-  "8": { rowFreq: 852, colFreq: 1336, color: "#ffcf76", duration: 0.17, send: 0.1 },
-  "9": { rowFreq: 852, colFreq: 1477, color: "#ffba7e", duration: 0.17, send: 0.1 },
-  "*": { rowFreq: 941, colFreq: 1209, color: "#ff9a74", duration: 0.18, send: 0.11 },
-  "0": { rowFreq: 941, colFreq: 1336, color: "#8ae6c8", duration: 0.18, send: 0.11 },
-  "#": { rowFreq: 941, colFreq: 1477, color: "#fff28b", duration: 0.18, send: 0.12 },
+  "1": { rowFreq: 697, colFreq: 1209, rgb: "143, 212, 255", duration: 0.16, send: 0.08 },
+  "2": { rowFreq: 697, colFreq: 1336, rgb: "153, 219, 255", duration: 0.16, send: 0.08 },
+  "3": { rowFreq: 697, colFreq: 1477, rgb: "168, 230, 255", duration: 0.16, send: 0.09 },
+  "4": { rowFreq: 770, colFreq: 1209, rgb: "156, 244, 238", duration: 0.16, send: 0.09 },
+  "5": { rowFreq: 770, colFreq: 1336, rgb: "142, 240, 208", duration: 0.16, send: 0.09 },
+  "6": { rowFreq: 770, colFreq: 1477, rgb: "148, 239, 187", duration: 0.16, send: 0.09 },
+  "7": { rowFreq: 852, colFreq: 1209, rgb: "248, 223, 130", duration: 0.17, send: 0.1 },
+  "8": { rowFreq: 852, colFreq: 1336, rgb: "255, 207, 118", duration: 0.17, send: 0.1 },
+  "9": { rowFreq: 852, colFreq: 1477, rgb: "255, 186, 126", duration: 0.17, send: 0.1 },
+  "*": { rowFreq: 941, colFreq: 1209, rgb: "255, 154, 116", duration: 0.18, send: 0.11 },
+  "0": { rowFreq: 941, colFreq: 1336, rgb: "138, 230, 200", duration: 0.18, send: 0.11 },
+  "#": { rowFreq: 941, colFreq: 1477, rgb: "255, 242, 139", duration: 0.18, send: 0.12 },
 };
-
-const PRINT_SOUND_START_AT = 0.08;
-const PRINT_SOUND_STOP_AT = 0.12;
 
 const faxButtons = new Map();
 let persistedComplete = readSession(STORAGE_KEY) === "1";
@@ -77,9 +74,11 @@ let audioContext = null;
 let masterGain = null;
 let delayNode = null;
 let noiseBuffer = null;
-let printingSound = null;
+let mutedAutoplayFallback = false;
 
 video.loop = false;
+video.volume = 1;
+video.muted = false;
 emailHit.setAttribute("href", EMAIL_HREF);
 phoneHit.setAttribute("href", PHONE_HREF);
 
@@ -89,7 +88,7 @@ for (const [index, button] of faxKeys.entries()) {
 
   const definition = FAX_PAD_MAP[key];
   if (definition) {
-    button.style.setProperty("--key-glow", definition.color);
+    button.style.setProperty("--key-rgb", definition.rgb);
   }
 
   button.style.setProperty("--sparkle-delay", `${index * 0.16}s`);
@@ -100,40 +99,17 @@ for (const [index, button] of faxKeys.entries()) {
   });
 }
 
-if (persistedComplete) {
-  setHotspotsReady(true);
-} else {
-  setHotspotsReady(false);
-}
+setHotspotsReady(persistedComplete);
 
 video.addEventListener("loadedmetadata", () => {
   if (persistedComplete) {
     holdFinalFrame();
   } else {
     setHotspotsReady(false);
-    video.currentTime = 0;
-    const startPlayback = video.play();
-    if (startPlayback && typeof startPlayback.catch === "function") {
-      startPlayback.catch(() => {
-        holdFinalFrame();
-        setHotspotsReady(true);
-      });
-    }
-    void syncPrintingAudio();
+    void startVideoPlayback();
   }
 
   updateHotspotPositions();
-});
-
-video.addEventListener("play", () => {
-  void syncPrintingAudio();
-});
-
-video.addEventListener("pause", () => {
-  const duration = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : FALLBACK_DURATION;
-  if (video.currentTime < duration - PRINT_SOUND_STOP_AT) {
-    stopPrintingSound();
-  }
 });
 
 video.addEventListener("timeupdate", () => {
@@ -151,24 +127,16 @@ video.addEventListener("ended", () => {
   writeSession(STORAGE_KEY, "1");
   persistedComplete = true;
   holdFinalFrame();
-  stopPrintingSound();
   setHotspotsReady(true);
 });
 
 plate.addEventListener("pointerdown", () => {
-  void syncPrintingAudio();
+  maybeUnmuteVideo();
 });
 
 window.addEventListener("resize", updateHotspotPositions);
 window.addEventListener("orientationchange", updateHotspotPositions);
 window.addEventListener("keydown", handleGlobalKeydown);
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    stopPrintingSound();
-  } else {
-    void syncPrintingAudio();
-  }
-});
 
 const resizeObserver = new ResizeObserver(() => {
   updateHotspotPositions();
@@ -184,6 +152,45 @@ function setHotspotsReady(ready) {
   }
 
   faxInstrument.classList.toggle("is-ready", ready);
+}
+
+async function startVideoPlayback() {
+  video.currentTime = 0;
+  video.volume = 1;
+  video.muted = false;
+  video.defaultMuted = false;
+  mutedAutoplayFallback = false;
+
+  try {
+    await video.play();
+  } catch {
+    video.muted = true;
+    video.defaultMuted = true;
+    mutedAutoplayFallback = true;
+
+    try {
+      await video.play();
+    } catch {
+      mutedAutoplayFallback = false;
+      holdFinalFrame();
+      setHotspotsReady(true);
+    }
+  }
+}
+
+function maybeUnmuteVideo() {
+  if (!video.muted) return;
+
+  video.muted = false;
+  video.defaultMuted = false;
+  video.volume = 1;
+  mutedAutoplayFallback = false;
+
+  if (video.paused && !persistedComplete) {
+    void video.play().catch(() => {
+      // Browser policy can still refuse late unmute; leave the page usable.
+    });
+  }
 }
 
 function holdFinalFrame() {
@@ -256,6 +263,9 @@ async function triggerFaxKey(key) {
   const definition = FAX_PAD_MAP[key];
   if (!definition || !faxInstrument.classList.contains("is-ready")) return;
 
+  if (mutedAutoplayFallback) {
+    maybeUnmuteVideo();
+  }
   flashFaxKey(key);
 
   const isAudioReady = await ensureAudioEngine();
@@ -289,28 +299,6 @@ function flashFaxKey(key) {
   }, 170);
 
   button.dataset.flashTimer = String(timer);
-}
-
-async function syncPrintingAudio() {
-  if (persistedComplete) {
-    stopPrintingSound();
-    return;
-  }
-
-  const duration = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : FALLBACK_DURATION;
-  const isPrinting = !video.paused && video.currentTime >= PRINT_SOUND_START_AT && video.currentTime < duration - PRINT_SOUND_STOP_AT;
-
-  if (!isPrinting) {
-    stopPrintingSound();
-    return;
-  }
-
-  const isAudioReady = await ensureAudioEngine();
-  if (!isAudioReady) return;
-
-  if (!printingSound) {
-    startPrintingSound();
-  }
 }
 
 async function ensureAudioEngine() {
@@ -360,218 +348,6 @@ async function ensureAudioEngine() {
   }
 
   return audioContext.state === "running";
-}
-
-function startPrintingSound() {
-  if (!audioContext || !masterGain || printingSound) return;
-
-  const now = audioContext.currentTime;
-  const output = audioContext.createGain();
-  output.gain.setValueAtTime(0.0001, now);
-  output.gain.linearRampToValueAtTime(0.16, now + 0.18);
-
-  const outputRoutes = routeSignal(output, 0.08);
-
-  const carrierA = audioContext.createOscillator();
-  carrierA.type = "square";
-  carrierA.frequency.value = 1290;
-
-  const carrierAGain = audioContext.createGain();
-  carrierAGain.gain.value = 0.085;
-
-  const carrierALfo = audioContext.createOscillator();
-  carrierALfo.type = "triangle";
-  carrierALfo.frequency.value = 0.38;
-
-  const carrierALfoGain = audioContext.createGain();
-  carrierALfoGain.gain.value = 240;
-  carrierALfo.connect(carrierALfoGain);
-  carrierALfoGain.connect(carrierA.detune);
-
-  const carrierB = audioContext.createOscillator();
-  carrierB.type = "sawtooth";
-  carrierB.frequency.value = 820;
-
-  const carrierBGain = audioContext.createGain();
-  carrierBGain.gain.value = 0.055;
-
-  const carrierBLfo = audioContext.createOscillator();
-  carrierBLfo.type = "sine";
-  carrierBLfo.frequency.value = 0.64;
-
-  const carrierBLfoGain = audioContext.createGain();
-  carrierBLfoGain.gain.value = 180;
-  carrierBLfo.connect(carrierBLfoGain);
-  carrierBLfoGain.connect(carrierB.detune);
-
-  const pilot = audioContext.createOscillator();
-  pilot.type = "sine";
-  pilot.frequency.value = 2100;
-
-  const pilotGain = audioContext.createGain();
-  pilotGain.gain.value = 0.014;
-
-  const pilotLfo = audioContext.createOscillator();
-  pilotLfo.type = "sine";
-  pilotLfo.frequency.value = 2.2;
-
-  const pilotLfoGain = audioContext.createGain();
-  pilotLfoGain.gain.value = 0.008;
-  pilotLfo.connect(pilotLfoGain);
-  pilotLfoGain.connect(pilotGain.gain);
-
-  const lineFilter = audioContext.createBiquadFilter();
-  lineFilter.type = "bandpass";
-  lineFilter.frequency.value = 1680;
-  lineFilter.Q.value = 0.74;
-
-  const lineLowpass = audioContext.createBiquadFilter();
-  lineLowpass.type = "lowpass";
-  lineLowpass.frequency.value = 3400;
-  lineLowpass.Q.value = 0.4;
-
-  carrierA.connect(carrierAGain);
-  carrierB.connect(carrierBGain);
-  pilot.connect(pilotGain);
-  carrierAGain.connect(lineFilter);
-  carrierBGain.connect(lineFilter);
-  pilotGain.connect(lineFilter);
-  lineFilter.connect(lineLowpass);
-  lineLowpass.connect(output);
-
-  const chatterNoise = createNoiseSource();
-  const chatterHighpass = audioContext.createBiquadFilter();
-  chatterHighpass.type = "highpass";
-  chatterHighpass.frequency.value = 1600;
-
-  const chatterLowpass = audioContext.createBiquadFilter();
-  chatterLowpass.type = "lowpass";
-  chatterLowpass.frequency.value = 5100;
-
-  const chatterGain = audioContext.createGain();
-  chatterGain.gain.value = 0.01;
-
-  const chatterLfo = audioContext.createOscillator();
-  chatterLfo.type = "triangle";
-  chatterLfo.frequency.value = 12.5;
-
-  const chatterLfoGain = audioContext.createGain();
-  chatterLfoGain.gain.value = 0.008;
-  chatterLfo.connect(chatterLfoGain);
-  chatterLfoGain.connect(chatterGain.gain);
-
-  chatterNoise.connect(chatterHighpass);
-  chatterHighpass.connect(chatterLowpass);
-  chatterLowpass.connect(chatterGain);
-  chatterGain.connect(output);
-
-  const paperNoise = createNoiseSource();
-  const paperLowpass = audioContext.createBiquadFilter();
-  paperLowpass.type = "lowpass";
-  paperLowpass.frequency.value = 920;
-
-  const paperHighpass = audioContext.createBiquadFilter();
-  paperHighpass.type = "highpass";
-  paperHighpass.frequency.value = 180;
-
-  const paperGain = audioContext.createGain();
-  paperGain.gain.value = 0.006;
-
-  const paperLfo = audioContext.createOscillator();
-  paperLfo.type = "sawtooth";
-  paperLfo.frequency.value = 7.4;
-
-  const paperLfoGain = audioContext.createGain();
-  paperLfoGain.gain.value = 0.004;
-  paperLfo.connect(paperLfoGain);
-  paperLfoGain.connect(paperGain.gain);
-
-  paperNoise.connect(paperLowpass);
-  paperLowpass.connect(paperHighpass);
-  paperHighpass.connect(paperGain);
-  paperGain.connect(output);
-
-  const motor = audioContext.createOscillator();
-  motor.type = "triangle";
-  motor.frequency.value = 86;
-
-  const motorLowpass = audioContext.createBiquadFilter();
-  motorLowpass.type = "lowpass";
-  motorLowpass.frequency.value = 190;
-  motorLowpass.Q.value = 0.6;
-
-  const motorGain = audioContext.createGain();
-  motorGain.gain.value = 0.012;
-
-  const motorLfo = audioContext.createOscillator();
-  motorLfo.type = "sine";
-  motorLfo.frequency.value = 5.4;
-
-  const motorLfoGain = audioContext.createGain();
-  motorLfoGain.gain.value = 0.005;
-  motorLfo.connect(motorLfoGain);
-  motorLfoGain.connect(motorGain.gain);
-
-  motor.connect(motorLowpass);
-  motorLowpass.connect(motorGain);
-  motorGain.connect(output);
-
-  const nodes = [
-    carrierA,
-    carrierAGain,
-    carrierALfo,
-    carrierALfoGain,
-    carrierB,
-    carrierBGain,
-    carrierBLfo,
-    carrierBLfoGain,
-    pilot,
-    pilotGain,
-    pilotLfo,
-    pilotLfoGain,
-    lineFilter,
-    lineLowpass,
-    chatterNoise,
-    chatterHighpass,
-    chatterLowpass,
-    chatterGain,
-    chatterLfo,
-    chatterLfoGain,
-    paperNoise,
-    paperLowpass,
-    paperHighpass,
-    paperGain,
-    paperLfo,
-    paperLfoGain,
-    motor,
-    motorLowpass,
-    motorGain,
-    motorLfo,
-    motorLfoGain,
-  ];
-
-  for (const node of [carrierA, carrierALfo, carrierB, carrierBLfo, pilot, pilotLfo, chatterNoise, chatterLfo, paperNoise, paperLfo, motor, motorLfo]) {
-    node.start(now);
-  }
-
-  printingSound = {
-    nodes,
-    output,
-    outputRoutes,
-  };
-}
-
-function stopPrintingSound() {
-  if (!printingSound || !audioContext) return;
-
-  const { output, nodes, outputRoutes } = printingSound;
-  const now = audioContext.currentTime;
-  output.gain.cancelScheduledValues(now);
-  output.gain.setValueAtTime(Math.max(output.gain.value, 0.0001), now);
-  output.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
-
-  stopAndDispose([output, ...nodes, ...outputRoutes], now + 0.26);
-  printingSound = null;
 }
 
 function playDtmfTone(definition, startAt = audioContext.currentTime) {
