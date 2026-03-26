@@ -3,92 +3,148 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coding - Portfolio</title>
-  <style>
-    pre {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
-    a[data-btn]:hover,
-    a[data-btn]:focus-visible {
-      background: #ff0;
-      color: #000;
-      outline: none;
-    }
-  </style>
+  <title>Coding | Reis Gordon</title>
+  <meta name="description" content="Creative systems and coding work by Reis Gordon, including avrai.org and technical systems built in support of storytelling, production, and immersive workflows." />
+  <link rel="canonical" href="https://reis.quest/portfolio/coding" />
+  <meta property="og:title" content="Coding | Reis Gordon" />
+  <meta property="og:description" content="Creative systems and coding work by Reis Gordon, including avrai.org and technical systems built in support of storytelling, production, and immersive workflows." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://reis.quest/portfolio/coding" />
+  <meta property="og:image" content="https://reis.quest/social-card.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Coding | Reis Gordon" />
+  <meta name="twitter:description" content="Creative systems and coding work by Reis Gordon, including avrai.org and technical systems built in support of storytelling, production, and immersive workflows." />
+  <meta name="twitter:image" content="https://reis.quest/social-card.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/portfolio/portfolio.css?v=pro10" />
 </head>
 <body>
-<pre id="portfolio-pre">&lt;!doctype html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;title&gt;Coding - Portfolio&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;h1&gt;Coding&lt;/h1&gt;
-  &lt;p&gt;this is where i track coding experiments, tools, and builds i make to support the rest of my work.&lt;/p&gt;
+  <div class="portfolio-shell">
+    <header class="site-header">
+      <a class="wordmark" href="/">reis.quest</a>
+      <nav class="top-nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/portfolio">Portfolio</a>
+        <a href="/resume">Resume</a>
+        <a href="mailto:reisjgordon@gmail.com">Email</a>
+        <a href="https://www.linkedin.com/in/reis-gordon/" target="_blank" rel="noopener">LinkedIn</a>
+      </nav>
+    </header>
 
-  &lt;a href="/"&gt;<a data-btn href="/">back</a>&lt;/a&gt;
-  &lt;a href="/resume"&gt;<a data-btn href="/resume">resume</a>&lt;/a&gt;
-  &lt;a href="/portfolio"&gt;<a data-btn href="/portfolio">portfolio</a>&lt;/a&gt;
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Discipline</p>
+        <div class="hero-grid">
+          <div>
+            <h1>Coding</h1>
+            <p class="hero-copy detail-hero-copy">
+              The coding work supports the rest of the practice. This is where tools, interfaces, and production-support systems
+              emerge when existing software does not fully fit the story, the workflow, or the world being built.
+            </p>
+          </div>
+          <aside class="hero-panel" aria-label="Coding summary">
+            <p><span>Focus</span> Creative tooling, interface builds, prototypes, workflow support</p>
+            <p><span>Function</span> Code used as an enabler for storytelling, production, and spatial thinking</p>
+            <p><span>Pattern</span> Technical systems built in service of larger narrative and experiential goals</p>
+          </aside>
+        </div>
+        <div class="sub-nav" aria-label="Other portfolio areas">
+          <a href="/portfolio/xr">XR</a>
+          <a href="/portfolio/writings">Writings</a>
+          <a href="/portfolio/misc">Archive</a>
+        </div>
+      </section>
 
-  &lt;a href="/portfolio/drawings"&gt;<a data-btn href="/portfolio/drawings">drawings</a>&lt;/a&gt;
-  &lt;a href="/portfolio/paintings"&gt;<a data-btn href="/portfolio/paintings">paintings</a>&lt;/a&gt;
-  &lt;a href="/portfolio/films"&gt;<a data-btn href="/portfolio/films">films</a>&lt;/a&gt;
-  &lt;a href="/portfolio/xr"&gt;<a data-btn href="/portfolio/xr">XR</a>&lt;/a&gt;
-  &lt;a href="/portfolio/coding"&gt;<a data-btn href="/portfolio/coding">coding</a>&lt;/a&gt;
-  &lt;a href="/portfolio/writings"&gt;<a data-btn href="/portfolio/writings">writings</a>&lt;/a&gt;
-  &lt;a href="/portfolio/wips"&gt;<a data-btn href="/portfolio/wips">W.I.Ps</a>&lt;/a&gt;
-  &lt;a href="/portfolio/misc"&gt;<a data-btn href="/portfolio/misc">misc.</a>&lt;/a&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</pre>
-<script>
-  (function () {
-    const pre = document.getElementById("portfolio-pre");
-    if (!pre) return;
+      <section class="section-block" aria-labelledby="coding-title">
+        <div class="section-heading">
+          <p class="section-kicker">Selected systems</p>
+          <h2 id="coding-title">Technical work that supports the larger creative direction rather than sitting outside it.</h2>
+        </div>
 
-    const walker = document.createTreeWalker(pre, NodeFilter.SHOW_TEXT);
-    const nodes = [];
-    let node;
+        <div class="project-stack">
+          <article class="project-entry">
+            <div class="project-entry-main">
+              <p class="feature-meta">Birmingham project / Product system / Live site</p>
+              <h3>AVRAI / avrai.org</h3>
+              <p>
+                AVRAI is an evolving product and creative system, with avrai.org acting as its public-facing front door.
+                The work spans product framing, interface development, waitlist design, business-facing messaging, and the underlying software structure needed to support a larger recommendation and community platform.
+              </p>
+              <p>
+                It is one of the clearest examples of how I use code as part of producing and creative direction: not as a detached engineering exercise, but as a way to shape public narrative, user flow, and long-term technical infrastructure around a bigger idea.
+              </p>
+              <div class="project-links">
+                <a href="https://avrai.org" target="_blank" rel="noopener noreferrer">Visit avrai.org</a>
+              </div>
+            </div>
+            <aside class="project-side">
+              <dl class="detail-list detail-list-compact">
+                <div>
+                  <dt>Role</dt>
+                  <dd>Founder, product lead, workflow designer, builder</dd>
+                </div>
+                <div>
+                  <dt>Format</dt>
+                  <dd>Consumer-facing product and creative system</dd>
+                </div>
+                <div>
+                  <dt>Focus</dt>
+                  <dd>Product positioning, technical systems, web launch, workflow architecture</dd>
+                </div>
+                <div>
+                  <dt>Outcome</dt>
+                  <dd>Shows how software, branding, and product direction can be built together as one project</dd>
+                </div>
+              </dl>
+            </aside>
+          </article>
 
-    while ((node = walker.nextNode())) {
-      const value = node.textContent || "";
-      nodes.push({ node, value });
-      node.textContent = "";
-    }
+          <article class="project-entry">
+            <div class="project-entry-main">
+              <p class="feature-meta">Story modeling concept</p>
+              <h3>Storyframe</h3>
+              <p>
+                Storyframe was a concept for an application that could translate a story into a navigable 3D model with multiple perspectives.
+                The goal was to give narrative structure spatial form so a creator could move through scenes, relationships, and point of view from more than one angle.
+              </p>
+              <p>
+                It sits between writing, previsualization, and immersive storytelling: a tool for understanding a story as a world rather than only as text on a page.
+              </p>
+            </div>
+            <aside class="project-side">
+              <dl class="detail-list detail-list-compact">
+                <div>
+                  <dt>Role</dt>
+                  <dd>Concept creator, systems thinker, prototyper</dd>
+                </div>
+                <div>
+                  <dt>Format</dt>
+                  <dd>Spatial story-modeling concept</dd>
+                </div>
+                <div>
+                  <dt>Focus</dt>
+                  <dd>Previsualization, multi-perspective narrative design, world navigation</dd>
+                </div>
+                <div>
+                  <dt>Outcome</dt>
+                  <dd>Captures the overlap between producing, directing, writing, and technical prototyping</dd>
+                </div>
+              </dl>
+              <div class="fact-box">
+                <span>Status</span>
+                <p>An earlier concept project that still reflects the type of system I intend to build around multi-perspective storytelling.</p>
+              </div>
+            </aside>
+          </article>
+        </div>
+      </section>
+    </main>
 
-    const totalChars = nodes.reduce((sum, entry) => sum + entry.value.length, 0);
-    if (!totalChars) return;
-
-    const holdMs = 250;
-    const durationMs = 670;
-    const start = performance.now() + holdMs;
-
-    function render(charCount) {
-      let remaining = charCount;
-      for (const entry of nodes) {
-        const take = Math.max(0, Math.min(entry.value.length, remaining));
-        entry.node.textContent = entry.value.slice(0, take);
-        remaining -= take;
-      }
-    }
-
-    function tick(now) {
-      const elapsed = now - start;
-      const progress = Math.min(1, Math.max(0, elapsed / durationMs));
-      const charsToShow = Math.floor(progress * totalChars);
-      render(charsToShow);
-
-      if (progress < 1) {
-        requestAnimationFrame(tick);
-      } else {
-        render(totalChars);
-      }
-    }
-
-    requestAnimationFrame(tick);
-  })();
-</script>
+    <footer class="site-footer">
+      <p>Back to the full <a href="/portfolio">portfolio index</a>, or continue to <a href="/portfolio/xr">XR</a> and <a href="/portfolio/writings">writings</a>.</p>
+    </footer>
+  </div>
 </body>
 </html>

@@ -3,90 +3,287 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio - Reis Quest</title>
-  <style>
-    pre {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
-    a[data-btn]:hover,
-    a[data-btn]:focus-visible {
-      background: #ff0;
-      color: #000;
-      outline: none;
-    }
-  </style>
+  <title>Portfolio | Reis Gordon</title>
+  <meta name="description" content="Selected work in film, XR, writing, creative systems, and avrai.org by Reis Gordon." />
+  <link rel="canonical" href="https://reis.quest/portfolio" />
+  <meta property="og:title" content="Portfolio | Reis Gordon" />
+  <meta property="og:description" content="Selected work in film, XR, writing, creative systems, and avrai.org by Reis Gordon." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://reis.quest/portfolio" />
+  <meta property="og:image" content="https://reis.quest/social-card.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Portfolio | Reis Gordon" />
+  <meta name="twitter:description" content="Selected work in film, XR, writing, creative systems, and avrai.org by Reis Gordon." />
+  <meta name="twitter:image" content="https://reis.quest/social-card.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/portfolio/portfolio.css?v=pro10" />
 </head>
 <body>
-<pre id="portfolio-pre">&lt;!doctype html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;title&gt;Portfolio - Reis Quest&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;p&gt;everything is reality, but honestly that shit does not make sense sometimes. my creativity is a boundless search for clarity. sometimes i wish it would stop so i could enjoy some peace and quiet, and that wish comes true when i find it. what i create is both the search for understanding and the clarity itself. each project lets that clarity be seen, heard, experienced, and understood through the work itself.&lt;/p&gt;
+  <div class="portfolio-shell">
+    <header class="site-header">
+      <a class="wordmark" href="/">reis.quest</a>
+      <nav class="top-nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/portfolio">Portfolio</a>
+        <a href="/resume">Resume</a>
+        <a href="mailto:reisjgordon@gmail.com">Email</a>
+        <a href="https://www.linkedin.com/in/reis-gordon/" target="_blank" rel="noopener">LinkedIn</a>
+      </nav>
+    </header>
 
-  &lt;a href="/"&gt;<a data-btn href="/">back</a>&lt;/a&gt;
-  &lt;a href="/resume"&gt;<a data-btn href="/resume">resume</a>&lt;/a&gt;
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Portfolio</p>
+        <div class="hero-grid">
+          <div>
+            <h1>Reis Gordon is a multidisciplinary producer and creative director developing films, immersive worlds, and narrative systems.</h1>
+            <p class="hero-copy">
+              My practice sits at the intersection of story development, creative direction, production design, immersive media, and technical experimentation.
+              I focus on shaping ambitious concepts into structured projects with a clear point of view, a workable production path, and a finished audience experience.
+            </p>
+          </div>
+          <aside class="hero-panel" aria-label="Portfolio summary">
+            <p><span>Focus</span> Multidisciplinary production, creative direction, XR storytelling, concept development</p>
+            <p><span>Formats</span> Film, immersive media, narrative worldbuilding, visual development, creative systems</p>
+            <p><span>Strength</span> Translating ambitious ideas into coherent scope, teams, systems, and finished work</p>
+          </aside>
+        </div>
+        <div class="hero-actions">
+          <a class="button button-dark" href="#featured-work">Featured work</a>
+          <a class="button" href="#disciplines">Browse disciplines</a>
+        </div>
+      </section>
 
-  &lt;a href="/portfolio/drawings"&gt;<a data-btn href="/portfolio/drawings">drawings</a>&lt;/a&gt;
-  &lt;a href="/portfolio/paintings"&gt;<a data-btn href="/portfolio/paintings">paintings</a>&lt;/a&gt;
-  &lt;a href="/portfolio/films"&gt;<a data-btn href="/portfolio/films">films</a>&lt;/a&gt;
-  &lt;a href="/portfolio/xr"&gt;<a data-btn href="/portfolio/xr">XR</a>&lt;/a&gt;
-  &lt;a href="/portfolio/coding"&gt;<a data-btn href="/portfolio/coding">coding</a>&lt;/a&gt;
-  &lt;a href="/portfolio/writings"&gt;<a data-btn href="/portfolio/writings">writings</a>&lt;/a&gt;
-  &lt;a href="/portfolio/wips"&gt;<a data-btn href="/portfolio/wips">W.I.Ps</a>&lt;/a&gt;
-  &lt;a href="/portfolio/misc"&gt;<a data-btn href="/portfolio/misc">misc.</a>&lt;/a&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</pre>
-<script>
-  (function () {
-    const pre = document.getElementById("portfolio-pre");
-    if (!pre) return;
+      <section class="section-block" id="featured-work" aria-labelledby="featured-title">
+        <div class="section-heading">
+          <p class="section-kicker">Selected projects</p>
+          <h2 id="featured-title">Selected work that best reflects the current direction of the portfolio.</h2>
+        </div>
 
-    const walker = document.createTreeWalker(pre, NodeFilter.SHOW_TEXT);
-    const nodes = [];
-    let node;
+        <div class="feature-grid">
+          <article class="feature-card feature-card-avrai">
+            <div class="feature-media feature-media-contain">
+              <img src="/portfolio/avrai-logo.png" alt="Avrai logo" loading="lazy" />
+            </div>
+            <p class="feature-meta">Creative systems / Product / Birmingham / 2026</p>
+            <h3>avrai.org</h3>
+            <p>
+              The live public-facing site and product framing for AVRAI, positioned as a Birmingham-based project at the intersection of product direction, interface design, and technical systems thinking.
+            </p>
+            <dl class="detail-list">
+              <div>
+                <dt>Role</dt>
+                <dd>Founder, product lead, creative director, builder</dd>
+              </div>
+              <div>
+                <dt>Focus</dt>
+                <dd>Product positioning, web launch, system design, waitlist and business-facing framing</dd>
+              </div>
+              <div>
+                <dt>Outcome</dt>
+                <dd>Established the clearest current public entry point for the wider AVRAI project</dd>
+              </div>
+            </dl>
+            <div class="feature-links">
+              <a href="https://avrai.org" target="_blank" rel="noopener noreferrer">Visit site</a>
+              <a href="/portfolio/coding">Coding</a>
+            </div>
+          </article>
 
-    while ((node = walker.nextNode())) {
-      const value = node.textContent || "";
-      nodes.push({ node, value });
-      node.textContent = "";
-    }
+          <article class="feature-card">
+            <div class="feature-media">
+              <img src="https://img.youtube.com/vi/i9nhfqqDeuY/hqdefault.jpg" alt="Wolfe &amp; The Bee preview still" loading="lazy" />
+            </div>
+            <p class="feature-meta">Film / Virtual production / 2025</p>
+            <h3>Wolfe &amp; The Bee</h3>
+            <p>
+              Graduate thesis short film created on the LED soundstage at the Martin Scorsese Institute of Virtual Production.
+              A narrative project centered on direction, in-camera worldbuilding, and the disciplined use of virtual production to support story.
+            </p>
+            <dl class="detail-list">
+              <div>
+                <dt>Role</dt>
+                <dd>Director, writer, producer, thesis lead</dd>
+              </div>
+              <div>
+                <dt>Focus</dt>
+                <dd>Virtual production, team leadership, narrative execution</dd>
+              </div>
+              <div>
+                <dt>Outcome</dt>
+                <dd>Flagship thesis film delivered as a finished portfolio anchor</dd>
+              </div>
+            </dl>
+            <div class="feature-links">
+              <a href="https://www.youtube.com/watch?v=i9nhfqqDeuY" target="_blank" rel="noopener noreferrer">Watch</a>
+              <a href="https://reisjgordon.wixsite.com/reis-gordon/portfolio-1/nyu-master%27s-thesis-short-film" target="_blank" rel="noopener noreferrer">Archive page</a>
+              <a href="/portfolio/films">Films</a>
+            </div>
+          </article>
 
-    const totalChars = nodes.reduce((sum, entry) => sum + entry.value.length, 0);
-    if (!totalChars) return;
+          <article class="feature-card">
+            <div class="feature-media">
+              <img src="https://vumbnail.com/1024206784.jpg" alt="Motel Sunshine Spec Intro preview still" loading="lazy" />
+            </div>
+            <p class="feature-meta">XR / Writing / Worldbuilding / 2024</p>
+            <h3>Motel Sunshine Spec Intro</h3>
+            <p>
+              A directional proof piece for an episodic VR world. It establishes tone, audience movement, and the long-form immersive storytelling model I am building across spatial media, writing, and future technical workflows.
+            </p>
+            <dl class="detail-list">
+              <div>
+                <dt>Role</dt>
+                <dd>Creative director, worldbuilder, concept lead</dd>
+              </div>
+              <div>
+                <dt>Focus</dt>
+                <dd>Audience movement, tone, serialized immersive story design</dd>
+              </div>
+              <div>
+                <dt>Outcome</dt>
+                <dd>Defines the strongest long-term XR story-world direction in the portfolio</dd>
+              </div>
+            </dl>
+            <div class="feature-links">
+              <a href="https://vimeo.com/1024206784" target="_blank" rel="noopener noreferrer">Watch</a>
+              <a href="https://reisjgordon.wixsite.com/reis-gordon/portfolio-1/motel-sunshine-spec-intro" target="_blank" rel="noopener noreferrer">Archive page</a>
+              <a href="/portfolio/xr">XR</a>
+            </div>
+          </article>
 
-    const holdMs = 250;
-    const durationMs = 670;
-    const start = performance.now() + holdMs;
+          <article class="feature-card">
+            <div class="feature-media">
+              <img src="https://img.youtube.com/vi/HNyakg44Qao/hqdefault.jpg" alt="No End For Sight preview still" loading="lazy" />
+            </div>
+            <p class="feature-meta">Film / AI-native workflow / 2025</p>
+            <h3>No End For Sight</h3>
+            <p>
+              A short film used to test authorship, tone, and emotional continuity inside a fully synthetic pipeline.
+              The project is focused on narrative control and cinematic coherence rather than novelty.
+            </p>
+            <dl class="detail-list">
+              <div>
+                <dt>Role</dt>
+                <dd>Director, workflow designer, story lead</dd>
+              </div>
+              <div>
+                <dt>Focus</dt>
+                <dd>AI-native image pipeline, pacing, authored tone</dd>
+              </div>
+              <div>
+                <dt>Outcome</dt>
+                <dd>Clarifies a serious narrative use case for AI-assisted filmmaking</dd>
+              </div>
+            </dl>
+            <div class="feature-links">
+              <a href="https://youtu.be/HNyakg44Qao" target="_blank" rel="noopener noreferrer">Watch</a>
+              <a href="https://reisjgordon.wixsite.com/reis-gordon/portfolio-1/no-end-for-sight" target="_blank" rel="noopener noreferrer">Archive page</a>
+              <a href="/portfolio/films">Films</a>
+            </div>
+          </article>
 
-    function render(charCount) {
-      let remaining = charCount;
-      for (const entry of nodes) {
-        const take = Math.max(0, Math.min(entry.value.length, remaining));
-        entry.node.textContent = entry.value.slice(0, take);
-        remaining -= take;
-      }
-    }
+          <article class="feature-card">
+            <div class="feature-media">
+              <img src="https://img.youtube.com/vi/n8BOpz_l-Lw/hqdefault.jpg" alt="Ride The Dice preview still" loading="lazy" />
+            </div>
+            <p class="feature-meta">XR / Music experience / 2023</p>
+            <h3>Ride The Dice</h3>
+            <p>
+              An immersive music experience built around spatial presence, rhythm, and environmental storytelling.
+              The project explores how music-video language can expand into a more spatial, multi-perspective format.
+            </p>
+            <dl class="detail-list">
+              <div>
+                <dt>Role</dt>
+                <dd>Creative strategist, immersive producer, concept lead</dd>
+              </div>
+              <div>
+                <dt>Focus</dt>
+                <dd>Spatial rhythm, environmental storytelling, music-led immersion</dd>
+              </div>
+              <div>
+                <dt>Outcome</dt>
+                <dd>Public-facing immersive project that demonstrates spatial direction quickly</dd>
+              </div>
+            </dl>
+            <div class="feature-links">
+              <a href="https://www.youtube.com/watch?v=n8BOpz_l-Lw" target="_blank" rel="noopener noreferrer">Watch</a>
+              <a href="https://reisjgordon.wixsite.com/reis-gordon/portfolio-1/ridethedice" target="_blank" rel="noopener noreferrer">Archive page</a>
+              <a href="/portfolio/xr">XR</a>
+            </div>
+          </article>
+        </div>
+      </section>
 
-    function tick(now) {
-      const elapsed = now - start;
-      const progress = Math.min(1, Math.max(0, elapsed / durationMs));
-      const charsToShow = Math.floor(progress * totalChars);
-      render(charsToShow);
+      <section class="section-block" id="disciplines" aria-labelledby="discipline-title">
+        <div class="section-heading">
+          <p class="section-kicker">Practice areas</p>
+          <h2 id="discipline-title">The portfolio spans several mediums, but the through-line remains the same: concept, atmosphere, and execution.</h2>
+        </div>
 
-      if (progress < 1) {
-        requestAnimationFrame(tick);
-      } else {
-        render(totalChars);
-      }
-    }
+        <div class="discipline-grid">
+          <a class="discipline-card" href="/portfolio/films">
+            <strong>Films</strong>
+            <span>Narrative shorts, AI-native experiments, and virtual production work.</span>
+          </a>
+          <a class="discipline-card" href="/portfolio/xr">
+            <strong>XR</strong>
+            <span>Immersive storytelling, 360 research, spatial narrative design, and worldbuilding.</span>
+          </a>
+          <a class="discipline-card" href="/portfolio/writings">
+            <strong>Writings</strong>
+            <span>Story worlds, concept writing, and long-form narrative development.</span>
+          </a>
+          <a class="discipline-card" href="/portfolio/coding">
+            <strong>Coding</strong>
+            <span>avrai.org, AVRAI, story-modeling concepts, and technical systems built to support the wider creative practice.</span>
+          </a>
+          <a class="discipline-card" href="/portfolio/wips">
+            <strong>In Development</strong>
+            <span>Projects still being written, prototyped, or assembled into a public-facing form.</span>
+          </a>
+          <a class="discipline-card" href="/portfolio/misc">
+            <strong>Archive</strong>
+            <span>Supporting material, legacy links, and crossover work that adds context to the portfolio.</span>
+          </a>
+        </div>
+      </section>
 
-    requestAnimationFrame(tick);
-  })();
-</script>
+      <section class="section-block notes-block" aria-labelledby="notes-title">
+        <div class="section-heading">
+          <p class="section-kicker">Current direction</p>
+          <h2 id="notes-title">The strongest long-term projects in the portfolio are hybrid by design.</h2>
+        </div>
+        <div class="notes-grid">
+          <article>
+            <h3>Motel Sunshine</h3>
+            <p>
+              An episodic 6DoF VR experience designed as a location-based story world with multiple character perspectives.
+              It sits at the intersection of writing, immersive cinema, and emerging production technology.
+            </p>
+          </article>
+          <article>
+            <h3>Family Tree</h3>
+            <p>
+              A memorial-driven concept using volumetric capture, AI-assisted reconstruction, and time-based re-recording to explore memory, aging, and family history.
+            </p>
+          </article>
+          <article>
+            <h3>Creative systems</h3>
+            <p>
+              I also develop tools and experiments when the available workflow does not support the project.
+              That technical layer is part of the producing and directing process, not separate from it. avrai.org is the clearest current example of that approach in public.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>For full background, see the <a href="/resume">resume</a>. For collaboration or opportunities, <a href="mailto:reisjgordon@gmail.com">email me</a>.</p>
+    </footer>
+  </div>
 </body>
 </html>

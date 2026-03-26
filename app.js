@@ -1,6 +1,8 @@
-const ALLOW_EDIT_MODE = true;
+const ALLOW_EDIT_MODE = false;
 const EDITOR_PASSCODE = "change-this-passcode";
 const STORAGE_KEY = "journey_map_resume_entries_v4";
+const COPY_VERSION_KEY = "journey_map_resume_copy_version";
+const DATA_COPY_VERSION = 6;
 
 const CATEGORY_COLORS = {
   education: "#5ca6f8",
@@ -17,6 +19,14 @@ const LOCATION_CODES = {
   birmingham: "BHAM",
   miami: "MIA",
   denver: "DEN",
+  dothan: "DTHN",
+  "fort walton beach": "FWB",
+  louisville: "LOU",
+  tampa: "TPA",
+  paris: "PAR",
+  dublin: "DUB",
+  stockholm: "STO",
+  alsace: "ALS",
 };
 
 const MOTION = {
@@ -31,31 +41,136 @@ const MOTION = {
 const defaultEntries = [
   {
     id: crypto.randomUUID(),
+    title: "Houston Academy",
+    startDate: "2003-08-01",
+    endDate: "2007-05-31",
+    category: "Education",
+    location: "Dothan",
+    country: "United States",
+    locationDetail: "Houston Academy",
+    lat: 31.223231,
+    lng: -85.390488,
+    description: "Began school at Houston Academy in Dothan, Alabama, starting in pre-K and staying through first grade. Repeated kindergarten there because the age cutoff placed me far younger than most of the class, then completed the year again with my own age group before moving on.",
+    impact: "Marks the first chapter of the educational timeline and an early example of adjusting the path for long-term fit rather than speed alone.",
+    scope: "Pre-K through first grade, including a repeated kindergarten year.",
+    tools: "Early literacy, classroom foundations, reading, writing",
+    outcome: "Built the earliest academic foundation before moving from Alabama to the Florida panhandle.",
+    skills: ["Academic Foundations", "Adaptability", "Reading", "Writing"],
+    overlapGroup: "Education-PreCollege",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Bay Elementary",
+    startDate: "2007-08-01",
+    endDate: "2010-05-31",
+    category: "Education",
+    location: "Fort Walton Beach",
+    country: "United States",
+    locationDetail: "Bay Elementary, Florida panhandle",
+    lat: 30.405755,
+    lng: -86.618843,
+    description: "Moved to the Fort Walton Beach area and continued elementary school at Bay Elementary from second through fourth grade. This was the Florida panhandle chapter of the school timeline following the move out of Alabama.",
+    impact: "Makes the first interstate move explicit inside the educational story rather than leaving it between later milestones.",
+    scope: "Elementary school years in the Florida panhandle through the end of fourth grade.",
+    tools: "Core coursework, reading, writing, classroom adaptation",
+    outcome: "Completed fourth grade before relocating again to Louisville, Kentucky.",
+    skills: ["Adaptability", "Core Coursework", "Reading", "Writing"],
+    overlapGroup: "Education-PreCollege",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Louisville Collegiate School",
+    startDate: "2010-08-01",
+    endDate: "2014-05-31",
+    category: "Education",
+    location: "Louisville",
+    country: "United States",
+    locationDetail: "Louisville Collegiate School",
+    lat: 38.252665,
+    lng: -85.758456,
+    description: "Attended Louisville Collegiate School from fifth grade through eighth grade after moving from Florida to Kentucky. This chapter bridges the elementary years and the start of high school before the move to Denver.",
+    impact: "Adds the Louisville chapter that connects the Florida and Colorado moves into a continuous pre-college timeline.",
+    scope: "Middle-school years completed in Louisville prior to the freshman-year move to Denver.",
+    tools: "Coursework, writing, academic planning, transition management",
+    outcome: "Completed eighth grade in Louisville before starting high school in Denver.",
+    skills: ["Academic Planning", "Adaptability", "Writing", "Transition Management"],
+    overlapGroup: "Education-PreCollege",
+  },
+  {
+    id: crypto.randomUUID(),
     title: "Service Industry Roles (Denver)",
-    startDate: "2014-02-01",
-    endDate: "2016-08-31",
+    startDate: "2014-08-01",
+    endDate: "2016-02-01",
     category: "Work",
     location: "Denver",
     country: "United States",
-    locationDetail: "Downtown Denver (service roles cluster)",
+    locationDetail: "Downtown Denver hospitality roles",
     lat: 39.739236,
     lng: -104.990251,
-    description: "Started in high-volume front-of-house and kitchen support environments where pace and consistency mattered every shift. Built the baseline skills that still shape my work style: reading people quickly, coordinating teams under pressure, and keeping quality steady while volume changes hour to hour.",
+    description: "Built an operational foundation in high-volume hospitality across front-of-house and kitchen-support roles. Learned to maintain service quality under pressure, communicate clearly across shifts, and execute consistently in fast-moving environments.",
+    impact: "Established the discipline, pace, and customer-awareness that later carried into production and leadership work.",
+    scope: "Cross-functional service and support work in busy restaurant environments.",
+    tools: "Hospitality operations, customer service, POS workflows, team coordination",
+    outcome: "Developed a strong baseline in execution, reliability, and calm performance under pressure.",
+    skills: ["Operations", "Customer Service", "Execution", "Team Coordination"],
     overlapGroup: "Service-MultiState",
   },
   {
     id: crypto.randomUUID(),
-    title: "Service Industry Roles (Miami)",
-    startDate: "2016-09-01",
+    title: "Denver South High School",
+    startDate: "2014-08-01",
+    endDate: "2016-02-01",
+    category: "Education",
+    location: "Denver",
+    country: "United States",
+    locationDetail: "South High School",
+    lat: 39.678801,
+    lng: -104.970764,
+    description: "Attended Denver South High School from August 2014 through February 2016 after moving from Louisville to Colorado for freshman year. This is the Denver chapter of the pre-college academic timeline before the later move to Florida.",
+    impact: "Makes the Kentucky-to-Colorado move explicit inside the full educational sequence.",
+    scope: "High school coursework completed prior to relocating in early 2016.",
+    tools: "Coursework, writing, academic planning, extracurricular balance",
+    outcome: "Completed the Denver portion of high school before transferring to Tampa Preparatory School.",
+    skills: ["Academic Planning", "Adaptability", "Writing", "Resilience"],
+    overlapGroup: "Education-PreCollege",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Service Industry Roles (Tampa)",
+    startDate: "2016-02-01",
     endDate: "2018-08-31",
     category: "Work",
-    location: "Miami",
+    location: "Tampa",
     country: "United States",
-    locationDetail: "Downtown Miami (service roles cluster)",
-    lat: 25.761681,
-    lng: -80.191788,
-    description: "Extended service and operations work into Miami, adapting quickly to a different customer base and operating style. Strengthened retention and reliability habits while learning how local market context changes communication, workflow, and team rhythm.",
+    locationDetail: "Tampa hospitality roles",
+    lat: 27.950575,
+    lng: -82.457176,
+    description: "Extended hospitality and operations experience into a new market, adapting quickly to different customers, teams, and service expectations. Strengthened consistency, retention-oriented service habits, and situational awareness in high-traffic settings.",
+    impact: "Expanded practical operations experience and adaptability across different service environments.",
+    scope: "Customer-facing hospitality work across multiple roles and service contexts.",
+    tools: "Guest experience, operations support, service communication, workflow management",
+    outcome: "Strengthened flexibility, reliability, and execution across changing business conditions.",
+    skills: ["Adaptability", "Operations", "Communication", "Customer Experience"],
     overlapGroup: "Service-MultiState",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Tampa Preparatory School",
+    startDate: "2016-02-01",
+    endDate: "2018-05-31",
+    category: "Education",
+    location: "Tampa",
+    country: "United States",
+    locationDetail: "Tampa Preparatory School",
+    lat: 27.947531,
+    lng: -82.465064,
+    description: "Transferred to Tampa Preparatory School in February 2016 and completed high school there, graduating in 2018. This closes the pre-college academic timeline before the transition to NYU Gallatin.",
+    impact: "Completes the pre-college education arc after the move from Denver to Florida.",
+    scope: "High school completion and graduation following an interstate move.",
+    tools: "Coursework, writing, academic planning, transition management",
+    outcome: "Graduated from Tampa Preparatory School in 2018 before matriculating at NYU Gallatin.",
+    skills: ["Adaptability", "Academic Planning", "Writing", "Transition Management"],
+    overlapGroup: "Education-PreCollege",
   },
   {
     id: crypto.randomUUID(),
@@ -68,7 +183,12 @@ const defaultEntries = [
     locationDetail: "New York University athletics",
     lat: 40.7295,
     lng: -73.9965,
-    description: "Competed in NCAA epee while balancing coursework and paid work, which demanded disciplined time management and repeatable training structure. Fencing sharpened decision speed, pattern recognition, and calm execution under pressure that now carries into leadership and production work.",
+    description: "Competed in NCAA epee while balancing coursework, work, and travel. The training and competition cycle reinforced fast decision-making, repeatable preparation, and composure under pressure in environments where performance depended on focus and discipline.",
+    impact: "Brought a high-performance mindset into later creative and operational roles.",
+    scope: "Varsity-level athletics alongside academic and professional commitments.",
+    tools: "Epee, match analysis, training structure, competitive preparation",
+    outcome: "Developed durable habits in discipline, resilience, and calm execution.",
+    skills: ["Discipline", "Performance Under Pressure", "Strategy", "Resilience"],
     overlapGroup: "NYC-Life-Leadership",
   },
   {
@@ -79,10 +199,15 @@ const defaultEntries = [
     category: "Work",
     location: "New York City",
     country: "United States",
-    locationDetail: "Manhattan + Brooklyn hospitality corridor",
+    locationDetail: "Manhattan and Brooklyn hospitality roles",
     lat: 40.712776,
     lng: -74.005974,
-    description: "Worked across New York service roles spanning host, barista, food service, and kitchen support. Built strong customer retention habits and team reliability in high-traffic environments where communication and handoffs directly affected revenue and guest experience.",
+    description: "Worked across New York hospitality roles spanning hosting, barista work, food service, and kitchen support. Built reliability in high-volume environments where coordination, communication, and timing directly affected guest experience and team performance.",
+    impact: "Deepened practical operations management and customer-facing execution in one of the fastest service markets in the country.",
+    scope: "Multiple hospitality roles across front-of-house and service support.",
+    tools: "Hospitality operations, guest communication, service flow, team support",
+    outcome: "Strengthened repeatable execution and service quality under sustained pressure.",
+    skills: ["Operations", "Execution", "Communication", "Customer Experience"],
     overlapGroup: "Service-MultiState",
   },
   {
@@ -96,21 +221,31 @@ const defaultEntries = [
     locationDetail: "NYU Gallatin",
     lat: 40.7295,
     lng: -73.9965,
-    description: "Supported first-year student onboarding at NYU Gallatin as an orientation leader and peer mentor. Designed and ran events, coordinated with the student team, and became a first point of contact for both logistics and student support issues.",
+    description: "Supported first-year onboarding at NYU Gallatin as an orientation leader and peer mentor. Helped run events, coordinate student-facing logistics, and serve as a first point of contact for both planning issues and day-to-day support needs.",
+    impact: "Expanded leadership and facilitation experience in a student-facing institutional setting.",
+    scope: "Event support, peer mentorship, and onboarding coordination.",
+    tools: "Program coordination, event support, facilitation, student communication",
+    outcome: "Built stronger public-facing leadership and support skills through structured campus programming.",
+    skills: ["Leadership", "Facilitation", "Event Coordination", "Communication"],
     overlapGroup: "NYC-Life-Leadership",
   },
   {
     id: crypto.randomUUID(),
-    title: "Intern",
+    title: "Strategy Intern, Limore Kurtz Dooley",
     startDate: "2020-07-01",
     endDate: "2021-01-01",
     category: "Work",
     location: "New York City",
     country: "United States",
-    locationDetail: "Limore Kurtz Dooley (NYC metro area)",
+    locationDetail: "Limore Kurtz Dooley",
     lat: 40.7128,
     lng: -74.006,
-    description: "Contributed to research, strategy, and client-facing communication workflows in a New York internship setting. Produced presentation materials, organized inputs for decision-making, and supported early-stage creative and business development tasks.",
+    description: "Supported research, strategy development, and client-facing communication workflows in a New York internship setting. Contributed presentation materials, organized inputs for decision-making, and helped translate early-stage ideas into clearer business and creative direction.",
+    impact: "Added a more formal strategy and communications layer to a service-and-production-oriented background.",
+    scope: "Research support, presentation development, and client communication preparation.",
+    tools: "Research, presentation design, strategic communication, synthesis",
+    outcome: "Strengthened analytical framing and communication structure in a professional client-services environment.",
+    skills: ["Research", "Strategy", "Communication", "Synthesis"],
     overlapGroup: "NYC-Life-Leadership",
   },
   {
@@ -124,21 +259,107 @@ const defaultEntries = [
     locationDetail: "NYU Gallatin School, 1 Washington Place",
     lat: 40.72927,
     lng: -73.99417,
-    description: "Completed a BA at NYU Gallatin in Business of Emerging Technology for New Media with a Bioethics minor. Built an interdisciplinary base across technology strategy, ethics, and communication design that later informed XR, AI media, and production leadership work.",
+    description: "Completed a BA at NYU Gallatin in Business of Emerging Technology for New Media with a Bioethics minor. The degree combined technology strategy, ethics, narrative thinking, and communication design into an interdisciplinary foundation for work in XR, AI media, and creative production.",
+    impact: "Built the academic framework behind a multidisciplinary producing and creative-direction practice.",
+    scope: "Interdisciplinary degree focused on emerging media, technology, and ethics.",
+    tools: "Research, writing, ethics, media theory, interdisciplinary analysis",
+    outcome: "Graduated with a cross-disciplinary perspective that informs both creative and strategic work.",
+    skills: ["Critical Thinking", "Research", "Media Strategy", "Storytelling"],
     overlapGroup: "NYC-Education-Track",
   },
   {
     id: crypto.randomUUID(),
-    title: "Ride The Dice - Love Crushed Velvet",
+    title: "NYU Paris Study Away",
+    startDate: "2019-09-01",
+    endDate: "2019-12-20",
+    category: "Education",
+    location: "Paris",
+    country: "France",
+    locationDetail: "NYU Paris",
+    lat: 48.856613,
+    lng: 2.352222,
+    description: "Completed a fall 2019 study away semester at NYU Paris with coursework in French cinema, philosophy, ethics, and art. The semester expanded cultural fluency, strengthened interdisciplinary analysis, and deepened the aesthetic references that continue to inform my creative direction and storytelling work.",
+    impact: "Added an international academic chapter that connected media study, ethics, and art history to a broader creative frame.",
+    scope: "Full-time study away semester completed alongside varsity fencing commitments abroad.",
+    tools: "Critical theory, film analysis, art history, writing, cross-cultural research",
+    outcome: "Strengthened the intellectual and aesthetic foundation behind later work in XR, narrative development, and creative production.",
+    skills: ["Research", "Critical Thinking", "Storytelling", "Cross-Cultural Communication"],
+    overlapGroup: "Europe-Fall-2019",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "International Epee Competition - Dublin Satellite",
+    startDate: "2019-10-01",
+    endDate: "2019-10-01",
+    category: "Life",
+    location: "Dublin",
+    country: "Ireland",
+    locationDetail: "Satellite tournament during study away in Europe",
+    lat: 53.349805,
+    lng: -6.26031,
+    description: "Competed internationally in epee at a satellite tournament in Dublin during the NYU Paris semester. Managing travel, training, and competition alongside coursework reinforced focus, preparation, and the ability to perform in unfamiliar environments.",
+    impact: "Extended collegiate fencing experience into the international circuit during study away.",
+    scope: "Tournament travel, preparation, and competition layered onto a full academic semester abroad.",
+    tools: "Epee, competition preparation, travel logistics, match analysis",
+    outcome: "Built stronger resilience and adaptability through international competition.",
+    skills: ["Discipline", "Adaptability", "Performance Under Pressure", "Time Management"],
+    overlapGroup: "Europe-Fall-2019",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Team Support - Stockholm Satellite",
+    startDate: "2019-11-01",
+    endDate: "2019-11-01",
+    category: "Life",
+    location: "Stockholm",
+    country: "Sweden",
+    locationDetail: "Satellite tournament support trip",
+    lat: 59.329323,
+    lng: 18.068581,
+    description: "Supported teammates at a satellite tournament in Stockholm during the same European semester. The experience sharpened the collaborative side of competition: reading momentum, helping others stay composed, and contributing to performance beyond individual results.",
+    impact: "Added a leadership-through-support dimension to the international fencing chapter.",
+    scope: "Team support, travel coordination, and in-competition observation during an active study-away term.",
+    tools: "Team support, communication, competitive analysis, travel coordination",
+    outcome: "Strengthened leadership instincts through support roles as well as direct competition.",
+    skills: ["Leadership", "Communication", "Team Support", "Observation"],
+    overlapGroup: "Europe-Fall-2019",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "European International Epee Competition - Alsace",
+    startDate: "2019-11-15",
+    endDate: "2019-11-15",
+    category: "Life",
+    location: "Alsace",
+    country: "France",
+    locationDetail: "Large European international competition in the Alsace region",
+    lat: 48.573405,
+    lng: 7.752111,
+    description: "Competed in a major European international epee event in Alsace while based in Paris for the semester. The event required sharper tactical adjustment, faster reading under pressure, and higher-level competitive composure.",
+    impact: "Broadened competitive experience beyond NCAA and domestic formats.",
+    scope: "International competition layered onto academic and travel commitments abroad.",
+    tools: "Epee, tactical adjustment, match analysis, endurance",
+    outcome: "Expanded international experience and reinforced the decision-making discipline that carries into production leadership.",
+    skills: ["Strategy", "Decision Making", "Resilience", "Execution"],
+    overlapGroup: "Europe-Fall-2019",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Ride The Dice",
     startDate: "2023-06-01",
     endDate: "2023-11-30",
     category: "Project",
     location: "New York City",
     country: "United States",
-    locationDetail: "Love Crushed Velvet (Band)",
+    locationDetail: "Love Crushed Velvet",
     lat: 40.758,
     lng: -73.9855,
-    description: "Drove the creative strategy and production path for an immersive music-video concept, translating a broad artistic vision into concrete scope, budget, and team execution. The project blended XR direction, storytelling, and practical production constraints to deliver a distinct audience experience.",
+    description: "Led the creative and production path for an immersive music experience, translating broad artistic direction into executable scope, visual language, and team coordination. The project connected XR storytelling, music-driven pacing, and practical production planning.",
+    impact: "Demonstrated the ability to move an ambitious concept from direction into structured execution.",
+    scope: "Creative strategy, production framing, immersive concept development, and execution planning.",
+    tools: "Creative direction, XR storytelling, music-video language, production planning",
+    outcome: "Delivered a public-facing immersive piece that clarified a broader spatial storytelling direction.",
+    skills: ["Creative Direction", "Production", "Storytelling", "Worldbuilding"],
     overlapGroup: "NYC-Production-Arc",
   },
   {
@@ -152,7 +373,12 @@ const defaultEntries = [
     locationDetail: "Independent 360 project",
     lat: 40.712776,
     lng: -74.005974,
-    description: "Created an early 360 storytelling experiment focused on emotional atmosphere and viewer embodiment. This project helped establish my long-term interest in immersive media by testing how framing and spatial presence change narrative impact.",
+    description: "Created an early 360 storytelling experiment focused on emotional atmosphere, viewer embodiment, and the narrative effect of spatial framing. The project established an early foundation for later work in immersive storytelling.",
+    impact: "Marked an early public expression of long-term interest in spatial narrative design.",
+    scope: "Independent concept development and immersive film experimentation.",
+    tools: "360 storytelling, spatial framing, emotional tone, visual composition",
+    outcome: "Created a foundational immersive piece that informed later XR and worldbuilding work.",
+    skills: ["XR", "Storytelling", "Visual Direction", "Experimentation"],
     overlapGroup: "NYC-Immersive-Projects",
   },
   {
@@ -166,21 +392,31 @@ const defaultEntries = [
     locationDetail: "Immersive 360 film experiment",
     lat: 40.712776,
     lng: -74.005974,
-    description: "Produced a 360 film experiment around point-of-view tension and perspective control. The work tested how interpretation shifts when the viewer decides where to look, and became a useful study in spatial framing and narrative ambiguity.",
+    description: "Produced a 360 film experiment centered on point-of-view tension, viewer agency, and spatial interpretation. The piece tested how narrative meaning shifts when the audience decides where to look and how long to stay with a given perspective.",
+    impact: "Advanced research into viewer agency as part of immersive narrative grammar.",
+    scope: "Concept development, immersive framing, and point-of-view experimentation.",
+    tools: "360 filmmaking, spatial storytelling, viewer agency, narrative design",
+    outcome: "Produced a focused study in immersive interpretation that informed later XR work.",
+    skills: ["XR", "Research", "Narrative Design", "Experimentation"],
     overlapGroup: "NYC-Immersive-Projects",
   },
   {
     id: crypto.randomUUID(),
-    title: "Salesperson",
+    title: "Retail Sales Associate, Luca Market",
     startDate: "2024-01-01",
     endDate: "2024-08-01",
     category: "Work",
     location: "Birmingham",
     country: "United States",
-    locationDetail: "Pihakis Restaurant Group (Luca Market)",
+    locationDetail: "Pihakis Restaurant Group, Luca Market",
     lat: 33.5186,
     lng: -86.8104,
-    description: "Worked full-time at Luca Market (Pihakis Restaurant Group) serving customers while supporting inventory flow, counter operations, and kitchen coordination. The role reinforced practical operations discipline: consistency, communication, and clean execution during peak demand windows.",
+    description: "Worked full-time at Luca Market supporting customer service, inventory flow, counter operations, and kitchen coordination. The role reinforced practical operations discipline: consistency, communication, and clean execution during peak demand periods.",
+    impact: "Reinforced operations management and customer-facing execution in a fast-moving retail environment.",
+    scope: "Sales support, inventory coordination, customer service, and daily operations.",
+    tools: "Retail operations, inventory flow, customer service, team coordination",
+    outcome: "Maintained reliable execution across customer-facing and back-of-house responsibilities.",
+    skills: ["Operations", "Execution", "Customer Service", "Reliability"],
     overlapGroup: "BHM-Coach-Leadership",
   },
   {
@@ -194,7 +430,31 @@ const defaultEntries = [
     locationDetail: "Virtual production concept development",
     lat: 40.6782,
     lng: -73.9442,
-    description: "Built a concept intro for a potential episodic VR world to define tone, visual language, and audience positioning. Framed the piece as proof-of-direction for a larger serialized immersive format.",
+    description: "Created a concept intro for a larger episodic VR world to define tone, audience movement, and the narrative promise of the environment. The piece serves as proof of direction for a serialized immersive format.",
+    impact: "Clarified the strongest long-term story-world direction in the portfolio.",
+    scope: "Concept development, tone definition, immersive framing, and directional proof-of-concept work.",
+    tools: "Worldbuilding, XR storytelling, concept development, audience design",
+    outcome: "Produced a concise directional artifact for a larger immersive project ecosystem.",
+    skills: ["Worldbuilding", "Creative Direction", "XR", "Narrative Development"],
+    overlapGroup: "NYC-Production-Arc",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Motel Sunshine",
+    startDate: "2024-10-01",
+    endDate: null,
+    category: "Project",
+    location: "Brooklyn",
+    country: "United States",
+    locationDetail: "Episodic XR world in development",
+    lat: 40.6782,
+    lng: -73.9442,
+    description: "Developing Motel Sunshine as a larger episodic XR story world built around revisitable perspective, character routes, and a location that functions as narrative infrastructure rather than backdrop.",
+    impact: "Defines the broader immersive franchise direction behind the current writing, XR, and technical-development work.",
+    scope: "Story-world architecture, serialized narrative design, and immersive format planning.",
+    tools: "Worldbuilding, episodic storytelling, XR design, narrative systems",
+    outcome: "Established the long-range narrative framework that the public proof pieces now support.",
+    skills: ["Worldbuilding", "XR", "Narrative Development", "Creative Direction"],
     overlapGroup: "NYC-Production-Arc",
   },
   {
@@ -208,12 +468,55 @@ const defaultEntries = [
     locationDetail: "Maya animation project",
     lat: 40.712776,
     lng: -74.005974,
-    description: "Designed and rendered a short-form Maya animation focused on timing, motion, and stylized visual storytelling. Used the piece as a controlled technical and narrative study to sharpen look development and finish quality.",
+    description: "Designed and rendered a short-form Maya animation focused on timing, stylization, and concise visual storytelling. Used the piece as a controlled study in motion, look development, and finish quality.",
+    impact: "Expanded the portfolio with a more tightly controlled animation and visual-development study.",
+    scope: "Concept, animation, rendering, and visual finish in a short-form format.",
+    tools: "Maya, animation, timing, look development, rendering",
+    outcome: "Completed a polished short-form animation that demonstrates visual judgment and finish.",
+    skills: ["Animation", "Visual Development", "Execution", "Design"],
     overlapGroup: "NYC-Production-Arc",
   },
   {
     id: crypto.randomUUID(),
-    title: "Graduate Student",
+    title: "AVRAI",
+    startDate: "2024-06-01",
+    endDate: null,
+    category: "Project",
+    location: "New York City",
+    country: "United States",
+    locationDetail: "Creative production system",
+    lat: 40.712776,
+    lng: -74.005974,
+    description: "Built AVRAI as a creative production system for structured worldbuilding, workflow clarity, and project organization across larger narrative and immersive work.",
+    impact: "Shows how software can function as infrastructure for ambitious creative production rather than as a separate technical side project.",
+    scope: "Concept design, workflow architecture, interface thinking, and systems prototyping.",
+    tools: "Creative systems, workflow design, product thinking, worldbuilding support",
+    outcome: "Created a technical backbone for organizing narrative, production, and worldbuilding work in one place.",
+    skills: ["Systems Thinking", "Workflow Design", "Production", "Worldbuilding"],
+    overlapGroup: "NYC-Production-Arc",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Storyframe",
+    startDate: "2021-06-01",
+    endDate: "2021-12-01",
+    category: "Project",
+    location: "New York City",
+    country: "United States",
+    locationDetail: "Spatial story-modeling concept",
+    lat: 40.712776,
+    lng: -74.005974,
+    description: "Developed Storyframe as a concept for translating a written story into a navigable 3D model with multiple viewpoints, giving narrative structure a more spatial and explorable form.",
+    impact: "Captures the intersection of writing, directing, previsualization, and technical prototyping that runs through the broader practice.",
+    scope: "Concept design, story modeling, previsualization thinking, and interface prototyping.",
+    tools: "Narrative systems, previsualization, multi-perspective design, prototyping",
+    outcome: "Defined an early technical concept for treating stories as environments rather than only as text.",
+    skills: ["Systems Thinking", "Storytelling", "Previsualization", "Prototyping"],
+    overlapGroup: "NYC-Immersive-Projects",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "NYU Tisch School of the Arts",
     startDate: "2024-08-01",
     endDate: "2025-05-01",
     category: "Education",
@@ -222,7 +525,13 @@ const defaultEntries = [
     locationDetail: "NYU Tisch Martin Scorsese Virtual Production Center",
     lat: 40.72935,
     lng: -73.99254,
-    description: "Completed the NYU Tisch Virtual Production MPS at the Martin Scorsese Institute while leading a 30-person thesis team from concept to delivery. Managed creative direction, schedule, production logistics, and post workflows across both technical and narrative tracks.",
+    description: "Completed the NYU Tisch Virtual Production MPS at the Martin Scorsese Institute while leading a 30-person thesis team from concept through delivery. The program sharpened virtual production fluency, cross-functional leadership, and the ability to align technical execution with narrative intent.",
+    impact: "Combined advanced virtual production training with hands-on creative leadership.",
+    scope: "Graduate study in virtual production plus leadership of a 30-person thesis team.",
+    tools: "Virtual production, team leadership, production design, post workflows",
+    teamSize: "30",
+    outcome: "Graduated with practical virtual production leadership experience tied to a finished thesis project.",
+    skills: ["Leadership", "Virtual Production", "Production", "Creative Direction"],
     overlapGroup: "NYC-Education-Track",
   },
   {
@@ -236,26 +545,74 @@ const defaultEntries = [
     locationDetail: "AI-native short film pipeline",
     lat: 40.6782,
     lng: -73.9442,
-    description: "Directed an AI-native short film to test authorship, pacing, and tonal continuity in a synthetic workflow. The project focused on turning exploratory tooling into intentional cinematic decision-making.",
+    description: "Directed an AI-native short film to test authorship, pacing, and tonal continuity within a synthetic image workflow. The project focused on turning exploratory tooling into intentional cinematic decision-making.",
+    impact: "Demonstrated a serious narrative use case for AI-assisted filmmaking rather than novelty-driven experimentation.",
+    scope: "Direction, workflow design, image-generation iteration, and story shaping.",
+    tools: "AI filmmaking, direction, pacing, workflow design, editing",
+    outcome: "Delivered a completed short that clarified how AI-native processes can support authored cinematic work.",
+    skills: ["Direction", "AI Media", "Workflow Design", "Storytelling"],
     overlapGroup: "NYC-2025-Creative",
   },
   {
     id: crypto.randomUUID(),
-    title: "GUM Studios - Intern, Production and Social Media",
+    title: "Home Struck",
+    startDate: "2024-02-01",
+    endDate: null,
+    category: "Project",
+    location: "New York City",
+    country: "United States",
+    locationDetail: "Novel and adaptation concept in development",
+    lat: 40.712776,
+    lng: -74.005974,
+    description: "Developing Home Struck as a long-form narrative project built around belonging, reader proximity, and a future path into immersive adaptation.",
+    impact: "Extends the portfolio beyond short-form work into a larger emotional and literary arc.",
+    scope: "Long-form writing, adaptation planning, and world development.",
+    tools: "Writing, narrative development, adaptation strategy, worldbuilding",
+    outcome: "Established a longer-form story world with a clear path toward cross-medium expansion.",
+    skills: ["Writing", "Storytelling", "Narrative Development", "Worldbuilding"],
+    overlapGroup: "NYC-Production-Arc",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Production and Social Media Intern, GUM Studios",
     startDate: "2025-03-01",
     endDate: "2025-05-01",
     category: "Work",
     location: "Brooklyn",
     country: "United States",
-    locationDetail: "GUM Studios (Brooklyn)",
+    locationDetail: "GUM Studios",
     lat: 40.651873,
     lng: -74.006142,
-    description: "At GUM Studios, produced social-first media and supported on-set production, including a local NYC band music video. Directed, produced, and coordinated across creative, crew, and virtual production constraints to move ideas from concept into delivered content.",
+    description: "Produced social-first media and supported on-set production at GUM Studios, including work connected to a New York music video. Contributed across creative coordination, production support, and content execution to move ideas from concept into delivered media.",
+    impact: "Expanded hands-on production experience within a studio setting spanning content and on-set work.",
+    scope: "Production support, social content creation, and cross-functional studio coordination.",
+    tools: "Production support, content creation, social media, coordination",
+    outcome: "Helped move studio projects from planning into delivered creative work.",
+    skills: ["Production", "Coordination", "Content Development", "Execution"],
     overlapGroup: "NYC-2025-Creative",
   },
   {
     id: crypto.randomUUID(),
-    title: "NYU Master's Thesis Short Film (Wolfe & The Bee)",
+    title: "Family Tree",
+    startDate: "2024-11-15",
+    endDate: null,
+    category: "Project",
+    location: "Brooklyn",
+    country: "United States",
+    locationDetail: "Volumetric memorial concept",
+    lat: 40.6782,
+    lng: -73.9442,
+    description: "Developing Family Tree as a living memorial concept that combines volumetric capture, voice and motion analysis, and repeated recordings over time to explore memory, aging, and continuity.",
+    impact: "Shows the emotional and systems-thinking ambition behind the longer-range immersive work.",
+    scope: "Concept development, memorial-system design, and volumetric storytelling research.",
+    tools: "Volumetric capture, memorial design, systems thinking, immersive storytelling",
+    outcome: "Established a clear conceptual framework for a long-term project about memory, family, and time.",
+    skills: ["Concept Development", "Systems Thinking", "Immersive Storytelling", "Worldbuilding"],
+    overlapGroup: "NYC-Production-Arc",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Wolfe & The Bee",
     startDate: "2025-05-31",
     endDate: "2025-05-31",
     category: "Project",
@@ -264,40 +621,56 @@ const defaultEntries = [
     locationDetail: "Martin Scorsese Institute LED soundstage",
     lat: 40.6782,
     lng: -73.9442,
-    description: "Delivered graduate thesis film \"Wolfe & The Bee\" on the LED soundstage, integrating narrative direction with in-camera virtual production techniques. Led cross-functional execution spanning story, technical setup, team coordination, and post-finishing decisions.",
+    description: "Delivered the graduate thesis film \"Wolfe & The Bee\" on the LED soundstage, integrating narrative direction with in-camera virtual production. Led cross-functional execution across story, technical setup, team coordination, and post-finishing decisions.",
+    impact: "Established a strong flagship example of narrative direction executed through virtual production.",
+    scope: "Thesis-film direction, team leadership, technical coordination, and final delivery.",
+    tools: "Virtual production, direction, story development, production coordination, post",
+    teamSize: "30",
+    outcome: "Completed and delivered a finished thesis short that anchors the current film portfolio.",
+    skills: ["Direction", "Leadership", "Virtual Production", "Production"],
     overlapGroup: "NYC-2025-Creative",
   },
   {
     id: crypto.randomUUID(),
-    title: "GUM Studios - Consultant, Business Development and Communications",
+    title: "Consultant, Business Development and Communications, GUM Studios",
     startDate: "2025-05-01",
     endDate: "2025-07-01",
     category: "Work",
     location: "Brooklyn",
     country: "United States",
-    locationDetail: "GUM Studios (Brooklyn)",
+    locationDetail: "GUM Studios",
     lat: 40.651873,
     lng: -74.006142,
-    description: "Partnered with leadership at GUM Studios on communication and business-development strategy during a rebranding phase. Built practical channel plans and messaging structure designed to improve positioning, client communication, and growth readiness.",
+    description: "Partnered with leadership at GUM Studios on communication and business-development strategy during a rebrand period. Helped shape channel priorities, messaging structure, and outward-facing positioning designed to support growth readiness.",
+    impact: "Added strategic communications and growth planning to a studio environment in transition.",
+    scope: "Business-development support, messaging strategy, and communications planning.",
+    tools: "Business development, communications, brand positioning, messaging strategy",
+    outcome: "Improved strategic clarity around how the studio presented itself to prospective partners and clients.",
+    skills: ["Strategy", "Communications", "Business Development", "Positioning"],
     overlapGroup: "NYC-2025-Creative",
   },
   {
     id: crypto.randomUUID(),
-    title: "Associate",
+    title: "Associate, Double Eye Studios",
     startDate: "2025-06-01",
     endDate: null,
     category: "Work",
     location: "New York City",
     country: "United States",
-    locationDetail: "Double Eye Studios (Remote contract)",
+    locationDetail: "Double Eye Studios",
     lat: 40.712776,
     lng: -74.005974,
-    description: "At Double Eye Studios, conduct market and competitive analysis across luxury fashion and accessory brands exploring XR adoption. Translate research into actionable partnership and positioning strategies that support client acquisition and thought-leadership opportunities.",
+    description: "Conduct market and competitive analysis for luxury fashion and accessory brands exploring XR adoption at Double Eye Studios. Translate research into actionable partnership, positioning, and thought-leadership strategy.",
+    impact: "Connected emerging-technology research to client-facing strategic recommendations.",
+    scope: "Market analysis, competitive research, partnership framing, and positioning support.",
+    tools: "Market research, competitive analysis, XR strategy, client advisory",
+    outcome: "Contributed research-backed strategy that supports client acquisition and informed business development.",
+    skills: ["Research", "Strategy", "XR", "Business Development"],
     overlapGroup: "NYC-2025-Creative",
   },
   {
     id: crypto.randomUUID(),
-    title: "Epee Fencing Coach",
+    title: "Epee Fencing Coach, Birmingham Fencing Club",
     startDate: "2025-08-01",
     endDate: null,
     category: "Work",
@@ -306,19 +679,63 @@ const defaultEntries = [
     locationDetail: "Birmingham Fencing Club",
     lat: 33.518589,
     lng: -86.810356,
-    description: "Brought in to lead epee coaching for youth and adults at Birmingham Fencing Club while supporting growth goals beyond the piste. Drove school outreach demos and contributed to brand-refresh efforts including social strategy and identity updates.",
+    description: "Lead epee coaching for youth and adult fencers at Birmingham Fencing Club while also supporting growth initiatives beyond the piste. Contribute to school outreach, club visibility, and brand-refresh efforts alongside direct coaching.",
+    impact: "Combined coaching, community outreach, and organizational growth support in a single role.",
+    scope: "Athlete development, program support, outreach demos, and light brand strategy.",
+    tools: "Coaching, curriculum planning, outreach, communication, program development",
+    outcome: "Strengthened both individual athlete development and broader club-facing growth efforts.",
+    skills: ["Coaching", "Leadership", "Program Development", "Community Outreach"],
     overlapGroup: "BHM-Coach-Leadership",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "AVRAI / avrai.org",
+    startDate: "2026-01-01",
+    endDate: null,
+    category: "Project",
+    location: "Birmingham",
+    country: "United States",
+    locationDetail: "Public product site and systems project",
+    lat: 33.518589,
+    lng: -86.810356,
+    description: "Launched avrai.org as the public-facing site for AVRAI, clarifying the product story around real-world discovery, community, and privacy-first recommendation systems. Built the site, waitlist flow, and public positioning as a Birmingham-based project while continuing to shape the wider product system behind it.",
+    impact: "Created the clearest public entry point for AVRAI and made the project legible to users, partners, and collaborators.",
+    scope: "Product positioning, website development, waitlist design, technical implementation, and creative direction.",
+    tools: "Product strategy, web development, interface design, creative direction, systems thinking",
+    outcome: "Established avrai.org as the current public home for the project and the newest visible chapter in the portfolio.",
+    skills: ["Product Strategy", "Creative Direction", "Web Development", "Systems Thinking"],
+    overlapGroup: "BHM-Creative-Systems",
   },
 ];
 
 const PORTFOLIO_PROJECT_TITLES = [
   "Falling. (Apart)",
   "Conflicting Perspectives",
-  "Ride The Dice - Love Crushed Velvet",
+  "Ride The Dice",
   "Motel Sunshine Spec Intro",
+  "Motel Sunshine",
   "A Fall At The Circus",
   "No End For Sight",
-  "NYU Master's Thesis Short Film (Wolfe & The Bee)",
+  "Wolfe & The Bee",
+  "Home Struck",
+  "Family Tree",
+  "AVRAI",
+  "AVRAI / avrai.org",
+  "Storyframe",
+];
+
+const REQUIRED_DEFAULT_ENTRY_TITLES = [
+  ...PORTFOLIO_PROJECT_TITLES,
+  "Houston Academy",
+  "Bay Elementary",
+  "Louisville Collegiate School",
+  "Denver South High School",
+  "Tampa Preparatory School",
+  "Service Industry Roles (Tampa)",
+  "NYU Paris Study Away",
+  "International Epee Competition - Dublin Satellite",
+  "Team Support - Stockholm Satellite",
+  "European International Epee Competition - Alsace",
 ];
 
 let entries = migrateEntries(loadEntries());
@@ -526,6 +943,10 @@ function symbolForCategory(category) {
   return "G";
 }
 
+function uniqueCategories(items = []) {
+  return [...new Set(items.map((entry) => normalizeCategory(entry.category)))];
+}
+
 function parseCsvSkills(value) {
   if (!value) return [];
   return value
@@ -643,6 +1064,10 @@ function visibleEntries() {
   });
 }
 
+function timelineEntries() {
+  return [...visibleEntries()].reverse();
+}
+
 function ensureSelection() {
   const visible = visibleEntries();
   if (!visible.length) {
@@ -658,10 +1083,10 @@ function selectedVisibleIndex() {
 
 function renderMeta() {
   const sorted = sortedEntries();
-  totalStepsEl.textContent = String(sorted.length);
+  if (totalStepsEl) totalStepsEl.textContent = String(sorted.length);
   if (!sorted.length) {
-    yearSpanEl.textContent = "-";
-    countryCountEl.textContent = "0";
+    if (yearSpanEl) yearSpanEl.textContent = "-";
+    if (countryCountEl) countryCountEl.textContent = "0";
     return;
   }
 
@@ -675,10 +1100,10 @@ function renderMeta() {
 
   const minYear = Math.min(...years);
   const maxYear = Math.max(...years);
-  yearSpanEl.textContent = minYear === maxYear ? String(minYear) : `${minYear}-${maxYear}`;
+  if (yearSpanEl) yearSpanEl.textContent = minYear === maxYear ? String(minYear) : `${minYear}-${maxYear}`;
 
   const countries = new Set(sorted.map((entry) => (entry.country || "Unknown").toLowerCase()));
-  countryCountEl.textContent = String(countries.size);
+  if (countryCountEl) countryCountEl.textContent = String(countries.size);
 }
 
 function renderYearFilter() {
@@ -752,31 +1177,36 @@ function renderWhySummary() {
   if (!whySummaryEl) return;
   const visible = visibleEntries();
   if (!visible.length) {
-    whySummaryEl.textContent = "Why this matters: adjust filters or search to reveal the relevant chapters.";
+    whySummaryEl.textContent = "Professional summary: adjust filters or search to surface the most relevant chapters.";
     return;
   }
   const categories = [...new Set(visible.map((entry) => entry.category || "General"))];
   const locations = [...new Set(visible.map((entry) => entry.location))];
   const withOutcome = visible.filter((entry) => entry.outcome).length;
-  whySummaryEl.textContent = `Why this matters: ${visible.length} steps across ${locations.length} locations, spanning ${categories.join(", ")}. ${withOutcome} steps include explicit outcomes.`;
+  whySummaryEl.textContent = `Professional summary: ${visible.length} steps across ${locations.length} locations, spanning ${categories.join(", ")}. ${withOutcome} steps include explicit outcomes.`;
 }
 
 function buildStepIcon(stepNumber, entry, isActive) {
   const symbol = symbolForCategory(entry.category);
   return L.divIcon({
     className: "step-pin",
-    html: `<div class="step-icon ${isActive ? "active" : "inactive"}" style="background:${colorForCategory(entry.category)};">${stepNumber}<span class="marker-symbol">${symbol}</span></div>`,
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
+    html: `<div class="step-icon ${isActive ? "active" : "inactive"}" style="background:${colorForCategory(entry.category)};"><span class="step-number">${stepNumber}</span><span class="marker-symbol">${symbol}</span></div>`,
+    iconSize: [38, 38],
+    iconAnchor: [19, 19],
   });
 }
 
-function buildClusterIcon(code) {
+function buildClusterIcon(code, groupEntries) {
+  const categories = uniqueCategories(groupEntries);
+  const swatches = categories
+    .map((category) => `<span class="cluster-swatch" style="background:${colorForCategory(category)};" aria-hidden="true"></span>`)
+    .join("");
+
   return L.divIcon({
     className: "cluster-pin",
-    html: `<div class="cluster-icon">${code}</div>`,
-    iconSize: [42, 42],
-    iconAnchor: [21, 21],
+    html: `<div class="cluster-icon"><span>${code}</span><small>${groupEntries.length}</small><i class="cluster-cats" aria-hidden="true">${swatches}</i></div>`,
+    iconSize: [48, 48],
+    iconAnchor: [24, 24],
   });
 }
 
@@ -806,9 +1236,9 @@ function renderMap() {
   const coords = visible.map((entry) => [Number(entry.lat), Number(entry.lng)]);
 
   routeLayer = L.polyline(coords, {
-    color: "#95a9c2",
-    weight: 2,
-    opacity: 0.55,
+    color: "#a4b2bc",
+    weight: 3,
+    opacity: 0.68,
     dashArray: "8 8",
   }).addTo(map);
 
@@ -816,7 +1246,7 @@ function renderMap() {
   const selectedPath = selectedIndex >= 0 ? coords.slice(0, selectedIndex + 1) : [];
   if (selectedPath.length > 1) {
     activeRouteLayer = L.polyline(selectedPath, {
-      color: "#2f89ff",
+      color: "#174a6a",
       weight: 4,
       opacity: 0.95,
     }).addTo(map);
@@ -854,7 +1284,7 @@ function renderMap() {
       const avgLat = groupEntries.reduce((sum, entry) => sum + Number(entry.lat), 0) / groupEntries.length;
       const avgLng = groupEntries.reduce((sum, entry) => sum + Number(entry.lng), 0) / groupEntries.length;
       const marker = L.marker([avgLat, avgLng], {
-        icon: buildClusterIcon(code),
+        icon: buildClusterIcon(code, groupEntries),
         title: `${code} cluster`,
       }).addTo(map);
 
@@ -939,7 +1369,7 @@ function scrollTimelineTo(id) {
 }
 
 function timelineMeta(entry, stepIndex, stepCount) {
-  return `Step ${stepIndex + 1}/${stepCount} | ${dateRangeLabel(entry)} | ${locationLabel(entry)} | ${entry.category || "General"}`;
+  return `${dateRangeLabel(entry)} | ${locationLabel(entry)} | ${entry.category || "General"}`;
 }
 
 function updateProgress() {
@@ -1000,30 +1430,21 @@ function renderFocusCard() {
     </div>
     <h3>${entry.title}</h3>
     <p class="focus-meta">${dateRangeLabel(entry)} | ${locationLabel(entry)}</p>
-    ${entry.overlapGroup ? `<p class="focus-overlap">Overlap Group: ${entry.overlapGroup}</p>` : ""}
     ${modeContent}
   `;
   setDrawerOpen(drawerOpen);
 }
 
 function renderTimeline() {
-  const visible = visibleEntries();
+  const visible = timelineEntries();
   timelineEl.innerHTML = "";
-  const overlapGroups = [...new Set(visible.map((entry) => entry.overlapGroup).filter(Boolean))];
-  const laneColorByGroup = new Map(
-    overlapGroups.map((group, idx) => [group, ["#8cb9ff", "#99e6be", "#ffc690", "#cbb0ff", "#ffe49f"][idx % 5]])
-  );
 
   visible.forEach((entry, index) => {
     const color = colorForCategory(entry.category);
     const li = document.createElement("li");
     li.className = `timeline-item${entry.id === selectedId ? " active" : ""}`;
     li.dataset.id = entry.id;
-    if (entry.overlapGroup && laneColorByGroup.has(entry.overlapGroup)) {
-      li.style.borderLeftColor = laneColorByGroup.get(entry.overlapGroup);
-    }
-
-    const overlapTag = entry.overlapGroup ? `<em class="overlap-tag">${entry.overlapGroup}</em>` : "";
+    li.style.borderLeftColor = color;
 
     const button = document.createElement("button");
     button.className = "timeline-link";
@@ -1033,7 +1454,6 @@ function renderTimeline() {
       <span>
         <strong>${entry.title}</strong>
         <span>${timelineMeta(entry, index, visible.length)}</span>
-        ${overlapTag}
       </span>
     `;
 
@@ -1068,48 +1488,78 @@ function loadEntries() {
 function migrateEntries(loadedEntries) {
   const templateByTitle = new Map(defaultEntries.map((entry) => [entry.title, entry]));
   const existingTitles = new Set();
+  const storedCopyVersion = Number(localStorage.getItem(COPY_VERSION_KEY) || "0");
+  const shouldRefreshCopy = storedCopyVersion < DATA_COPY_VERSION;
   let changed = false;
 
   const enriched = loadedEntries.map((entry) => {
-    const template = templateByTitle.get(entry.title);
-    existingTitles.add(entry.title);
-    if (!template) return entry;
-
     const next = { ...entry };
-
-    const currentDescriptionLength = (next.description || "").length;
-    if (currentDescriptionLength < 120 && template.description.length > currentDescriptionLength) {
-      next.description = template.description;
+    if (next.title === "Service Industry Roles (Miami)") {
+      next.title = "Service Industry Roles (Tampa)";
+      next.location = "Tampa";
+      next.locationDetail = "Tampa hospitality roles";
+      next.lat = 27.950575;
+      next.lng = -82.457176;
       changed = true;
     }
 
-    if (!next.locationDetail && template.locationDetail) {
-      next.locationDetail = template.locationDetail;
+    const renamedTitles = {
+      "Intern": "Strategy Intern, Limore Kurtz Dooley",
+      "NYU Paris Study Away Semester": "NYU Paris Study Away",
+      "Ride The Dice - Love Crushed Velvet": "Ride The Dice",
+      "Salesperson": "Retail Sales Associate, Luca Market",
+      "Graduate Student": "NYU Tisch School of the Arts",
+      "GUM Studios - Intern, Production and Social Media": "Production and Social Media Intern, GUM Studios",
+      "NYU Master's Thesis Short Film (Wolfe & The Bee)": "Wolfe & The Bee",
+      "GUM Studios - Consultant, Business Development and Communications": "Consultant, Business Development and Communications, GUM Studios",
+      "Associate": "Associate, Double Eye Studios",
+      "Epee Fencing Coach": "Epee Fencing Coach, Birmingham Fencing Club",
+    };
+
+    if (renamedTitles[next.title]) {
+      next.title = renamedTitles[next.title];
       changed = true;
     }
 
-    if (!next.overlapGroup && template.overlapGroup) {
-      next.overlapGroup = template.overlapGroup;
-      changed = true;
-    }
+    const template = templateByTitle.get(next.title);
+    existingTitles.add(next.title);
+    if (!template) return next;
 
-    if (!next.country && template.country) {
-      next.country = template.country;
-      changed = true;
-    }
+    const fieldsToRefresh = [
+      "category",
+      "description",
+      "impact",
+      "scope",
+      "tools",
+      "outcome",
+      "location",
+      "locationDetail",
+      "country",
+      "lat",
+      "lng",
+      "overlapGroup",
+      "teamSize",
+      "evidenceLinks",
+      "mediaLinks",
+    ];
 
-    if (!next.impact) {
-      next.impact = "Demonstrated measurable growth through execution and ownership in this phase.";
-      changed = true;
-    }
+    fieldsToRefresh.forEach((field) => {
+      const templateValue = template[field];
+      const currentValue = next[field];
+      if (!templateValue) return;
+      if (shouldRefreshCopy || !currentValue) {
+        if (currentValue !== templateValue) {
+          next[field] = templateValue;
+          changed = true;
+        }
+      }
+    });
 
-    if (!next.outcome) {
-      next.outcome = "Converted experience into repeatable process and stronger cross-functional performance.";
+    if (Array.isArray(template.skills) && (shouldRefreshCopy || !Array.isArray(next.skills) || !next.skills.length)) {
+      next.skills = [...template.skills];
       changed = true;
-    }
-
-    if (!Array.isArray(next.skills) || !next.skills.length) {
-      next.skills = parseCsvSkills(next.tools || "") || [];
+    } else if (!Array.isArray(next.skills) || !next.skills.length) {
+      next.skills = parseCsvSkills(next.tools || "");
       if (!next.skills.length) next.skills = ["Execution", "Communication"];
       changed = true;
     }
@@ -1117,7 +1567,7 @@ function migrateEntries(loadedEntries) {
     return next;
   });
 
-  PORTFOLIO_PROJECT_TITLES.forEach((title) => {
+  REQUIRED_DEFAULT_ENTRY_TITLES.forEach((title) => {
     if (existingTitles.has(title)) return;
     const template = templateByTitle.get(title);
     if (!template) return;
@@ -1128,6 +1578,7 @@ function migrateEntries(loadedEntries) {
   if (changed) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(enriched));
   }
+  localStorage.setItem(COPY_VERSION_KEY, String(DATA_COPY_VERSION));
 
   return enriched;
 }
@@ -1370,7 +1821,7 @@ function stopPlayback() {
   playbackTimer = null;
   isPlaying = false;
   guidedTour = false;
-  if (tourBtn) tourBtn.textContent = "Guided Tour";
+  if (tourBtn) tourBtn.textContent = "Guided Walkthrough";
   if (tourStatusEl) tourStatusEl.textContent = "";
   playBtn.textContent = "▶";
 }
@@ -1435,7 +1886,7 @@ function startGuidedTour() {
   stopPlayback();
   guidedTour = true;
   isPlaying = false;
-  if (tourBtn) tourBtn.textContent = "Stop Tour";
+  if (tourBtn) tourBtn.textContent = "Stop Walkthrough";
   let tourIndex = Math.max(selectedVisibleIndex(), 0);
 
   const runTourStep = () => {
@@ -1454,7 +1905,7 @@ function startGuidedTour() {
       easeLinearity: 0.2,
     });
     if (tourStatusEl) {
-      tourStatusEl.textContent = `Guided tour: ${entry.title} • ${dateRangeLabel(entry)} • ${entry.location}`;
+      tourStatusEl.textContent = `Guided walkthrough: ${entry.title} • ${dateRangeLabel(entry)} • ${entry.location}`;
     }
     tourIndex += 1;
     playbackTimer = setTimeout(runTourStep, 3800);
@@ -1626,33 +2077,35 @@ function renderAll() {
   syncPrecisionMarker();
 }
 
-if (!ALLOW_EDIT_MODE) unlockBtn.classList.add("hidden");
+if (!ALLOW_EDIT_MODE && unlockBtn) unlockBtn.classList.add("hidden");
 
-unlockBtn.addEventListener("click", () => {
-  if (!ALLOW_EDIT_MODE) return;
+if (unlockBtn) {
+  unlockBtn.addEventListener("click", () => {
+    if (!ALLOW_EDIT_MODE) return;
 
-  if (editorUnlocked) {
-    editorUnlocked = false;
-    editorEl.classList.add("hidden");
-    unlockBtn.textContent = "Unlock Edit Mode";
-    pickMode = false;
-    pickModeBtn.textContent = "Pick Coordinates on Map: Off";
-    removePrecisionMarker();
-    return;
-  }
+    if (editorUnlocked) {
+      editorUnlocked = false;
+      editorEl.classList.add("hidden");
+      unlockBtn.textContent = "Edit Data";
+      pickMode = false;
+      pickModeBtn.textContent = "Pick Coordinates on Map: Off";
+      removePrecisionMarker();
+      return;
+    }
 
-  const pass = window.prompt("Enter editor passcode");
-  if (pass !== EDITOR_PASSCODE) {
-    window.alert("Incorrect passcode.");
-    return;
-  }
+    const pass = window.prompt("Enter editor passcode");
+    if (pass !== EDITOR_PASSCODE) {
+      window.alert("Incorrect passcode.");
+      return;
+    }
 
-  editorUnlocked = true;
-  editorEl.classList.remove("hidden");
-  unlockBtn.textContent = "Lock Edit Mode";
-  renderEditorList();
-  syncPrecisionMarker();
-});
+    editorUnlocked = true;
+    editorEl.classList.remove("hidden");
+    unlockBtn.textContent = "Close Editor";
+    renderEditorList();
+    syncPrecisionMarker();
+  });
+}
 
 pickModeBtn.addEventListener("click", () => {
   if (!editorUnlocked) return;
@@ -1746,7 +2199,7 @@ if (searchInputEl) {
   });
 }
 
-fitAllBtn.addEventListener("click", fitToVisibleRoute);
+if (fitAllBtn) fitAllBtn.addEventListener("click", fitToVisibleRoute);
 if (printBtn) printBtn.addEventListener("click", () => window.print());
 if (tourBtn) tourBtn.addEventListener("click", startGuidedTour);
 

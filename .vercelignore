@@ -1,0 +1,13 @@
+tmp/
+.codex-final-frame.png
+.codex-top-paper.png
+resume/__pycache__/
+fax-printer.aep
+fax-printer.mp4.overwritten-backup
+fax-printer.aep_AME/.DS_Store
+fax-printer.aep_AME/fax-printer_1.mp4
+fax-printer.aep_AME/tmpAEtoAMEProject-fax-printer.aep
+fax-printer.aep_AME/tmpAEtoAMEProject-fax-printer_1.aep
+fax-printer.aep_AME/tmpAEtoAMEProject-fax-printer_2.aep
+fax-printer.aep_AME/tmpAEtoAMEProject-fax-printer_3.aep
+fax-printer.aep_AME/tmpAEtoAMEProject-fax-printer_4.aep

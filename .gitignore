@@ -1,3 +1,8 @@
 .DS_Store
 dist/
 *.zip
+.vercel
+tmp/
+resume/__pycache__/
+.codex-final-frame.png
+.codex-top-paper.png

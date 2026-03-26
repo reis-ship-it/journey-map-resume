@@ -3,8 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reis Quest</title>
-  <link rel="stylesheet" href="/landing.css?v=ae10" />
+  <title>Reis Quest | Reis Gordon</title>
+  <meta name="description" content="Portfolio and map-based resume for Reis Gordon, a multidisciplinary producer and creative director working across film, XR, writing, and creative systems." />
+  <link rel="canonical" href="https://reis.quest/" />
+  <meta property="og:title" content="Reis Quest | Reis Gordon" />
+  <meta property="og:description" content="Portfolio and map-based resume for Reis Gordon, a multidisciplinary producer and creative director working across film, XR, writing, and creative systems." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://reis.quest/" />
+  <meta property="og:image" content="https://reis.quest/social-card.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Reis Quest | Reis Gordon" />
+  <meta name="twitter:description" content="Portfolio and map-based resume for Reis Gordon, a multidisciplinary producer and creative director working across film, XR, writing, and creative systems." />
+  <meta name="twitter:image" content="https://reis.quest/social-card.jpg" />
+  <link rel="stylesheet" href="/landing.css?v=ae16" />
 </head>
 <body>
   <main class="landing-video" aria-label="Fax printer landing">
@@ -12,7 +23,7 @@
       <video
         id="faxVideo"
         class="scene-video"
-        src="/fax-printer-ae.mp4"
+        src="/fax-printer.aep_AME/fax-printer_1_1.mp4"
         preload="auto"
         playsinline
         muted
@@ -24,8 +35,31 @@
         <a id="emailHit" href="#" aria-label="Email"></a>
         <a id="phoneHit" href="#" aria-label="Phone"></a>
       </nav>
+
+      <div class="fax-instrument" aria-label="Playable fax machine easter egg">
+        <div id="faxDisplay" class="fax-display" aria-live="polite">DIAL</div>
+
+        <div id="faxPad" class="fax-keypad" aria-label="Fax keypad">
+          <button class="fax-key" type="button" data-fax-key="1" aria-label="Play fax key 1" tabindex="-1"></button>
+          <button class="fax-key" type="button" data-fax-key="2" aria-label="Play fax key 2" tabindex="-1"></button>
+          <button class="fax-key" type="button" data-fax-key="3" aria-label="Play fax key 3" tabindex="-1"></button>
+          <button class="fax-key" type="button" data-fax-key="4" aria-label="Play fax key 4" tabindex="-1"></button>
+          <button class="fax-key" type="button" data-fax-key="5" aria-label="Play fax key 5" tabindex="-1"></button>
+          <button class="fax-key" type="button" data-fax-key="6" aria-label="Play fax key 6" tabindex="-1"></button>
+          <button class="fax-key" type="button" data-fax-key="7" aria-label="Play fax key 7" tabindex="-1"></button>
+          <button class="fax-key" type="button" data-fax-key="8" aria-label="Play fax key 8" tabindex="-1"></button>
+          <button class="fax-key" type="button" data-fax-key="9" aria-label="Play fax key 9" tabindex="-1"></button>
+          <button class="fax-key" type="button" data-fax-key="*" aria-label="Play fax star beat" tabindex="-1"></button>
+          <button class="fax-key" type="button" data-fax-key="0" aria-label="Play fax key 0" tabindex="-1"></button>
+          <button class="fax-key" type="button" data-fax-key="#" aria-label="Play fax pound noise" tabindex="-1"></button>
+        </div>
+      </div>
+
+      <p id="faxHint" class="fax-hint" aria-live="polite">
+        easter egg unlocked: click the keypad or press 1-9 * 0 #
+      </p>
     </section>
   </main>
-  <script type="module" src="/landing.js?v=ae10"></script>
+  <script type="module" src="/landing.js?v=ae16"></script>
 </body>
 </html>
