@@ -82,7 +82,7 @@ video.muted = false;
 emailHit.setAttribute("href", EMAIL_HREF);
 phoneHit.setAttribute("href", PHONE_HREF);
 
-for (const [index, button] of faxKeys.entries()) {
+for (const button of faxKeys) {
   const key = button.getAttribute("data-fax-key") || "";
   faxButtons.set(key, button);
 
@@ -90,8 +90,6 @@ for (const [index, button] of faxKeys.entries()) {
   if (definition) {
     button.style.setProperty("--key-rgb", definition.rgb);
   }
-
-  button.style.setProperty("--sparkle-delay", `${index * 0.16}s`);
 
   button.addEventListener("pointerdown", (event) => {
     event.preventDefault();
