@@ -39,18 +39,18 @@ const HITBOXES = {
 
 // Key hitboxes measured against the 3840x2160 final frame.
 const KEY_HITBOXES = {
-  "1": { left: 1388, top: 842, width: 128, height: 80 },
-  "2": { left: 1515, top: 842, width: 128, height: 80 },
-  "3": { left: 1643, top: 842, width: 128, height: 80 },
-  "4": { left: 1384, top: 932, width: 128, height: 80 },
-  "5": { left: 1511, top: 932, width: 128, height: 80 },
-  "6": { left: 1639, top: 932, width: 128, height: 80 },
-  "7": { left: 1380, top: 1022, width: 128, height: 80 },
-  "8": { left: 1508, top: 1022, width: 128, height: 80 },
-  "9": { left: 1636, top: 1022, width: 128, height: 80 },
-  "*": { left: 1376, top: 1112, width: 130, height: 82 },
-  "0": { left: 1504, top: 1112, width: 130, height: 82 },
-  "#": { left: 1632, top: 1112, width: 130, height: 82 },
+  "1": { left: 1470, top: 928, width: 84, height: 50 },
+  "2": { left: 1572, top: 928, width: 84, height: 50 },
+  "3": { left: 1674, top: 928, width: 84, height: 50 },
+  "4": { left: 1468, top: 1002, width: 86, height: 52 },
+  "5": { left: 1570, top: 1002, width: 86, height: 52 },
+  "6": { left: 1672, top: 1002, width: 86, height: 52 },
+  "7": { left: 1468, top: 1078, width: 86, height: 52 },
+  "8": { left: 1570, top: 1078, width: 86, height: 52 },
+  "9": { left: 1672, top: 1078, width: 86, height: 52 },
+  "*": { left: 1468, top: 1160, width: 86, height: 52 },
+  "0": { left: 1570, top: 1160, width: 86, height: 52 },
+  "#": { left: 1672, top: 1160, width: 86, height: 52 },
 };
 
 const FAX_PAD_MAP = {
