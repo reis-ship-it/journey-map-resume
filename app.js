@@ -757,6 +757,8 @@ const detailDrawerEl = document.getElementById("detailDrawer");
 const closeDrawerBtn = document.getElementById("closeDrawerBtn");
 const focusCardEl = document.getElementById("focusCard");
 const legendEl = document.getElementById("legend");
+const mapEl = document.getElementById("map");
+const journeyGridEl = document.querySelector(".journey-grid");
 const filterPanelEl = document.getElementById("filterPanel");
 const whySummaryEl = document.getElementById("whySummary");
 const quickChipsEl = document.getElementById("quickChips");
@@ -820,19 +822,72 @@ const mediaLinksEl = document.getElementById("mediaLinks");
 const dataHealthEl = document.getElementById("dataHealth");
 const resetFormBtn = document.getElementById("resetFormBtn");
 
-const map = L.map("map", {
-  worldCopyJump: true,
-  zoomControl: true,
-  minZoom: 2,
-  zoomAnimation: true,
-  fadeAnimation: true,
-  markerZoomAnimation: true,
-}).setView([20, 0], 2);
+let map = null;
+let baseTileLayer = null;
+let mapResizeTimer = 0;
+let initialFitComplete = false;
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 18,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-}).addTo(map);
+function showMapFallback(message) {
+  if (!mapEl) return;
+  mapEl.classList.remove("is-loading", "is-slow", "is-ready");
+  mapEl.classList.add("map-fallback");
+  mapEl.innerHTML = `<div class="map-fallback-message">${message}</div>`;
+}
+
+function markMapReady() {
+  if (!mapEl) return;
+  mapEl.classList.remove("is-loading", "is-slow", "map-fallback");
+  mapEl.classList.add("is-ready");
+}
+
+function queueMapInvalidate() {
+  if (!map) return;
+  if (mapResizeTimer) window.clearTimeout(mapResizeTimer);
+
+  window.requestAnimationFrame(() => {
+    if (map) map.invalidateSize({ pan: false, debounceMoveend: true });
+  });
+
+  mapResizeTimer = window.setTimeout(() => {
+    if (map) map.invalidateSize({ pan: false, debounceMoveend: true });
+  }, 180);
+}
+
+if (window.L && mapEl) {
+  mapEl.classList.add("is-loading");
+  window.setTimeout(() => {
+    if (mapEl.classList.contains("is-loading")) {
+      mapEl.classList.add("is-slow");
+    }
+  }, 1800);
+
+  map = L.map("map", {
+    worldCopyJump: true,
+    zoomControl: true,
+    minZoom: 2,
+    zoomAnimation: false,
+    fadeAnimation: false,
+    markerZoomAnimation: false,
+    preferCanvas: true,
+    inertia: false,
+  }).setView([20, 0], 2);
+
+  baseTileLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    keepBuffer: 2,
+    updateWhenIdle: true,
+  });
+
+  baseTileLayer.on("load", () => {
+    markMapReady();
+    queueMapInvalidate();
+  });
+
+  baseTileLayer.addTo(map);
+} else {
+  showMapFallback("Career map is unavailable in this browser. Use the walkthrough on the right.");
+}
 
 let markerLayers = [];
 let routeLayer = null;
@@ -896,12 +951,13 @@ function currentCoordsFromForm() {
 }
 
 function removePrecisionMarker() {
-  if (!precisionMarker) return;
+  if (!precisionMarker || !map) return;
   map.removeLayer(precisionMarker);
   precisionMarker = null;
 }
 
 function syncPrecisionMarker() {
+  if (!map) return;
   if (!editorUnlocked) {
     removePrecisionMarker();
     return;
@@ -1065,7 +1121,7 @@ function visibleEntries() {
 }
 
 function timelineEntries() {
-  return [...visibleEntries()].reverse();
+  return visibleEntries();
 }
 
 function ensureSelection() {
@@ -1218,6 +1274,7 @@ function offsetMarker(entry, duplicateIndex, duplicateTotal) {
 }
 
 function clearMapLayers() {
+  if (!map) return;
   markerLayers.forEach((layer) => map.removeLayer(layer));
   markerLayers = [];
 
@@ -1229,6 +1286,7 @@ function clearMapLayers() {
 }
 
 function renderMap() {
+  if (!map) return;
   clearMapLayers();
   const visible = visibleEntries();
   if (!visible.length) return;
@@ -1342,10 +1400,21 @@ function renderMap() {
   });
 }
 
-function fitToVisibleRoute() {
+function fitToVisibleRoute({ immediate = false } = {}) {
+  if (!map) return;
   const visible = visibleEntries();
   if (!visible.length) return;
   const bounds = L.latLngBounds(visible.map((entry) => [entry.lat, entry.lng]));
+  if (immediate || !initialFitComplete) {
+    map.fitBounds(bounds, {
+      padding: [50, 50],
+      maxZoom: 5,
+    });
+    initialFitComplete = true;
+    queueMapInvalidate();
+    return;
+  }
+
   map.flyToBounds(bounds, {
     padding: [50, 50],
     maxZoom: 5,
@@ -1355,6 +1424,7 @@ function fitToVisibleRoute() {
 }
 
 function panToSelected() {
+  if (!map) return;
   const selected = visibleEntries().find((entry) => entry.id === selectedId);
   if (!selected) return;
   map.flyTo([selected.lat, selected.lng], Math.max(map.getZoom(), 4), {
@@ -1365,7 +1435,10 @@ function panToSelected() {
 
 function scrollTimelineTo(id) {
   const item = timelineEl.querySelector(`[data-id="${id}"]`);
-  if (item) item.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  if (!item) return;
+
+  const targetTop = Math.max(0, item.offsetTop - timelineEl.clientHeight * 0.18);
+  timelineEl.scrollTo({ top: targetTop, behavior: "smooth" });
 }
 
 function timelineMeta(entry, stepIndex, stepCount) {
@@ -1900,10 +1973,12 @@ function startGuidedTour() {
     selectedId = entry.id;
     drawerOpen = true;
     renderAll();
-    map.flyTo([entry.lat, entry.lng], Math.max(5, map.getZoom()), {
-      duration: 2.6,
-      easeLinearity: 0.2,
-    });
+    if (map) {
+      map.flyTo([entry.lat, entry.lng], Math.max(5, map.getZoom()), {
+        duration: 2.6,
+        easeLinearity: 0.2,
+      });
+    }
     if (tourStatusEl) {
       tourStatusEl.textContent = `Guided walkthrough: ${entry.title} • ${dateRangeLabel(entry)} • ${entry.location}`;
     }
@@ -1936,10 +2011,12 @@ async function findPlaceCoordinates() {
     latEl.value = Number(result.lat).toFixed(6);
     lngEl.value = Number(result.lon).toFixed(6);
     syncPrecisionMarker();
-    map.flyTo([Number(result.lat), Number(result.lon)], 9, {
-      duration: MOTION.geocodePanDuration,
-      easeLinearity: MOTION.ease,
-    });
+    if (map) {
+      map.flyTo([Number(result.lat), Number(result.lon)], 9, {
+        duration: MOTION.geocodePanDuration,
+        easeLinearity: MOTION.ease,
+      });
+    }
     setPlaceStatus(`Found: ${result.display_name}`);
   } catch (error) {
     setPlaceStatus(error.message, true);
@@ -2075,6 +2152,7 @@ function renderAll() {
   if (editorUnlocked) renderEditorList();
   if (editorUnlocked) renderDataHealth();
   syncPrecisionMarker();
+  queueMapInvalidate();
 }
 
 if (!ALLOW_EDIT_MODE && unlockBtn) unlockBtn.classList.add("hidden");
@@ -2113,17 +2191,19 @@ pickModeBtn.addEventListener("click", () => {
   pickModeBtn.textContent = `Pick Coordinates on Map: ${pickMode ? "On" : "Off"}`;
 });
 
-map.on("click", (event) => {
-  if (!editorUnlocked || !pickMode) return;
-  latEl.value = event.latlng.lat.toFixed(6);
-  lngEl.value = event.latlng.lng.toFixed(6);
-  syncPrecisionMarker();
-  setPlaceStatus(`Picked on map: ${event.latlng.lat.toFixed(6)}, ${event.latlng.lng.toFixed(6)}`);
-});
+if (map) {
+  map.on("click", (event) => {
+    if (!editorUnlocked || !pickMode) return;
+    latEl.value = event.latlng.lat.toFixed(6);
+    lngEl.value = event.latlng.lng.toFixed(6);
+    syncPrecisionMarker();
+    setPlaceStatus(`Picked on map: ${event.latlng.lat.toFixed(6)}, ${event.latlng.lng.toFixed(6)}`);
+  });
 
-map.on("zoomend", () => {
-  renderMap();
-});
+  map.on("zoomend", () => {
+    renderMap();
+  });
+}
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -2297,6 +2377,21 @@ importInput.addEventListener("change", async (event) => {
 setPlaceStatus("Use map click, search, or drag the precision pin.");
 applyResponsiveMode();
 renderAll();
-fitToVisibleRoute();
-setTimeout(() => map.invalidateSize(), 120);
-window.addEventListener("resize", applyResponsiveMode);
+fitToVisibleRoute({ immediate: true });
+window.addEventListener("load", queueMapInvalidate);
+window.addEventListener("resize", () => {
+  applyResponsiveMode();
+  queueMapInvalidate();
+});
+
+if (filterPanelEl) {
+  filterPanelEl.addEventListener("toggle", queueMapInvalidate);
+}
+
+if (window.ResizeObserver && journeyGridEl) {
+  const mapResizeObserver = new ResizeObserver(() => {
+    queueMapInvalidate();
+  });
+  mapResizeObserver.observe(journeyGridEl);
+  if (mapEl) mapResizeObserver.observe(mapEl);
+}
