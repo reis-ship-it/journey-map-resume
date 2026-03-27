@@ -72,8 +72,19 @@ const faxButtons = new Map();
 let persistedComplete = readSession(STORAGE_KEY) === "1";
 let audioContext = null;
 let masterGain = null;
+let compressor = null;
+let bounceInput = null;
+let reverbInput = null;
 const sampleBuffers = new Map();
 const sampleLoaders = new Map();
+const activeLoopVoices = new Map();
+const effectState = {
+  sustain: false,
+  bounce: false,
+  reverb: false,
+  chorus: false,
+  nightcore: false,
+};
 
 video.loop = false;
 video.volume = 0;
@@ -131,6 +142,7 @@ video.addEventListener("ended", () => {
 window.addEventListener("resize", updateHotspotPositions);
 window.addEventListener("orientationchange", updateHotspotPositions);
 window.addEventListener("keydown", handleGlobalKeydown);
+window.addEventListener("keyup", handleGlobalKeyup);
 
 const resizeObserver = new ResizeObserver(() => {
   updateHotspotPositions();
@@ -216,6 +228,10 @@ function getVideoRectPx() {
 function handleGlobalKeydown(event) {
   if (event.metaKey || event.ctrlKey || event.altKey || event.repeat) return;
 
+  if (handlePerformanceKeydown(event)) {
+    return;
+  }
+
   const key = normalizeFaxKey(event);
   if (!key) return;
 
@@ -223,10 +239,57 @@ function handleGlobalKeydown(event) {
   void triggerFaxKey(key);
 }
 
+function handleGlobalKeyup(event) {
+  if (event.code === "Space" || event.key === " ") {
+    event.preventDefault();
+    effectState.sustain = false;
+    releaseSustainVoices();
+  }
+}
+
+function handlePerformanceKeydown(event) {
+  if (event.code === "Space" || event.key === " ") {
+    event.preventDefault();
+    effectState.sustain = true;
+    return true;
+  }
+
+  const key = event.key.toLowerCase();
+  if (key === "b") {
+    event.preventDefault();
+    effectState.bounce = !effectState.bounce;
+    return true;
+  }
+
+  if (key === "v") {
+    event.preventDefault();
+    effectState.reverb = !effectState.reverb;
+    return true;
+  }
+
+  if (key === "c") {
+    event.preventDefault();
+    effectState.chorus = !effectState.chorus;
+    return true;
+  }
+
+  if (key === "n") {
+    event.preventDefault();
+    effectState.nightcore = !effectState.nightcore;
+    return true;
+  }
+
+  return false;
+}
+
 function normalizeFaxKey(event) {
   if (/^[0-9]$/.test(event.key)) return event.key;
   if (event.key === "*" || event.key === "#") return event.key;
   if (event.code === "NumpadMultiply") return "*";
+  if (event.code === "NumpadAdd") return "#";
+  if (event.code === "NumpadSubtract") return "*";
+  if (event.key === "-" || event.key === "_" || event.code === "Minus") return "*";
+  if (event.key === "=" || event.key === "+" || event.code === "Equal") return "#";
   return "";
 }
 
@@ -241,6 +304,16 @@ async function triggerFaxKey(key) {
 
   try {
     await loadFaxSample(key);
+    if (effectState.sustain) {
+      const existingVoice = activeLoopVoices.get(key);
+      if (existingVoice) {
+        existingVoice.stop();
+      }
+
+      activeLoopVoices.set(key, playFaxSample(key, { loop: true }));
+      return;
+    }
+
     playFaxSample(key);
   } catch (error) {
     console.error(`Failed to play fax sample for key "${key}".`, error);
@@ -272,7 +345,7 @@ async function ensureAudioEngine() {
   if (!audioContext) {
     audioContext = new AudioContextCtor();
 
-    const compressor = audioContext.createDynamicsCompressor();
+    compressor = audioContext.createDynamicsCompressor();
     compressor.threshold.value = -28;
     compressor.knee.value = 24;
     compressor.ratio.value = 10;
@@ -283,6 +356,9 @@ async function ensureAudioEngine() {
     masterGain.gain.value = 0.82;
     masterGain.connect(compressor);
     compressor.connect(audioContext.destination);
+
+    bounceInput = buildBounceBus();
+    reverbInput = buildReverbBus();
   }
 
   if (audioContext.state === "suspended") {
@@ -352,44 +428,193 @@ function decodeAudioBuffer(arrayBuffer) {
   });
 }
 
-function playFaxSample(key) {
+function playFaxSample(key, { loop = false } = {}) {
   const definition = FAX_PAD_MAP[key];
   const buffer = sampleBuffers.get(key);
   if (!definition || !buffer || !audioContext || !masterGain) return;
 
-  const source = audioContext.createBufferSource();
-  source.buffer = buffer;
+  const voiceBus = audioContext.createGain();
+  voiceBus.gain.value = (definition.gain || 0.96) * (loop ? 0.88 : 1);
+  voiceBus.connect(masterGain);
+
+  const nodesToDisconnect = [voiceBus];
+  const sources = [];
+  const layers = [
+    { detune: 0, delay: 0, gain: 1 },
+    ...(effectState.chorus
+      ? [
+          { detune: -9, delay: 0.012, gain: 0.52 },
+          { detune: 9, delay: 0.021, gain: 0.52 },
+        ]
+      : []),
+  ];
+
+  for (const layer of layers) {
+    const source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.loop = loop;
+    source.playbackRate.value = effectState.nightcore ? 1.16 : 1;
+    source.detune.value = layer.detune + (effectState.nightcore ? 120 : 0);
+
+    const highpass = audioContext.createBiquadFilter();
+    highpass.type = "highpass";
+    highpass.frequency.value = effectState.nightcore ? 180 : 140;
+    highpass.Q.value = 0.4;
+
+    const lowpass = audioContext.createBiquadFilter();
+    lowpass.type = "lowpass";
+    lowpass.frequency.value = effectState.nightcore ? 5600 : 4600;
+    lowpass.Q.value = 0.4;
+
+    const layerGain = audioContext.createGain();
+    layerGain.gain.value = layer.gain;
+
+    source.connect(highpass);
+    highpass.connect(lowpass);
+    lowpass.connect(layerGain);
+    layerGain.connect(voiceBus);
+
+    source.start(audioContext.currentTime + layer.delay);
+
+    sources.push(source);
+    nodesToDisconnect.push(highpass, lowpass, layerGain);
+  }
+
+  if (effectState.bounce && bounceInput) {
+    const bounceSend = audioContext.createGain();
+    bounceSend.gain.value = loop ? 0.34 : 0.28;
+    voiceBus.connect(bounceSend);
+    bounceSend.connect(bounceInput);
+    nodesToDisconnect.push(bounceSend);
+  }
+
+  if (effectState.reverb && reverbInput) {
+    const reverbSend = audioContext.createGain();
+    reverbSend.gain.value = loop ? 0.42 : 0.32;
+    voiceBus.connect(reverbSend);
+    reverbSend.connect(reverbInput);
+    nodesToDisconnect.push(reverbSend);
+  }
+
+  let cleanedUp = false;
+  const cleanup = () => {
+    if (cleanedUp) return;
+    cleanedUp = true;
+
+    for (const node of nodesToDisconnect) {
+      try {
+        node.disconnect();
+      } catch {
+        // no-op
+      }
+    }
+  };
+
+  let endedSources = 0;
+  for (const source of sources) {
+    source.addEventListener("ended", () => {
+      endedSources += 1;
+      if (!loop && endedSources >= sources.length) {
+        cleanup();
+      }
+    });
+  }
+
+  return {
+    stop() {
+      const stopAt = audioContext.currentTime + 0.08;
+      voiceBus.gain.cancelScheduledValues(audioContext.currentTime);
+      voiceBus.gain.setValueAtTime(Math.max(voiceBus.gain.value, 0.0001), audioContext.currentTime);
+      voiceBus.gain.exponentialRampToValueAtTime(0.0001, stopAt);
+
+      for (const source of sources) {
+        try {
+          source.stop(stopAt + 0.02);
+        } catch {
+          // no-op
+        }
+      }
+
+      window.setTimeout(cleanup, 180);
+    },
+  };
+}
+
+function releaseSustainVoices() {
+  for (const voice of activeLoopVoices.values()) {
+    voice.stop();
+  }
+
+  activeLoopVoices.clear();
+}
+
+function buildBounceBus() {
+  const input = audioContext.createGain();
+  const delay = audioContext.createDelay(0.6);
+  delay.delayTime.value = 0.24;
+
+  const feedback = audioContext.createGain();
+  feedback.gain.value = 0.42;
+
+  const tone = audioContext.createBiquadFilter();
+  tone.type = "lowpass";
+  tone.frequency.value = 3200;
+  tone.Q.value = 0.45;
+
+  const output = audioContext.createGain();
+  output.gain.value = 0.28;
+
+  input.connect(delay);
+  delay.connect(tone);
+  tone.connect(output);
+  output.connect(compressor);
+  tone.connect(feedback);
+  feedback.connect(delay);
+
+  return input;
+}
+
+function buildReverbBus() {
+  const input = audioContext.createGain();
+  const convolver = audioContext.createConvolver();
+  convolver.buffer = createImpulseResponse(audioContext, 1.8, 2.4);
 
   const highpass = audioContext.createBiquadFilter();
   highpass.type = "highpass";
-  highpass.frequency.value = 140;
-  highpass.Q.value = 0.4;
+  highpass.frequency.value = 180;
+  highpass.Q.value = 0.35;
 
   const lowpass = audioContext.createBiquadFilter();
   lowpass.type = "lowpass";
   lowpass.frequency.value = 4600;
-  lowpass.Q.value = 0.4;
+  lowpass.Q.value = 0.45;
 
-  const gain = audioContext.createGain();
-  gain.gain.value = definition.gain || 0.96;
+  const output = audioContext.createGain();
+  output.gain.value = 0.34;
 
-  source.connect(highpass);
+  input.connect(convolver);
+  convolver.connect(highpass);
   highpass.connect(lowpass);
-  lowpass.connect(gain);
-  gain.connect(masterGain);
+  lowpass.connect(output);
+  output.connect(compressor);
 
-  source.addEventListener("ended", () => {
-    try {
-      source.disconnect();
-      highpass.disconnect();
-      lowpass.disconnect();
-      gain.disconnect();
-    } catch {
-      // no-op
+  return input;
+}
+
+function createImpulseResponse(context, duration, decay) {
+  const length = Math.floor(context.sampleRate * duration);
+  const buffer = context.createBuffer(2, length, context.sampleRate);
+
+  for (let channel = 0; channel < buffer.numberOfChannels; channel += 1) {
+    const samples = buffer.getChannelData(channel);
+
+    for (let index = 0; index < length; index += 1) {
+      const envelope = Math.pow(1 - index / length, decay);
+      samples[index] = (Math.random() * 2 - 1) * envelope;
     }
-  });
+  }
 
-  source.start();
+  return buffer;
 }
 
 function clamp(value, min, max) {
