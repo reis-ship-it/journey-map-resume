@@ -121,14 +121,14 @@ body {
 }
 
 .fax-lcd-text {
-  display: inline-block;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.14em;
   white-space: nowrap;
   font-family: "DSEG7 Classic", monospace;
   font-size: var(--lcd-font-size, 36px);
   font-weight: 700;
   line-height: 1;
-  letter-spacing: 0.14em;
-  word-spacing: 0.52em;
   color: #000;
   opacity: 0;
   position: relative;
@@ -143,6 +143,68 @@ body {
     0.015em 0.015em 0 currentColor,
     -0.015em -0.015em 0 currentColor;
   will-change: transform, opacity;
+}
+
+.fax-lcd-char {
+  display: inline-block;
+  min-width: 0.7em;
+  flex: 0 0 auto;
+}
+
+.fax-lcd-word-gap {
+  width: 0.78em;
+  flex: 0 0 auto;
+}
+
+.fax-lcd-char-m {
+  position: relative;
+  width: 0.88em;
+  min-width: 0.88em;
+  height: 0.98em;
+  margin-right: 0.05em;
+}
+
+.fax-lcd-m-seg {
+  position: absolute;
+  display: block;
+  background: currentColor;
+  border-radius: 999px;
+  box-shadow: 0 0 0 0.02em currentColor;
+}
+
+.fax-lcd-m-seg-left,
+.fax-lcd-m-seg-center,
+.fax-lcd-m-seg-right {
+  top: 0.12em;
+  width: 0.13em;
+  height: 0.8em;
+}
+
+.fax-lcd-m-seg-left {
+  left: 0;
+}
+
+.fax-lcd-m-seg-center {
+  left: 0.375em;
+}
+
+.fax-lcd-m-seg-right {
+  right: 0;
+}
+
+.fax-lcd-m-seg-top-left,
+.fax-lcd-m-seg-top-right {
+  top: 0;
+  width: 0.48em;
+  height: 0.13em;
+}
+
+.fax-lcd-m-seg-top-left {
+  left: 0;
+}
+
+.fax-lcd-m-seg-top-right {
+  right: 0;
 }
 
 .fax-lcd.is-scrolling .fax-lcd-text {
