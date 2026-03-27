@@ -308,6 +308,8 @@ async function triggerFaxKey(key) {
       const existingVoice = activeLoopVoices.get(key);
       if (existingVoice) {
         existingVoice.stop();
+        activeLoopVoices.delete(key);
+        return;
       }
 
       activeLoopVoices.set(key, playFaxSample(key, { loop: true }));
