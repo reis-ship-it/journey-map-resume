@@ -5,6 +5,8 @@ const resumeHit = document.getElementById("resumeHit");
 const portfolioHit = document.getElementById("portfolioHit");
 const emailHit = document.getElementById("emailHit");
 const phoneHit = document.getElementById("phoneHit");
+const faxLcd = document.getElementById("faxLcd");
+const faxLcdText = document.getElementById("faxLcdText");
 const faxInstrument = document.querySelector(".fax-instrument");
 const faxKeys = Array.from(document.querySelectorAll(".fax-key"));
 
@@ -16,6 +18,8 @@ if (
   !portfolioHit ||
   !emailHit ||
   !phoneHit ||
+  !faxLcd ||
+  !faxLcdText ||
   !faxInstrument ||
   !faxKeys.length
 ) {
@@ -36,6 +40,8 @@ const HITBOXES = {
   email: { left: 1628, top: 2036, width: 360, height: 96 },
   phone: { left: 2338, top: 2039, width: 242, height: 90 },
 };
+
+const LCD_RECT = { left: 1948, top: 772, width: 274, height: 56 };
 
 // Key hitboxes measured against the 3840x2160 final frame.
 const KEY_HITBOXES = {
@@ -78,6 +84,9 @@ let reverbInput = null;
 const sampleBuffers = new Map();
 const sampleLoaders = new Map();
 const activeLoopVoices = new Map();
+let lcdMarqueePlayed = false;
+let lcdMarqueeStarting = false;
+let lcdFontPromise = null;
 const effectState = {
   sustain: false,
   bounce: false,
@@ -119,6 +128,9 @@ video.addEventListener("loadedmetadata", () => {
   }
 
   updateHotspotPositions();
+  if (faxLcd.classList.contains("is-ready")) {
+    void playFaxLcdMarquee();
+  }
 });
 
 video.addEventListener("timeupdate", () => {
@@ -152,6 +164,7 @@ resizeObserver.observe(video);
 resizeObserver.observe(plate);
 window.addEventListener("pointerdown", warmFaxSamples, { once: true, passive: true });
 window.addEventListener("keydown", warmFaxSamples, { once: true });
+faxLcdText.addEventListener("animationend", handleFaxLcdAnimationEnd);
 
 function setHotspotsReady(ready) {
   for (const node of [resumeHit, portfolioHit, emailHit, phoneHit]) {
@@ -159,7 +172,12 @@ function setHotspotsReady(ready) {
     else node.classList.remove("is-ready");
   }
 
+  faxLcd.classList.toggle("is-ready", ready);
   faxInstrument.classList.toggle("is-ready", ready);
+
+  if (ready) {
+    void playFaxLcdMarquee();
+  }
 }
 
 async function startVideoPlayback() {
@@ -194,6 +212,7 @@ function updateHotspotPositions() {
   placeHitbox(portfolioHit, videoRect, HITBOXES.portfolio);
   placeHitbox(emailHit, videoRect, HITBOXES.email);
   placeHitbox(phoneHit, videoRect, HITBOXES.phone);
+  placeFaxLcd(videoRect);
 
   for (const [key, button] of faxButtons) {
     const rect = KEY_HITBOXES[key];
@@ -212,6 +231,17 @@ function placeHitbox(node, videoRect, rect) {
   node.style.top = `${rect.top * scaleY}px`;
   node.style.width = `${rect.width * scaleX}px`;
   node.style.height = `${rect.height * scaleY}px`;
+}
+
+function placeFaxLcd(videoRect) {
+  const { width: sourceWidth, height: sourceHeight } = getSourceVideoSize();
+  const scaleX = videoRect.width / sourceWidth;
+  const scaleY = videoRect.height / sourceHeight;
+
+  placeHitbox(faxLcd, videoRect, LCD_RECT);
+  faxLcd.style.setProperty("--lcd-font-size", `${36 * scaleY}px`);
+  faxLcd.style.setProperty("--lcd-pad-x", `${8 * scaleX}px`);
+  faxLcd.style.setProperty("--lcd-pad-y", `${2 * scaleY}px`);
 }
 
 function getVideoRectPx() {
@@ -376,6 +406,35 @@ async function ensureAudioEngine() {
 
 function warmFaxSamples() {
   void preloadFaxSamples();
+}
+
+async function playFaxLcdMarquee() {
+  if (lcdMarqueePlayed || lcdMarqueeStarting || !faxLcd.classList.contains("is-ready")) return;
+  if (!video.videoWidth) return;
+
+  lcdMarqueeStarting = true;
+  await ensureLcdFont();
+
+  faxLcd.classList.remove("is-scrolling", "is-done");
+  void faxLcd.offsetWidth;
+  faxLcd.classList.add("is-scrolling");
+
+  lcdMarqueePlayed = true;
+  lcdMarqueeStarting = false;
+}
+
+function handleFaxLcdAnimationEnd() {
+  faxLcd.classList.remove("is-scrolling");
+  faxLcd.classList.add("is-done");
+}
+
+async function ensureLcdFont() {
+  if (!document.fonts) return;
+  if (!lcdFontPromise) {
+    lcdFontPromise = document.fonts.load('32px "DSEG7 Classic"').catch(() => undefined);
+  }
+
+  await lcdFontPromise;
 }
 
 async function preloadFaxSamples() {
