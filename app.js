@@ -1423,11 +1423,37 @@ function fitToVisibleRoute({ immediate = false } = {}) {
   });
 }
 
+function relatedFocusEntries(entry) {
+  const visible = visibleEntries().filter((item) => item.id !== entry.id);
+
+  if (entry.overlapGroup) {
+    const overlapMatches = visible.filter(
+      (item) => item.overlapGroup && item.overlapGroup === entry.overlapGroup
+    );
+    if (overlapMatches.length) return overlapMatches;
+  }
+
+  return visible.filter(
+    (item) =>
+      item.location === entry.location &&
+      (item.country || "") === (entry.country || "")
+  );
+}
+
+function focusZoomForEntry(entry) {
+  const related = relatedFocusEntries(entry);
+
+  if (related.length >= 3) return 10.25;
+  if (related.length >= 1) return 9.35;
+  if (entry.locationDetail) return 8.55;
+  return 7.8;
+}
+
 function panToSelected() {
   if (!map) return;
   const selected = visibleEntries().find((entry) => entry.id === selectedId);
   if (!selected) return;
-  map.flyTo([selected.lat, selected.lng], Math.max(map.getZoom(), 4), {
+  map.flyTo([selected.lat, selected.lng], focusZoomForEntry(selected), {
     duration: MOTION.focusPanDuration,
     easeLinearity: MOTION.ease,
   });
@@ -1974,7 +2000,7 @@ function startGuidedTour() {
     drawerOpen = true;
     renderAll();
     if (map) {
-      map.flyTo([entry.lat, entry.lng], Math.max(5, map.getZoom()), {
+      map.flyTo([entry.lat, entry.lng], focusZoomForEntry(entry), {
         duration: 2.6,
         easeLinearity: 0.2,
       });
