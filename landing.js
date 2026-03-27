@@ -54,26 +54,26 @@ const KEY_HITBOXES = {
 };
 
 const FAX_PAD_MAP = {
-  "1": { rowFreq: 697, colFreq: 1209, rgb: "143, 212, 255", duration: 0.16, send: 0.08 },
-  "2": { rowFreq: 697, colFreq: 1336, rgb: "153, 219, 255", duration: 0.16, send: 0.08 },
-  "3": { rowFreq: 697, colFreq: 1477, rgb: "168, 230, 255", duration: 0.16, send: 0.09 },
-  "4": { rowFreq: 770, colFreq: 1209, rgb: "156, 244, 238", duration: 0.16, send: 0.09 },
-  "5": { rowFreq: 770, colFreq: 1336, rgb: "142, 240, 208", duration: 0.16, send: 0.09 },
-  "6": { rowFreq: 770, colFreq: 1477, rgb: "148, 239, 187", duration: 0.16, send: 0.09 },
-  "7": { rowFreq: 852, colFreq: 1209, rgb: "248, 223, 130", duration: 0.17, send: 0.1 },
-  "8": { rowFreq: 852, colFreq: 1336, rgb: "255, 207, 118", duration: 0.17, send: 0.1 },
-  "9": { rowFreq: 852, colFreq: 1477, rgb: "255, 186, 126", duration: 0.17, send: 0.1 },
-  "*": { rowFreq: 941, colFreq: 1209, rgb: "255, 154, 116", duration: 0.18, send: 0.11 },
-  "0": { rowFreq: 941, colFreq: 1336, rgb: "138, 230, 200", duration: 0.18, send: 0.11 },
-  "#": { rowFreq: 941, colFreq: 1477, rgb: "255, 242, 139", duration: 0.18, send: 0.12 },
+  "1": { rgb: "143, 212, 255", sampleUrl: "/assets/audio/fax-vocals/1.mp3" },
+  "2": { rgb: "153, 219, 255", sampleUrl: "/assets/audio/fax-vocals/2.mp3" },
+  "3": { rgb: "168, 230, 255", sampleUrl: "/assets/audio/fax-vocals/3.mp3" },
+  "4": { rgb: "156, 244, 238", sampleUrl: "/assets/audio/fax-vocals/4.mp3" },
+  "5": { rgb: "142, 240, 208", sampleUrl: "/assets/audio/fax-vocals/5.mp3" },
+  "6": { rgb: "148, 239, 187", sampleUrl: "/assets/audio/fax-vocals/6.mp3" },
+  "7": { rgb: "248, 223, 130", sampleUrl: "/assets/audio/fax-vocals/7.mp3" },
+  "8": { rgb: "255, 207, 118", sampleUrl: "/assets/audio/fax-vocals/8.mp3" },
+  "9": { rgb: "255, 186, 126", sampleUrl: "/assets/audio/fax-vocals/9.mp3" },
+  "*": { rgb: "255, 154, 116", sampleUrl: "/assets/audio/fax-vocals/star.mp3", gain: 1.04 },
+  "0": { rgb: "138, 230, 200", sampleUrl: "/assets/audio/fax-vocals/0.mp3" },
+  "#": { rgb: "255, 242, 139", sampleUrl: "/assets/audio/fax-vocals/pound.mp3", gain: 1.02 },
 };
 
 const faxButtons = new Map();
 let persistedComplete = readSession(STORAGE_KEY) === "1";
 let audioContext = null;
 let masterGain = null;
-let delayNode = null;
-let noiseBuffer = null;
+const sampleBuffers = new Map();
+const sampleLoaders = new Map();
 
 video.loop = false;
 video.volume = 0;
@@ -138,6 +138,8 @@ const resizeObserver = new ResizeObserver(() => {
 
 resizeObserver.observe(video);
 resizeObserver.observe(plate);
+window.addEventListener("pointerdown", warmFaxSamples, { once: true, passive: true });
+window.addEventListener("keydown", warmFaxSamples, { once: true });
 
 function setHotspotsReady(ready) {
   for (const node of [resumeHit, portfolioHit, emailHit, phoneHit]) {
@@ -237,16 +239,12 @@ async function triggerFaxKey(key) {
   const isAudioReady = await ensureAudioEngine();
   if (!isAudioReady) return;
 
-  if (key === "#") {
-    playFaxHandshake({
-      duration: 0.38,
-      intensity: 1.08,
-      send: 0.18,
-    });
-    return;
+  try {
+    await loadFaxSample(key);
+    playFaxSample(key);
+  } catch (error) {
+    console.error(`Failed to play fax sample for key "${key}".`, error);
   }
-
-  playDtmfTone(definition);
 }
 
 function flashFaxKey(key) {
@@ -282,27 +280,9 @@ async function ensureAudioEngine() {
     compressor.release.value = 0.18;
 
     masterGain = audioContext.createGain();
-    masterGain.gain.value = 0.56;
+    masterGain.gain.value = 0.82;
     masterGain.connect(compressor);
     compressor.connect(audioContext.destination);
-
-    delayNode = audioContext.createDelay(0.45);
-    delayNode.delayTime.value = 0.17;
-
-    const delayFeedback = audioContext.createGain();
-    delayFeedback.gain.value = 0.24;
-
-    const delayTone = audioContext.createBiquadFilter();
-    delayTone.type = "lowpass";
-    delayTone.frequency.value = 2400;
-    delayTone.Q.value = 0.4;
-
-    delayNode.connect(delayTone);
-    delayTone.connect(masterGain);
-    delayTone.connect(delayFeedback);
-    delayFeedback.connect(delayNode);
-
-    noiseBuffer = createNoiseBuffer(audioContext);
   }
 
   if (audioContext.state === "suspended") {
@@ -316,311 +296,100 @@ async function ensureAudioEngine() {
   return audioContext.state === "running";
 }
 
-function playDtmfTone(definition, startAt = audioContext.currentTime) {
-  const now = startAt;
-  const duration = definition.duration || 0.17;
-  const stopAt = now + duration;
+function warmFaxSamples() {
+  void preloadFaxSamples();
+}
 
-  const rowOsc = audioContext.createOscillator();
-  rowOsc.type = "sine";
-  rowOsc.frequency.setValueAtTime(definition.rowFreq, now);
+async function preloadFaxSamples() {
+  const isAudioReady = await ensureAudioEngine();
+  if (!isAudioReady) return;
 
-  const colOsc = audioContext.createOscillator();
-  colOsc.type = "sine";
-  colOsc.frequency.setValueAtTime(definition.colFreq, now);
+  await Promise.allSettled(
+    Object.keys(FAX_PAD_MAP).map((key) => loadFaxSample(key))
+  );
+}
 
-  const rowGain = audioContext.createGain();
-  rowGain.gain.value = 0.48;
+async function loadFaxSample(key) {
+  const definition = FAX_PAD_MAP[key];
+  if (!definition?.sampleUrl) {
+    throw new Error(`Missing sample URL for key "${key}".`);
+  }
 
-  const colGain = audioContext.createGain();
-  colGain.gain.value = 0.52;
+  if (sampleBuffers.has(key)) {
+    return sampleBuffers.get(key);
+  }
 
-  const wobble = audioContext.createOscillator();
-  wobble.type = "sine";
-  wobble.frequency.value = 11;
+  if (sampleLoaders.has(key)) {
+    return sampleLoaders.get(key);
+  }
 
-  const wobbleGain = audioContext.createGain();
-  wobbleGain.gain.value = 2.2;
-  wobble.connect(wobbleGain);
-  wobbleGain.connect(rowOsc.detune);
-  wobbleGain.connect(colOsc.detune);
+  const loader = fetch(definition.sampleUrl)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} for ${definition.sampleUrl}`);
+      }
+
+      return response.arrayBuffer();
+    })
+    .then((arrayBuffer) => decodeAudioBuffer(arrayBuffer))
+    .then((buffer) => {
+      sampleBuffers.set(key, buffer);
+      sampleLoaders.delete(key);
+      return buffer;
+    })
+    .catch((error) => {
+      sampleLoaders.delete(key);
+      throw error;
+    });
+
+  sampleLoaders.set(key, loader);
+  return loader;
+}
+
+function decodeAudioBuffer(arrayBuffer) {
+  return new Promise((resolve, reject) => {
+    audioContext.decodeAudioData(arrayBuffer.slice(0), resolve, reject);
+  });
+}
+
+function playFaxSample(key) {
+  const definition = FAX_PAD_MAP[key];
+  const buffer = sampleBuffers.get(key);
+  if (!definition || !buffer || !audioContext || !masterGain) return;
+
+  const source = audioContext.createBufferSource();
+  source.buffer = buffer;
 
   const highpass = audioContext.createBiquadFilter();
   highpass.type = "highpass";
-  highpass.frequency.value = 320;
-  highpass.Q.value = 0.45;
+  highpass.frequency.value = 140;
+  highpass.Q.value = 0.4;
 
   const lowpass = audioContext.createBiquadFilter();
   lowpass.type = "lowpass";
-  lowpass.frequency.value = 2350;
-  lowpass.Q.value = 0.6;
+  lowpass.frequency.value = 4600;
+  lowpass.Q.value = 0.4;
 
-  const env = audioContext.createGain();
-  env.gain.setValueAtTime(0.0001, now);
-  env.gain.linearRampToValueAtTime(0.14, now + 0.01);
-  env.gain.exponentialRampToValueAtTime(0.0001, stopAt);
+  const gain = audioContext.createGain();
+  gain.gain.value = definition.gain || 0.96;
 
-  rowOsc.connect(rowGain);
-  colOsc.connect(colGain);
-  rowGain.connect(highpass);
-  colGain.connect(highpass);
+  source.connect(highpass);
   highpass.connect(lowpass);
-  lowpass.connect(env);
+  lowpass.connect(gain);
+  gain.connect(masterGain);
 
-  const click = audioContext.createOscillator();
-  click.type = "square";
-  click.frequency.setValueAtTime(1740, now);
-  click.frequency.exponentialRampToValueAtTime(880, now + 0.018);
-
-  const clickGain = audioContext.createGain();
-  clickGain.gain.setValueAtTime(0.0001, now);
-  clickGain.gain.linearRampToValueAtTime(0.03, now + 0.002);
-  clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
-  click.connect(clickGain);
-
-  const hiss = createNoiseSource();
-  const hissHighpass = audioContext.createBiquadFilter();
-  hissHighpass.type = "highpass";
-  hissHighpass.frequency.value = 1500;
-
-  const hissLowpass = audioContext.createBiquadFilter();
-  hissLowpass.type = "lowpass";
-  hissLowpass.frequency.value = 4200;
-
-  const hissGain = audioContext.createGain();
-  hissGain.gain.setValueAtTime(0.0001, now);
-  hissGain.gain.linearRampToValueAtTime(0.012, now + 0.004);
-  hissGain.gain.exponentialRampToValueAtTime(0.0001, stopAt + 0.03);
-
-  hiss.connect(hissHighpass);
-  hissHighpass.connect(hissLowpass);
-  hissLowpass.connect(hissGain);
-
-  const routed = [
-    ...routeSignal(env, definition.send || 0.1),
-    ...routeSignal(clickGain, 0.02),
-    ...routeSignal(hissGain, 0.03),
-  ];
-
-  rowOsc.start(now);
-  colOsc.start(now);
-  wobble.start(now);
-  click.start(now);
-  hiss.start(now);
-
-  stopAndDispose(
-    [
-      rowOsc,
-      colOsc,
-      wobble,
-      click,
-      hiss,
-      rowGain,
-      colGain,
-      wobbleGain,
-      highpass,
-      lowpass,
-      env,
-      clickGain,
-      hissHighpass,
-      hissLowpass,
-      hissGain,
-      ...routed,
-    ],
-    stopAt + 0.05
-  );
-}
-
-function playFaxHandshake({ startAt = audioContext.currentTime, duration = 0.32, intensity = 1, send = 0.18 } = {}) {
-  const now = startAt;
-  const stopAt = now + duration;
-
-  const primary = audioContext.createOscillator();
-  primary.type = "square";
-  primary.frequency.setValueAtTime(1320, now);
-  primary.frequency.exponentialRampToValueAtTime(2080, now + duration * 0.28);
-  primary.frequency.exponentialRampToValueAtTime(1180, now + duration * 0.72);
-  primary.frequency.linearRampToValueAtTime(1660, stopAt);
-
-  const answer = audioContext.createOscillator();
-  answer.type = "sawtooth";
-  answer.frequency.setValueAtTime(860, now);
-  answer.frequency.exponentialRampToValueAtTime(1180, now + duration * 0.34);
-  answer.frequency.exponentialRampToValueAtTime(980, stopAt);
-
-  const pilot = audioContext.createOscillator();
-  pilot.type = "sine";
-  pilot.frequency.setValueAtTime(2100, now);
-
-  const primaryGain = audioContext.createGain();
-  primaryGain.gain.value = 0.11 * intensity;
-
-  const answerGain = audioContext.createGain();
-  answerGain.gain.value = 0.072 * intensity;
-
-  const pilotGain = audioContext.createGain();
-  pilotGain.gain.setValueAtTime(0.0001, now);
-  pilotGain.gain.linearRampToValueAtTime(0.028 * intensity, now + duration * 0.2);
-  pilotGain.gain.exponentialRampToValueAtTime(0.0001, stopAt);
-
-  const warble = audioContext.createOscillator();
-  warble.type = "triangle";
-  warble.frequency.value = 24;
-
-  const warbleGain = audioContext.createGain();
-  warbleGain.gain.value = 18;
-  warble.connect(warbleGain);
-  warbleGain.connect(primary.detune);
-  warbleGain.connect(answer.detune);
-
-  const filter = audioContext.createBiquadFilter();
-  filter.type = "bandpass";
-  filter.frequency.setValueAtTime(1850, now);
-  filter.frequency.linearRampToValueAtTime(2100, now + duration * 0.24);
-  filter.frequency.linearRampToValueAtTime(1460, stopAt);
-  filter.Q.value = 0.82;
-
-  const postLowpass = audioContext.createBiquadFilter();
-  postLowpass.type = "lowpass";
-  postLowpass.frequency.value = 3400;
-  postLowpass.Q.value = 0.5;
-
-  const env = audioContext.createGain();
-  env.gain.setValueAtTime(0.0001, now);
-  env.gain.linearRampToValueAtTime(0.21 * intensity, now + 0.014);
-  env.gain.exponentialRampToValueAtTime(0.0001, stopAt);
-
-  primary.connect(primaryGain);
-  answer.connect(answerGain);
-  pilot.connect(pilotGain);
-  primaryGain.connect(filter);
-  answerGain.connect(filter);
-  pilotGain.connect(filter);
-  filter.connect(postLowpass);
-  postLowpass.connect(env);
-
-  const noise = createNoiseSource();
-  const noiseHighpass = audioContext.createBiquadFilter();
-  noiseHighpass.type = "highpass";
-  noiseHighpass.frequency.value = 1700;
-
-  const noiseLowpass = audioContext.createBiquadFilter();
-  noiseLowpass.type = "lowpass";
-  noiseLowpass.frequency.value = 5200;
-
-  const noiseGain = audioContext.createGain();
-  noiseGain.gain.setValueAtTime(0.0001, now);
-  noiseGain.gain.linearRampToValueAtTime(0.018 * intensity, now + 0.008);
-  noiseGain.gain.exponentialRampToValueAtTime(0.0001, stopAt + 0.04);
-
-  noise.connect(noiseHighpass);
-  noiseHighpass.connect(noiseLowpass);
-  noiseLowpass.connect(noiseGain);
-
-  const chirp = audioContext.createOscillator();
-  chirp.type = "triangle";
-  chirp.frequency.setValueAtTime(980, now);
-  chirp.frequency.exponentialRampToValueAtTime(2200, now + duration * 0.16);
-
-  const chirpGain = audioContext.createGain();
-  chirpGain.gain.setValueAtTime(0.0001, now);
-  chirpGain.gain.linearRampToValueAtTime(0.04 * intensity, now + 0.006);
-  chirpGain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.2);
-
-  chirp.connect(chirpGain);
-
-  const routed = [
-    ...routeSignal(env, send),
-    ...routeSignal(noiseGain, send * 0.5),
-    ...routeSignal(chirpGain, send * 0.2),
-  ];
-
-  primary.start(now);
-  answer.start(now);
-  pilot.start(now);
-  warble.start(now);
-  noise.start(now);
-  chirp.start(now);
-
-  stopAndDispose(
-    [
-      primary,
-      answer,
-      pilot,
-      warble,
-      noise,
-      chirp,
-      primaryGain,
-      answerGain,
-      pilotGain,
-      warbleGain,
-      filter,
-      postLowpass,
-      env,
-      noiseHighpass,
-      noiseLowpass,
-      noiseGain,
-      chirpGain,
-      ...routed,
-    ],
-    stopAt + 0.06
-  );
-}
-
-function routeSignal(node, sendAmount) {
-  node.connect(masterGain);
-
-  if (!delayNode || sendAmount <= 0) {
-    return [];
-  }
-
-  const send = audioContext.createGain();
-  send.gain.value = sendAmount;
-  node.connect(send);
-  send.connect(delayNode);
-
-  return [send];
-}
-
-function createNoiseSource() {
-  const source = audioContext.createBufferSource();
-  source.buffer = noiseBuffer;
-  return source;
-}
-
-function createNoiseBuffer(context) {
-  const length = context.sampleRate;
-  const buffer = context.createBuffer(1, length, context.sampleRate);
-  const channel = buffer.getChannelData(0);
-
-  for (let index = 0; index < length; index += 1) {
-    channel[index] = Math.random() * 2 - 1;
-  }
-
-  return buffer;
-}
-
-function stopAndDispose(nodes, stopAt) {
-  for (const node of nodes) {
-    if (typeof node.stop === "function") {
-      try {
-        node.stop(stopAt);
-      } catch {
-        // no-op
-      }
+  source.addEventListener("ended", () => {
+    try {
+      source.disconnect();
+      highpass.disconnect();
+      lowpass.disconnect();
+      gain.disconnect();
+    } catch {
+      // no-op
     }
-  }
+  });
 
-  const delayMs = Math.max(80, Math.ceil((stopAt - audioContext.currentTime) * 1000) + 80);
-  window.setTimeout(() => {
-    for (const node of nodes) {
-      try {
-        node.disconnect();
-      } catch {
-        // no-op
-      }
-    }
-  }, delayMs);
+  source.start();
 }
 
 function clamp(value, min, max) {
