@@ -431,7 +431,7 @@ function handleFaxLcdAnimationEnd() {
 async function ensureLcdFont() {
   if (!document.fonts) return;
   if (!lcdFontPromise) {
-    lcdFontPromise = document.fonts.load('32px "DSEG7 Classic"').catch(() => undefined);
+    lcdFontPromise = document.fonts.load('700 32px "DSEG7 Classic"').catch(() => undefined);
   }
 
   await lcdFontPromise;
