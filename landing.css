@@ -127,9 +127,12 @@ body {
   font-size: var(--lcd-font-size, 36px);
   font-weight: 700;
   line-height: 1;
-  letter-spacing: 0.06em;
-  color: #6f706a;
+  letter-spacing: 0.14em;
+  word-spacing: 0.52em;
+  color: #000;
   opacity: 0;
+  position: relative;
+  top: 0.07em;
   transform: translateX(100%);
   -webkit-text-stroke: 0.012em currentColor;
   text-shadow:
